@@ -1,0 +1,58 @@
+<div>
+    <div data-ng-show="currentEditField === null">
+
+        <div class="form-group">
+            <label>Table Name</label>
+            <input type="text" class="form-control" data-ng-model="table.record.name" placeholder="Enter table name." data-ng-disabled="!table.__dfUI.newTable"/>
+        </div>
+
+        <div class="form-group">
+            <button type="button" class="btn btn-default" data-ng-click="addField()">Add Field</button>
+            <button type="button" class="btn btn-default" data-ng-click="toggleViewMode()">
+                <span data-ng-if="viewMode === 'table'">Json</span>
+                <span data-ng-if="viewMode === 'json'">Table</span>
+            </button>
+            <button type="button" data-ng-if="viewMode === 'json'" class="btn btn-default" data-ng-click="checkJSON()">Validate</button>
+        </div>
+
+
+        <div data-ng-show="viewMode === 'table'">
+            <table class="table table-condensed table-hover table-striped table-bordered">
+                <th></th>
+                <th>Name</th>
+                <th>Type</th>
+
+                <tr data-ng-repeat="field in table.record.field | orderBy:'name'  track by $index ">
+                    <td>
+                        <button type="button" class="btn btn-default btn-xs" data-ng-click="deleteField(field)"><i class="fa fa-fw fa-trash"></i></button>
+                        <button type="button" class="btn btn-default btn-xs" data-ng-class="field.is_primary_key ? 'btn-warning' : ''" data-ng-click="setPrimaryKey(field)"><i class="fa fa-fw fa-key"></i></button>
+                    </td>
+                    <td data-ng-click="editField(field)">{{field.name}}</td>
+                    <td data-ng-click="editField(field)">{{field.type}}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div data-ng-show="viewMode === 'json'">
+
+            <div class="col-xs-12">
+                <df-ace-editor data-direct-data="table.record" data-is-editable="isEditable" data-is-clean="isEditorClean" data-current-editor="editor"></df-ace-editor>
+            </div>
+
+        </div>
+
+        <div class="row df-btn-row" style="padding-bottom: 20px">
+            <div class="col-xs-12">
+
+                <button data-ng-if="table.__dfUI.newTable" type="button" class="btn btn-primary" data-ng-click="saveTable()">Save</button>
+                <button data-ng-if="!table.__dfUI.newTable" type="button" class="btn btn-primary" data-ng-click="updateTable()">Update</button>
+                <button type="button" class="btn btn-primary" data-ng-click="closeTable()">Close</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div data-ng-show="currentEditField !== null">
+        <df-field-details data-field-data="currentEditField"></df-field-details>
+    </div>
+</div>

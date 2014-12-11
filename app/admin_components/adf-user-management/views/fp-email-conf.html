@@ -1,0 +1,42 @@
+<div >
+    <!-- Page title -->
+    <!--<h1>Email Password Reset</h1>-->
+
+    <div class="alert alert-danger" role="alert" data-ng-show="errorMsg !== ''">
+        <button type="button" class="close" data-ng-click="dismissError()"><span aria-hidden="true">&times;</span></button>
+        {{errorMsg}}
+    </div>
+
+    <div class="alert alert-success" role="alert" data-ng-show="successMsg !== ''">
+        <button type="button" class="close" data-ng-click="dismissSuccess()"><span aria-hidden="true">&times;</span></button>
+        {{successMsg}}
+    </div>
+
+
+    <div class="panel panel-default">
+        <div class="panel-heading df-panel-heading">
+            <h3 class="panel-title">Email Password Reset</h3>
+        </div>
+        <div class="panel-body">
+
+            <p>Enter your email address to reset your password.</p>
+
+            <!-- Forgot Password Form -->
+            <form name="reset-password-form" data-ng-submit="requestPasswordReset(reset)" autocomplete="off">
+                <div class="form-group">
+                    <input type="email" id="reset-password-email" name="reset-password-email" placeholder="Enter Email"
+                           data-ng-model="reset.email" class="form-control" required>
+                </div>
+
+                <input class="btn btn-primary btn-block" id="submit-reset" type="submit" value="Send Reset Email">
+
+                <!--<button class="btn btn-default pull-right" id="login-form-active" type="button"
+                        data-ng-click="showLoginForm()">Show Login</button>-->
+            </form>
+        </div>
+    </div>
+
+    <div class="pull-right">
+        <a id="login-form-active" type="button" data-ng-click="showLoginForm()">Login Form</a>
+    </div>
+</div>

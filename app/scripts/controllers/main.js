@@ -1,0 +1,492 @@
+'use strict';
+
+/**
+ * @ngdoc function
+ * @name dreamfactoryApp.controller:MainCtrl
+ * @description
+ * # MainCtrl
+ * Controller of the dreamfactoryApp
+ */
+angular.module('dreamfactoryApp')
+
+    // MainCtrl is the parent controller of everything.  Checks routing and deals with navs
+    .controller('MainCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', '$location', '$http', 'DSP_URL', 'dfApplicationData', 'dfNotify',
+        function ($scope, UserDataService, SystemConfigDataService, $location, $http, DSP_URL, dfApplicationData, dfNotify) {
+
+        // So child controllers can set the app section title
+        $scope.title = '';
+
+        // Top Level Links
+        $scope.topLevelLinks = [
+
+            {
+                path: '#/launchpad',
+                label: 'LaunchPad',
+                name: 'launchpad',
+                show: false
+            },
+            {
+                path: '#/profile',
+                label: 'Profile',
+                name: 'profile',
+                show: false
+            },
+            {
+                path: '#/quickstart',
+                label: 'Admin',
+                name: 'admin',
+                show: false
+            },
+//            {
+//                path: '#/dashboard',
+//                label: 'Admin',
+//                name: 'admin',
+//                show: false
+//            },
+            {
+                path: '#/login',
+                label: 'Login',
+                name: 'login',
+                show: false
+            },
+            {
+                path: '#/logout',
+                label: 'Logout',
+                name: 'logout',
+                show: false
+            },
+            {
+                path: '#/register',
+                label: 'Register',
+                name: 'register',
+                show: false
+            }
+
+        ];
+        $scope.topLevelNavOptions = {
+            links: $scope.topLevelLinks
+        };
+
+        // Component links.  Displayed under the top bar.
+        // plan is to have these loaded by role access eventually
+        // Right now they are all hard coded
+        $scope.componentLinks = [
+
+            {
+                name: 'quickstart',
+                label: 'Quickstart',
+                path: '/quickstart'
+            },
+//            {
+//                name: 'dashboard',
+//                label: 'Dashboard',
+//                path: '/dashboard'
+//            },
+            {
+                name: 'apps',
+                label: 'Apps',
+                path: '/apps'
+            },
+            {
+                name: 'users',
+                label: 'Users',
+                path: '/users'
+            },
+            {
+                name: 'roles',
+                label: 'Roles',
+                path: '/roles'
+            },
+            {
+                name: 'services',
+                label: 'Services',
+                path: '/services'
+            },
+            {
+                name: 'data',
+                label: 'Data',
+                path: '/data'
+            },
+            {
+                name: 'schema',
+                label: 'Schema',
+                path: '/schema'
+            },
+            {
+                name: 'package-manager',
+                label: 'Packages',
+                path: '/package-manager'
+            },
+            {
+                name: 'file-manager',
+                label: 'Files',
+                path: '/file-manager'
+
+            },
+            {
+                name: 'apidocs',
+                label: 'API/DOCS',
+                path: '/apidocs'
+            },
+            {
+                name: 'config',
+                label: 'Config',
+                path: '/config'
+            },
+            {
+                name: 'scripts',
+                label: 'Scripts',
+                path: '/scripts'
+            }
+
+        ];
+        $scope.componentNavOptions = {
+            links: $scope.componentLinks
+        };
+
+        // CurrentUser
+        $scope.currentUser = UserDataService.getCurrentUser();
+
+
+        // View options
+        $scope.showAdminComponentNav = false;
+
+
+        // PRIVATE API
+        // Sets links for navigation
+        $scope._setActiveLinks = function(linksArr, activeLinksArr) {
+
+            angular.forEach(linksArr, function(link) {
+
+                var i = 0;
+
+                while (i < activeLinksArr.length) {
+
+                    if (link.name === activeLinksArr[i]) {
+
+                        link.show = true;
+                        break;
+                    }
+                    else {
+                        link.show = false;
+                    }
+
+                    i++;
+                }
+            })
+        };
+
+
+        // WATCHERS
+
+        // Watch our current location
+        $scope.$watch(function() {return $location.path()}, function (newValue, oldValue) {
+
+
+            // If we are at launchpad
+            // || newValue === '/logout'
+            if (newValue === '/launchpad') {
+
+
+                $scope.showAdminComponentNav = false;
+
+                // Do we allow guest users and if there is no current user.
+                if (SystemConfigDataService.getSystemConfig().allow_guest_user && !UserDataService.getCurrentUser()) {
+
+                    // We make a call to user session to get guest user apps
+                    $http.get(DSP_URL + '/rest/user/session').then(
+                        function (result) {
+
+                            // we set the current user to the guest user
+                            UserDataService.setCurrentUser(result.data);
+
+                        },
+                        function (reject) {
+
+                            var messageOptions = {
+                                module: 'DreamFactory Application',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: reject
+
+                            };
+
+                            dfNotify.error(messageOptions);
+
+                        }
+                    )
+
+                    return;
+                }
+
+
+                // We don't allow guset users and there is no currentUser
+                if (!SystemConfigDataService.getSystemConfig().allow_guest_user && !UserDataService.getCurrentUser()) {
+
+                    $location.url('/login');
+                    return;
+                }
+
+
+
+                if (UserDataService.getCurrentUser()) {
+
+                    // We make a call to user session to get guest user apps
+                    $http.get(DSP_URL + '/rest/user/session').then(
+                        function (result) {
+
+                            // we set the current user to the guest user
+                            UserDataService.setCurrentUser(result.data);
+
+                        },
+                        function (reject) {
+
+                            var messageOptions = {
+                                module: 'DreamFactory Application',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: reject
+
+                            };
+
+                            dfNotify.error(messageOptions);
+                        }
+                    );
+
+                    return;
+                }
+
+
+
+
+            }
+
+            if (newValue === '/logout') {
+
+                $scope.showAdminComponentNav = false;
+                return;
+            }
+
+            // this is not a launchpad or logout route so check is user is sys admin
+            if ($scope.currentUser.is_sys_admin) {
+
+                // yes.  show the component nav
+                $scope.showAdminComponentNav = true;
+            }
+        });
+
+        $scope.$watch('currentUser', function(newValue, oldValue) {
+
+            // There is no currentUser and we allow guest users
+            if (!newValue && SystemConfigDataService.getSystemConfig().allow_guest_user) {
+
+                // Do we allow open registration
+                if (SystemConfigDataService.getSystemConfig().allow_open_registration) {
+
+                    // yes
+                    $scope._setActiveLinks($scope.topLevelLinks, ['launchpad', 'login', 'register']);
+
+                }
+                else {
+
+                    // no
+                    $scope._setActiveLinks($scope.topLevelLinks, ['launchpad', 'login']);
+                }
+
+            }
+            // There is no currentUser and we don't allow guest users
+            else if (!newValue && !SystemConfigDataService.getSystemConfig().allow_guest_user) {
+
+                // Do we allow open registration
+                if (SystemConfigDataService.getSystemConfig().allow_open_registration) {
+
+                    // yes
+                    $scope._setActiveLinks($scope.topLevelLinks, ['login', 'register']);
+                    $location.url('/login');
+                }
+                else {
+
+                    // no
+                    $scope._setActiveLinks($scope.topLevelLinks, ['login']);
+                }
+
+            }
+
+            // we have a current user.  Is that user an admin
+            else if (newValue.is_sys_admin) {
+
+                $scope._setActiveLinks($scope.topLevelLinks, ['launchpad', 'admin', 'logout']);
+            }
+
+            // is it a regular user
+            else if (!newValue.is_sys_admin) {
+
+                $scope._setActiveLinks($scope.topLevelLinks, ['launchpad', 'profile', 'logout']);
+            }
+        })
+    }])
+
+    // Our LoginCtrl controller inherits from our TopLevelAppCtrl controller
+    // This controller provides an attachment point for our Login Functionality
+    // We inject $location because we'll want to update our location on a successful
+    // login and the UserEventsService from our DreamFactory User Management Module to be able
+    // to respond to events generated from that module
+    .controller('LoginCtrl', ['$scope', '$location', '$timeout', 'UserEventsService', 'dfApplicationData', 'dfApplicationPrefs', 'SystemConfigDataService', function($scope, $location, $timeout, UserEventsService, dfApplicationData, dfApplicationPrefs, SystemConfigDataService) {
+
+        // Login options array
+        $scope.loginOptions = {
+            showTemplate: true
+        };
+
+
+        // Listen for the login success message which returns a user data obj
+        // When we have a successful login...
+        $scope.$on(UserEventsService.login.loginSuccess, function(e, userDataObj) {
+
+            // Set our parent's current user var
+            $scope.$parent.currentUser = userDataObj;
+
+
+            // API Options
+            var options = {
+                apis: []
+            };
+
+            // Set services on application object
+            // are we an admin
+            if (userDataObj.is_sys_admin) {
+
+                // Hide our login template while services build
+                $scope.loginOptions.showTemplate = false;
+
+                // 250ms delay to allow the login screen to process
+                // and disappear
+                $timeout(function () {
+
+                    // Set the apis we want
+                    options.apis = ['service', 'app', 'role', 'system','user', 'config', 'email_template', 'app_group'];
+
+                    if (!SystemConfigDataService.getSystemConfig().is_hosted) {
+                        options.apis.push('event')
+                    }
+
+                    // Init the app
+                    dfApplicationData.init(options);
+
+                    // Change our app location back to the home page
+                    $location.url('/quickstart');
+//                    $location.url('/dashboard');
+                }, 250);
+            }
+
+            // not an admin.
+            else {
+
+                dfApplicationData.init();
+                $location.url('/launchpad');
+            }
+        });
+
+    }])
+
+
+    // Our LogoutCtrl controller inherits from out TopLevelAppCtrl controller
+    // This controller provides an attachment point for our logout functionality
+    // We inject $location and the UserEventsService...same as the LoginCtrl.
+    .controller('LogoutCtrl', ['$scope', '$location', 'UserEventsService', 'dfApplicationData', 'SystemConfigDataService', function($scope, $location, UserEventsService, dfApplicationData, SystemConfigDataService) {
+
+        // Listen for the logout success message
+        // then we...
+        $scope.$on(UserEventsService.logout.logoutSuccess, function(e, userDataObj) {
+
+            // Set the current user var on the parent
+            // the userDataObj passed with the success message is just a boolean
+            // and should be 'false'
+            $scope.$parent.currentUser = userDataObj;
+
+
+            // Remove Application Object from sessionStorage on successful logout
+            dfApplicationData.destroyApplicationObj();
+
+            // redirect
+            $location.url('/login')
+        });
+    }])
+
+
+    // Our RegisterCtrl controller inherits from our TopLevelAppCtrl controller
+    // This controller provides an attachment point for our register users functionality
+    // We inject $location and UserEventService for the same reasons as stated in the LoginCtrl controller
+    // description.
+    .controller('RegisterCtrl', ['$scope', '$location', 'UserEventsService', 'SystemConfigDataService', function($scope, $location, UserEventsService, SystemConfigDataService) {
+
+
+        // If we have an email service registered with open registration then
+        // we require confirmation.  If that value is null...then we do not require
+        // confirmation
+        $scope.options = {
+            confirmationRequired: SystemConfigDataService.getSystemConfig().open_reg_email_service_id
+        };
+
+        // Listen for a register success message
+        // This returns a user credentials object which is just the email and password
+        // from the register form
+        // on success we...
+        $scope.$on(UserEventsService.register.registerSuccess, function(e, userCredsObj) {
+
+            // Send a message to our login directive requesting a login.
+            // We send our user credentials object that we received from our successful
+            // registration along to it can log us in.
+            $scope.$broadcast(UserEventsService.login.loginRequest, userCredsObj);
+        });
+
+
+        // Listen for a register confirmation message
+        // on confirmation required we...
+        $scope.$on(UserEventsService.register.registerConfirmation, function(e) {
+
+            // redirect to our registration thanks page
+            // that contains more directions
+            $location.url('/register-confirm')
+        });
+
+        // We handle login the same way here as we did in the LoginCtrl controller
+        // While this breaks the DRY(Don't repeat yourself) rule... we don't have access
+        // to the LoginCtrl to do this for us and although we could ping from route to route
+        // in order not to write the same code twice...the user experience would suffer and
+        // we would probably write more code trying not to repeat ourselves.
+        //@TODO: Make sure this works correctly.  Changed from loginRequest event to LoginSuccess event
+        $scope.$on(UserEventsService.login.loginSuccess, function(e, userDataObj) {
+
+            // Assign the user to the parent current user var
+            $scope.$parent.currentUser = userDataObj;
+
+            // redirect to the app home page
+            $location.url('/launchpad');
+        })
+    }])
+
+    .controller('RegisterConfirmCtrl', ['$scope', function($scope) {
+
+        // Don't need anything in here.  Just yet anyway.
+    }]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

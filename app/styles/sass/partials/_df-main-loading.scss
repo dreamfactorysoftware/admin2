@@ -1,0 +1,21 @@
+.df-main-loading {
+
+  display: none;
+
+  h1 {
+    color: $gray-darker;
+    display: inline-block;
+  }
+
+  p {
+
+    color: $gray;
+    font-size: 24px;
+    display: inline-block;
+  }
+}
+
+.df-main-loading-bar {
+  background: $gray-dark;
+  color: $gray-dark;
+}
