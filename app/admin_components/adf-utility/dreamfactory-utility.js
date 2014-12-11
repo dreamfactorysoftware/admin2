@@ -1056,6 +1056,7 @@ angular.module('dfUtility', ['dfApplication'])
         '$parse', function ($parse) {
             return {
                 restrict: 'A',
+                scope: false,
                 link: function (scope, element, attrs) {
 
                     var model = $parse(attrs.fileModel);
@@ -1065,6 +1066,7 @@ angular.module('dfUtility', ['dfApplication'])
                         'change', function () {
                             scope.$apply(
                                 function () {
+
                                     modelSetter(scope, element[0].files[0]);
                                 }
                             );

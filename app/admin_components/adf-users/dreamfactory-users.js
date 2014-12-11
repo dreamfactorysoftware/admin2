@@ -624,6 +624,10 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     }
                 };
 
+                // For file upload on import users;
+                // there is a scope issue where the fileUpload directive
+                // accesses import users parent scope.  It's not as bad as it sounds
+                scope.uploadFile = null;
 
                 scope.currentViewMode = dfApplicationPrefs.getPrefs().sections.user.manageViewMode;
 
@@ -945,7 +949,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
         }
     }])
 
-    .directive('dfImportUsers', ['MOD_USER_ASSET_PATH', 'DSP_URL', '$http', 'dfTableEventService', function (MOD_USER_ASSET_PATH, DSP_URL, $http, dfTableEventService) {
+    .directive('dfImportUsers', ['MOD_USER_ASSET_PATH', 'DSP_URL', '$http', 'dfTableEventService', 'dfNotify', function (MOD_USER_ASSET_PATH, DSP_URL, $http, dfTableEventService, dfNotify) {
 
         return {
             restrict: 'A',
@@ -954,7 +958,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             link: function (scope, elem, attrs) {
 
 
-                scope.uploadFile = null;
                 scope.importType = null;
                 scope.field = angular.element('#upload');
 
@@ -1009,11 +1012,23 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     if (!newValue) return false;
 
+                    newValue = scope.uploadFile;
+
                     if (!scope._checkFileType(newValue)) {
 
                         scope.uploadFile = null;
 
-                        scope.$emit(scope.es.alertFailure, {message: 'Acceptable file formats are csv, json, and xml.'})
+
+                        var messageOptions = {
+                            module: 'Api Error',
+                            type: 'error',
+                            provider: 'dreamfactory',
+                            message: 'Acceptable file formats are csv, json, and xml.'
+                        }
+
+                        dfNotify.error(messageOptions);
+
+
 
                         return false;
                     }
@@ -1027,8 +1042,17 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                             $('#upload').val('');
 
-                            scope.$broadcast(dfTableEventService.refreshTable);
-                            scope.$emit(scope.es.alertSuccess, {message: 'Users imported successfully.'});
+                            var messageOptions = {
+                                module: 'Users',
+                                type: 'success',
+                                provider: 'dreamfactory',
+                                message: 'Users imported successfully.'
+                            }
+                            dfNotify.success(messageOptions);
+
+
+                            scope.$broadcast('toolbar:paginate:user:reset');
+
                         },
                         function (reject) {
 
@@ -1037,12 +1061,16 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                             $('#upload').val('');
 
-                            throw {
+                            var messageOptions = {
                                 module: 'Api Error',
                                 type: 'error',
                                 provider: 'dreamfactory',
-                                exception: reject
+                                message: reject
                             }
+
+                            dfNotify.error(messageOptions);
+
+                            scope.$broadcast('toolbar:paginate:user:reset');
                         }
 
                     ).finally(
