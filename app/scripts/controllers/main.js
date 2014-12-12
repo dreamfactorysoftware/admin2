@@ -315,7 +315,7 @@ angular.module('dreamfactoryApp')
             // we have a current user.  Is that user an admin
             else if (newValue.is_sys_admin) {
 
-                $scope._setActiveLinks($scope.topLevelLinks, ['launchpad', 'admin', 'logout']);
+                $scope._setActiveLinks($scope.topLevelLinks, ['launchpad', 'admin', 'profile', 'logout']);
             }
 
             // is it a regular user
@@ -447,7 +447,7 @@ angular.module('dreamfactoryApp')
 
             // redirect to our registration thanks page
             // that contains more directions
-            $location.url('/register-confirm')
+            $location.url('/register-complete')
         });
 
         // We handle login the same way here as we did in the LoginCtrl controller
@@ -455,7 +455,6 @@ angular.module('dreamfactoryApp')
         // to the LoginCtrl to do this for us and although we could ping from route to route
         // in order not to write the same code twice...the user experience would suffer and
         // we would probably write more code trying not to repeat ourselves.
-        //@TODO: Make sure this works correctly.  Changed from loginRequest event to LoginSuccess event
         $scope.$on(UserEventsService.login.loginSuccess, function(e, userDataObj) {
 
             // Assign the user to the parent current user var
@@ -466,10 +465,82 @@ angular.module('dreamfactoryApp')
         })
     }])
 
-    .controller('RegisterConfirmCtrl', ['$scope', function($scope) {
+    .controller('RegisterCompleteCtrl', ['$scope', function($scope) {
 
         // Don't need anything in here.  Just yet anyway.
-    }]);
+    }])
+
+    // Controls confirmation flow
+    .controller('RegisterConfirmCtrl', ['$scope', '$location', 'dfApplicationData', 'UserEventsService', 'SystemConfigDataService',  function($scope, $location, dfApplicationData, UserEventsService, SystemConfigDataService) {
+
+
+        // Listen for a confirmation success message
+        // This returns a user credentials object which is just the email and password
+        // from the register form
+        // on success we...
+        $scope.$on(UserEventsService.confirm.confirmationSuccess, function(e, userCredsObj) {
+
+            // Send a message to our login directive requesting a login.
+            // We send our user credentials object that we received from our successful
+            // registration along to it can log us in.
+            $scope.$broadcast(UserEventsService.login.loginRequest, userCredsObj);
+        });
+
+
+        // We handle login the same way here as we did in the LoginCtrl controller
+        // While this breaks the DRY(Don't repeat yourself) rule... we don't have access
+        // to the LoginCtrl to do this for us and although we could ping from route to route
+        // in order not to write the same code twice...the user experience would suffer and
+        // we would probably write more code trying not to repeat ourselves.
+        $scope.$on(UserEventsService.login.loginSuccess, function(e, userDataObj) {
+
+            // Assign the user to the parent current user var
+            $scope.$parent.currentUser = userDataObj;
+
+            // setup the app
+            dfApplicationData.init();
+
+            // redirect to the app home page
+            $location.url('/launchpad');
+        })
+    }])
+
+    // Controls Reset of password
+    .controller('ResetPasswordEmailCtrl', ['$scope', '$location', 'dfApplicationData', 'UserEventsService', 'SystemConfigDataService',  function($scope, $location, dfApplicationData, UserEventsService, SystemConfigDataService) {
+
+
+
+        // Listen for a confirmation success message
+        // This returns a user credentials object which is just the email and password
+        // from the register form
+        // on success we...
+        $scope.$on(UserEventsService.password.passwordSetSuccess, function(e, userCredsObj) {
+
+            // Send a message to our login directive requesting a login.
+            // We send our user credentials object that we received from our successful
+            // registration along to it can log us in.
+            $scope.$broadcast(UserEventsService.login.loginRequest, userCredsObj);
+        });
+
+
+        // We handle login the same way here as we did in the LoginCtrl controller
+        // While this breaks the DRY(Don't repeat yourself) rule... we don't have access
+        // to the LoginCtrl to do this for us and although we could ping from route to route
+        // in order not to write the same code twice...the user experience would suffer and
+        // we would probably write more code trying not to repeat ourselves.
+        $scope.$on(UserEventsService.login.loginSuccess, function(e, userDataObj) {
+
+            // Assign the user to the parent current user var
+            $scope.$parent.currentUser = userDataObj;
+
+            // setup the app
+            dfApplicationData.init();
+
+            // redirect to the app home page
+            $location.url('/launchpad');
+        })
+
+    }])
 
 
 

@@ -4,6 +4,7 @@
 angular.module('dfSchema', ['ngRoute', 'dfUtility'])
     .constant('MOD_SCHEMA_ROUTER_PATH', '/schema')
     .constant('MOD_SCHEMA_ASSET_PATH', 'admin_components/adf-schema/')
+
     .config(['$routeProvider', 'MOD_SCHEMA_ROUTER_PATH', 'MOD_SCHEMA_ASSET_PATH',
         function ($routeProvider, MOD_SCHEMA_ROUTER_PATH, MOD_SCHEMA_ASSET_PATH) {
             $routeProvider
@@ -30,6 +31,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     }
                 });
         }])
+
     .run(['DSP_URL', '$templateCache', function (DSP_URL, $templateCache) {}])
 
     .controller('SchemaCtrl', ['DSP_URL', '$scope', '$http', 'dfApplicationData', 'dfNotify', 'dfObjectService', function(DSP_URL, $scope, $http, dfApplicationData, dfNotify, dfObjectService) {

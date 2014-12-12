@@ -18,7 +18,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                                 sysConfig = SystemConfigDataService.getSystemConfig(),
                                 messageOptions = {};
 
-                            if (currentUser && currentUser.is_sys_admin && currentUser.session_id) {
+                            /*if (currentUser && currentUser.is_sys_admin && currentUser.session_id) {
                                 $location.url('/users');
 
                                 messageOptions = {
@@ -30,7 +30,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
 
                                 dfNotify.warn(messageOptions);
                                 return;
-                            }
+                            }*/
 
                             if (!currentUser && sysConfig.allow_guest_user) {
 
@@ -78,7 +78,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
             }
         ];
     }])
-    .directive('dfEditProfile', ['MOD_PROFILE_ASSET_PATH', 'DSP_URL', 'dfNotify', 'dfApplicationData', '$http', function(MOD_APPS_ASSET_PATH, DSP_URL, dfNotify, dfApplicationData, $http) {
+    .directive('dfEditProfile', ['MOD_PROFILE_ASSET_PATH', 'DSP_URL', 'dfNotify', 'dfApplicationData', 'UserDataService', '$http', function(MOD_APPS_ASSET_PATH, DSP_URL, dfNotify, dfApplicationData, UserDataService, $http) {
 
         return {
 
@@ -142,6 +142,11 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                     })
                 };
 
+                scope._updateUsers = function (update) {
+
+                    return dfApplicationData.updateApiData('user', update).$promise;
+                };
+
                 scope._updateUserPasswordToServer = function (requestDataObj) {
 
                     return $http({
@@ -172,9 +177,43 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                                 type: 'success',
                                 provider: 'dreamfactory',
                                 message: "Profile updated successfully."
-                            }
+                            };
 
-                            dfNotify.success(messageOptions);
+
+                            if (UserDataService.getCurrentUser().is_sys_admin) {
+
+
+                                var update = {
+                                    params: {
+                                        fields: '*'
+                                    },
+                                    data: {
+                                        id: UserDataService.getCurrentUser().id
+                                    }
+                                };
+
+                                scope._updateUsers(update).then(
+                                    function(result) {
+
+                                        dfNotify.success(messageOptions);
+
+                                    },
+
+                                    function(reject) {
+
+                                        var messageOptions = {
+                                            module: 'Profile',
+                                            type: 'error',
+                                            provider: 'dreamfactory',
+                                            message: reject
+                                        };
+                                    }
+                                )
+                            }
+                            else {
+
+                                dfNotify.success(messageOptions);
+                            }
                         },
                         function (reject) {
 

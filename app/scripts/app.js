@@ -113,9 +113,9 @@ angular
                     }]
                 }
             })
-            .when('/register-confirm', {
-                templateUrl: 'views/register-confirm.html',
-                controller: 'RegisterConfirmCtrl',
+            .when('/register-complete', {
+                templateUrl: 'views/register-complete.html',
+                controller: 'RegisterCompleteCtrl',
                 resolve: {
 
                     checkRegisterConfirmRoute: ['SystemConfigDataService', 'dfApplicationData', '$location', function (SystemConfigDataService, dfApplicationData, $location) {
@@ -140,6 +140,64 @@ angular
                         }
                     }]
                 }
+            })
+            .when('/register-confirm', {
+                templateUrl: 'views/register-confirm.html',
+                controller: "RegisterConfirmCtrl",
+                resolve: {
+
+                    checkRegisterConfirmRoute: ['SystemConfigDataService', 'dfApplicationData', '$location', function (SystemConfigDataService, dfApplicationData, $location) {
+
+                        var sysConfig = SystemConfigDataService.getSystemConfig(),
+                            currentUser = dfApplicationData.getCurrentUser();
+
+                        if (!currentUser && !sysConfig.allow_open_registration) {
+                            $location.url('/login');
+                            return;
+                        }
+
+                        if (currentUser && currentUser.is_sys_admin) {
+                            $location.url('/quickstart');
+//                            $location.url('/dashboard');
+                            return;
+                        }
+
+                        if (currentUser && !currentUser.is_sys_admin) {
+                            $location.url('/launchpad');
+                            return;
+                        }
+                    }]
+                }
+            })
+            .when('/reset-password', {
+                templateUrl: 'views/reset-password-email.html',
+                controller: 'ResetPasswordEmailCtrl',
+                resolve: {
+
+                    checkRegisterConfirmRoute: ['SystemConfigDataService', 'dfApplicationData', '$location', function (SystemConfigDataService, dfApplicationData, $location) {
+
+                        var sysConfig = SystemConfigDataService.getSystemConfig(),
+                            currentUser = dfApplicationData.getCurrentUser();
+
+                        if (!currentUser && !sysConfig.allow_open_registration) {
+                            $location.url('/login');
+                            return;
+                        }
+
+                        if (currentUser && currentUser.is_sys_admin) {
+                            $location.url('/quickstart');
+//                            $location.url('/dashboard');
+                            return;
+                        }
+
+                        if (currentUser && !currentUser.is_sys_admin) {
+                            $location.url('/launchpad');
+                            return;
+                        }
+                    }]
+
+                }
+
             })
             .otherwise({
                 redirectTo: '/launchpad'

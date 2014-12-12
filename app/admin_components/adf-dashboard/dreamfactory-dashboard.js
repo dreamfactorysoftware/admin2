@@ -262,7 +262,7 @@ angular.module('dfDashboard', ['dfUtility'])
                 scope._setStep = function (step) {
 
                     // Do they want a native ios or android app
-                    if ( step == 2 && scope.app.record.native == 1) {
+                    if ( step == 2 && scope.app.record.native === 1) {
 
                         scope._createApp(4);
                         return;

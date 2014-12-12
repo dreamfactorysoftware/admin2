@@ -131,12 +131,10 @@
                                                     Full name: {{user.record.first_name}}&nbsp;{{user.record.last_name}}<br />
                                                     Email: {{user.record.email}}<br />
                                                     Role: <span data-ng-if="user.record.role_id !== null">{{user.record.role_id}}</span><span data-ng-if="user.record.role_id === null">Unassigned</span><br/>
-                                                    Active: <span data-ng-if="user.record.active">True</span><span data-ng-if="!user.record.active">False</span><br />
+                                                    Active: <span data-ng-if="user.record.is_active">True</span><span data-ng-if="!user.record.is_active">False</span><br />
                                                     Admin: <span data-ng-if="user.record.is_sys_admin">True</span><span data-ng-if="!user.record.is_sys_admin">False</span><br />
                                                     Confirmed:  <span data-ng-if="user.record.confirmed">True</span><span data-ng-if="!user.record.confirmed">False</span><br />
-
                                                 </p>
-
                                             </div>
                                         </div>
                                     </div>
