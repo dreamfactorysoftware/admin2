@@ -44,6 +44,9 @@ angular
     // Set app name(api key) for this application
     .constant('DSP_API_KEY', 'admin')
 
+    // Set Icon Set
+    .constant('ICON_SET', 'fontawesome')
+
     // Set global header for calls made to DSP
     .config(['$httpProvider', 'DSP_API_KEY', function($httpProvider, DSP_API_KEY) {
 
@@ -176,13 +179,31 @@ angular
 
                     checkRegisterConfirmRoute: ['SystemConfigDataService', 'dfApplicationData', '$location', function (SystemConfigDataService, dfApplicationData, $location) {
 
-                        var sysConfig = SystemConfigDataService.getSystemConfig(),
-                            currentUser = dfApplicationData.getCurrentUser();
+                        var currentUser = dfApplicationData.getCurrentUser();
 
-                        if (!currentUser && !sysConfig.allow_open_registration) {
-                            $location.url('/login');
+                        if (currentUser && currentUser.is_sys_admin) {
+                            $location.url('/quickstart');
+//                            $location.url('/dashboard');
                             return;
                         }
+
+                        if (currentUser && !currentUser.is_sys_admin) {
+                            $location.url('/launchpad');
+                            return;
+                        }
+                    }]
+
+                }
+
+            })
+            .when('/user-invite', {
+                templateUrl: 'views/user-invite.html',
+                controller: 'UserInviteCtrl',
+                resolve: {
+
+                    checkRegisterConfirmRoute: ['SystemConfigDataService', 'dfApplicationData', '$location', function (SystemConfigDataService, dfApplicationData, $location) {
+
+                        var currentUser = dfApplicationData.getCurrentUser();
 
                         if (currentUser && currentUser.is_sys_admin) {
                             $location.url('/quickstart');

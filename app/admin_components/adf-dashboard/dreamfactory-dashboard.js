@@ -85,7 +85,7 @@ angular.module('dfDashboard', ['dfUtility'])
         }
     }])
 
-    .directive('dfQuickStart', ['MOD_DASHBOARD_ASSET_PATH', 'dfApplicationData', 'dfNotify', function (MOD_DASHBOARD_ASSET_PATH, dfApplicationData, dfNotify) {
+    .directive('dfQuickStart', ['MOD_DASHBOARD_ASSET_PATH', '$location', 'dfApplicationData', 'dfNotify', 'dfStringService', function (MOD_DASHBOARD_ASSET_PATH, $location,  dfApplicationData, dfNotify, dfStringService) {
 
 
         return {
@@ -93,7 +93,6 @@ angular.module('dfDashboard', ['dfUtility'])
             scope: false,
             templateUrl: MOD_DASHBOARD_ASSET_PATH + 'views/df-quick-start.html',
             link: function (scope, elem, attrs) {
-
 
                 var App = function  (appData) {
 
@@ -124,11 +123,30 @@ angular.module('dfDashboard', ['dfUtility'])
 
                 scope.step = 1;
 
+                // This is where we will store you new app object during the
+                // quickstart
                 scope.app = new App();
 
+
+                // Let's get the other apps so that we can compare
+                // api names to make sure you haven't already created
+                // an app with the same api name.
+                scope.apps = dfApplicationData.getApiData('app');
+
+                // We'll need your storage containers because we 'll need to assign
+                // this app to a storage container if it is a 'hosted on this system' app.
                 scope.storageServices = dfApplicationData.getApiData('service', {type: 'Local File Storage,File Storage'});
+
+                // We don't know the containers you may have because you haven't chosen
+                // a service yet. In reality we just find the 'applications' container from your
+                // local storage and put the app there if you are creating a 'hosted' app.
                 scope.storageContainers = [];
 
+
+                scope.downloadSDK = function() {
+
+                    window.top.location = location.protocol + '//' + location.host + '/rest/system/app/' + scope.app.record.id + '?sdk=true&app_name=admin';
+                };
 
 
                 scope.setStep = function (step) {
@@ -136,7 +154,29 @@ angular.module('dfDashboard', ['dfUtility'])
                    scope._setStep(step);
                 };
 
+                scope.goToDocs = function() {
+                    $location.path( '/apidocs' );
+                };
 
+
+                // This checks to see if you have already used this api name
+                // for an application
+                scope._isApiNameUnique = function () {
+
+                    // let's loop through the apps
+                    for (var i = 0; i < scope.apps.length; i++) {
+
+                        // Do we already have an app with that api_name
+                        if (dfStringService.areIdentical(scope.apps[i].api_name, scope.app.record.api_name)) {
+
+                            // Yes.
+                            return false;
+                        }
+                    }
+
+                    // The name is unique.
+                    return true;
+                };
 
                 scope._saveAppToServer = function (requestDataObj) {
 
@@ -177,6 +217,7 @@ angular.module('dfDashboard', ['dfUtility'])
                             _app.record.storage_service_id = null;
                             _app.record.storage_container = null;
 
+
                         }
                         else {
 
@@ -199,6 +240,7 @@ angular.module('dfDashboard', ['dfUtility'])
                             });
 
                             _app.record.storage_container = 'applications';
+
                         }
 
                         _app.record.is_url_external = false;
@@ -212,6 +254,10 @@ angular.module('dfDashboard', ['dfUtility'])
                 };
 
                 scope._createApp = function (stepOnSuccess) {
+
+
+                    // Set so we can distinguish a remote client web app from a native app
+                    scope.isWebAppOnLocalMachine = scope.app.__dfUI.devLocal;
 
                     // Create our request obj
                     var requestDataObj = {
@@ -238,11 +284,15 @@ angular.module('dfDashboard', ['dfUtility'])
 
                             scope.app = new App (result);
 
-                            if (!scope.app.record.is_url_external && !scope.app.record.storage_service_id) {
+                            if (!scope.app.record.is_url_external && !scope.app.record.storage_service_id && (scope.isWebAppOnLocalMachine === null)) {
                                 scope.app.record['native'] = true;
                             }
+                            else {
+                                scope.app.record['native'] = false;
+                            }
 
-                            scope.step = stepOnSuccess;
+                            scope.setStep(stepOnSuccess);
+
                         },
                         function (reject) {
 
@@ -261,23 +311,30 @@ angular.module('dfDashboard', ['dfUtility'])
 
                 scope._setStep = function (step) {
 
-                    // Do they want a native ios or android app
-                    if ( step == 2 && scope.app.record.native === 1) {
+                    switch (step) {
 
-                        scope._createApp(4);
-                        return;
+                        case 1:
+                            scope.step = step;
+
+                        case 2:
+                            if (scope.app.record.native) {
+
+                                scope._createApp(3);
+                                break;
+                            }
+
+                            scope.step = step;
+                            break;
+
+                        case 3:
+                            scope.step = step;
+                            break;
+
+                        default:
+                            scope.step = step;
 
                     }
-                    else if (step == 3 && scope.app.record.native == 0) {
-
-                        scope._createApp(4);
-                        return;
-                    }
-
-
-                    scope.step = step;
                 }
-
             }
         }
     }])

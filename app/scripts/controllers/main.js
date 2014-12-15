@@ -10,11 +10,14 @@
 angular.module('dreamfactoryApp')
 
     // MainCtrl is the parent controller of everything.  Checks routing and deals with navs
-    .controller('MainCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', '$location', '$http', 'DSP_URL', 'dfApplicationData', 'dfNotify',
-        function ($scope, UserDataService, SystemConfigDataService, $location, $http, DSP_URL, dfApplicationData, dfNotify) {
+    .controller('MainCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', '$location', '$http', 'DSP_URL', 'dfApplicationData', 'dfNotify', 'dfIconService',
+        function ($scope, UserDataService, SystemConfigDataService, $location, $http, DSP_URL, dfApplicationData, dfNotify, dfIconService) {
 
         // So child controllers can set the app section title
         $scope.title = '';
+
+        // CurrentUser
+        $scope.currentUser = UserDataService.getCurrentUser();
 
         // Top Level Links
         $scope.topLevelLinks = [
@@ -23,18 +26,14 @@ angular.module('dreamfactoryApp')
                 path: '#/launchpad',
                 label: 'LaunchPad',
                 name: 'launchpad',
-                show: false
-            },
-            {
-                path: '#/profile',
-                label: 'Profile',
-                name: 'profile',
+                icon: dfIconService().launchpad,
                 show: false
             },
             {
                 path: '#/quickstart',
                 label: 'Admin',
                 name: 'admin',
+                icon: dfIconService().quickstart,
                 show: false
             },
 //            {
@@ -47,18 +46,28 @@ angular.module('dreamfactoryApp')
                 path: '#/login',
                 label: 'Login',
                 name: 'login',
+                icon: dfIconService().login,
                 show: false
             },
             {
                 path: '#/logout',
                 label: 'Logout',
                 name: 'logout',
+                icon: dfIconService().logout,
                 show: false
             },
             {
                 path: '#/register',
                 label: 'Register',
                 name: 'register',
+                icon: dfIconService().register,
+                show: false
+            },
+            {
+                path: '#/profile',
+                label: $scope.currentUser.display_name || 'Guest',
+                name: 'profile',
+                icon: dfIconService().profile,
                 show: false
             }
 
@@ -103,19 +112,14 @@ angular.module('dreamfactoryApp')
                 path: '/services'
             },
             {
-                name: 'data',
-                label: 'Data',
-                path: '/data'
-            },
-            {
                 name: 'schema',
                 label: 'Schema',
                 path: '/schema'
             },
             {
-                name: 'package-manager',
-                label: 'Packages',
-                path: '/package-manager'
+                name: 'data',
+                label: 'Data',
+                path: '/data'
             },
             {
                 name: 'file-manager',
@@ -124,8 +128,13 @@ angular.module('dreamfactoryApp')
 
             },
             {
+                name: 'scripts',
+                label: 'Scripts',
+                path: '/scripts'
+            },
+            {
                 name: 'apidocs',
-                label: 'API/DOCS',
+                label: 'Api Docs',
                 path: '/apidocs'
             },
             {
@@ -133,19 +142,17 @@ angular.module('dreamfactoryApp')
                 label: 'Config',
                 path: '/config'
             },
+
             {
-                name: 'scripts',
-                label: 'Scripts',
-                path: '/scripts'
-            }
+                name: 'package-manager',
+                label: 'Packages',
+                path: '/package-manager'
+            },
 
         ];
         $scope.componentNavOptions = {
             links: $scope.componentLinks
         };
-
-        // CurrentUser
-        $scope.currentUser = UserDataService.getCurrentUser();
 
 
         // View options
@@ -302,7 +309,21 @@ angular.module('dreamfactoryApp')
 
                     // yes
                     $scope._setActiveLinks($scope.topLevelLinks, ['login', 'register']);
-                    $location.url('/login');
+
+
+                    // check if we are resetting a password
+                    if ($location.path() === '/reset-password') {
+
+                        $location.url('/reset-password');
+                    }
+                    else if ($location.path() === '/user-invite'){
+
+                        $location.url('/user-invite')
+                    }
+                    else {
+
+                        $location.url('/login');
+                    }
                 }
                 else {
 
@@ -474,6 +495,17 @@ angular.module('dreamfactoryApp')
     .controller('RegisterConfirmCtrl', ['$scope', '$location', 'dfApplicationData', 'UserEventsService', 'SystemConfigDataService',  function($scope, $location, dfApplicationData, UserEventsService, SystemConfigDataService) {
 
 
+        $scope.confirmOptions = {
+
+            showTemplate: true,
+            title: 'Registration Confirmation'
+        }
+
+        $scope.loginOptions = {
+            showTemplate: false
+        }
+
+
         // Listen for a confirmation success message
         // This returns a user credentials object which is just the email and password
         // from the register form
@@ -541,6 +573,51 @@ angular.module('dreamfactoryApp')
         })
 
     }])
+
+
+    // Controls User Invite Page
+    .controller('UserInviteCtrl', ['$scope', '$location', 'dfApplicationData', 'UserEventsService', 'SystemConfigDataService',  function($scope, $location, dfApplicationData, UserEventsService, SystemConfigDataService) {
+
+        $scope.confirmOptions = {
+
+            showTemplate: true,
+            title: 'Invitation Confirmation'
+        };
+
+        $scope.loginOptions = {
+            showTemplate: false
+        };
+
+        // Listen for a confirmation success message
+        // This returns a user credentials object which is just the email and password
+        // from the register form
+        // on success we...
+        $scope.$on(UserEventsService.confirm.confirmationSuccess, function(e, userCredsObj) {
+
+            // Send a message to our login directive requesting a login.
+            // We send our user credentials object that we received from our successful
+            // registration along to it can log us in.
+            $scope.$broadcast(UserEventsService.login.loginRequest, userCredsObj);
+        });
+
+
+        // We handle login the same way here as we did in the LoginCtrl controller
+        // While this breaks the DRY(Don't repeat yourself) rule... we don't have access
+        // to the LoginCtrl to do this for us and although we could ping from route to route
+        // in order not to write the same code twice...the user experience would suffer and
+        // we would probably write more code trying not to repeat ourselves.
+        $scope.$on(UserEventsService.login.loginSuccess, function(e, userDataObj) {
+
+            // Assign the user to the parent current user var
+            $scope.$parent.currentUser = userDataObj;
+
+            // setup the app
+            dfApplicationData.init();
+
+            // redirect to the app home page
+            $location.url('/launchpad');
+        })
+    }]);
 
 
 

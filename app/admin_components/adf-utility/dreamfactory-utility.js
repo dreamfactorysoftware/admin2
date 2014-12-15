@@ -2582,6 +2582,40 @@ angular.module('dfUtility', ['dfApplication'])
         }
     }])
 
+    // Icon Service
+    .service('dfIconService', ['ICON_SET', function (ICON_SET) {
+
+
+        return function () {
+
+            var bootstrap = {}, fontawesome = {};
+
+            fontawesome = {
+                launchpad: 'fa fa-fw fa-bars',
+                quickstart: 'fa fa-fw fa-cog',
+                login: 'fa fa-fw fa-sign-in',
+                logout: 'fa fa-fw fa-sign-out',
+                register: 'fa fa-fw fa-group',
+                profile: 'fa fa-fw fa-user'
+            }
+
+
+
+
+            switch (ICON_SET) {
+
+
+                case 'fontawesome':
+                    return fontawesome;
+
+                default:
+                    return fontawesome;
+
+            }
+        }
+    }])
+
+
 
     // Various Filters.  All used in dfTable.  Possibly elsewhere.
     // I'll find out if so.

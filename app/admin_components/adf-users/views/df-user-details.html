@@ -45,7 +45,7 @@
                 <!-- User Role -->
                 <div class="form-group">
                     <label>Assign Role</label><df-simple-help data-options="dfHelp.userRole"></df-simple-help>
-                    <select class="form-control" data-ng-model="user.record.role_id" data-ng-options="role.id as role.name for role in roles" >
+                    <select class="form-control" data-ng-model="user.record.role_id" data-ng-options="role.id as role.name for role in roles" data-ng-disabled="user.record.is_sys_admin">
                         <option value="">-- No Role Selected --</option>
                     </select>
                 </div>

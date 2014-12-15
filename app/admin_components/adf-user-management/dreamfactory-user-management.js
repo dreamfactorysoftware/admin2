@@ -222,11 +222,10 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                                 // remove unnecessary apps data
                                 // this is temporary and cleans up our
                                 // session obj that is returned by the login function
-                                // this data will be removed from the session object in
-                                // DSP v2 so if you use it for anything currently
-                                // beware and use at your own risk
-                                // delete result.data.no_group_apps;
-                                // delete result.data.app_groups;
+                                // If a user has a large number of apps it can overflow our cookie
+                                // So we're not going to store this info
+                                delete result.data.no_group_apps;
+                                delete result.data.app_groups;
 
                                 // Set the cookies
                                 scope._setCookies(result.data);
@@ -359,9 +358,6 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                         // handle successful password reset
                         function (result) {
 
-
-                            console.log(data);
-
                             scope.successMsg = 'A password reset email has been sent to the provided email address.';
 
                             // Emit a confirm message indicating that is the next step
@@ -374,13 +370,6 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                             scope.errorMsg = reject.data.error[0].message;
                             return;
 
-                            // Throw a DreamFactory error object
-//                            throw {
-//                                module: 'DreamFactory User Management',
-//                                type: 'error',
-//                                provider: 'dreamfactory',
-//                                exception: reject
-//                            }
                         }
                     )
                 };
@@ -965,11 +954,10 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                 link: function(scope, elem, attrs) {
 
 
-
                     // PUBLIC VARS
                     // This holds our options object.  If we don't provide an options object
                     // it defaults to showing the template.  This is currently the only option
-                    var defaults = {showTemplate: true};
+                    var defaults = {showTemplate: true, title: 'User Confirmation'};
 
                     scope.options = _dfObjectService.mergeObjects(scope.options, defaults);
 

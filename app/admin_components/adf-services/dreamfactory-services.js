@@ -126,7 +126,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope.service = null;
 
-                // Is this going to be a new Role
+                // Is this going to be a new Service
                 if (scope.newService) {
                     scope.service = new Service();
                 }
@@ -290,7 +290,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                                 module: 'Services',
                                 type: 'success',
                                 provider: 'dreamfactory',
-                                message: 'Role updated successfully.'
+                                message: 'Service updated successfully.'
 
                             };
 
@@ -418,8 +418,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 // HELP
                 scope.dfHelp = {
                     createService: {
-                        title: 'Create Role Information',
-                        text: 'Create Role information help text'
+                        title: 'Create Service Information',
+                        text: 'Create Service information help text'
                     }
                 };
 
