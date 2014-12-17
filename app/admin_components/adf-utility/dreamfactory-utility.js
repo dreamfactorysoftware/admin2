@@ -1720,32 +1720,32 @@ angular.module('dfUtility', ['dfApplication'])
                 scope.sdkLinks = [
                     {
                         label: 'Android',
-                        link: '',
+                        href: 'https://github.com/dreamfactorysoftware/android-sdk',
                         icon: ''
                     },
                     {
                         label: 'iOS',
-                        link: '',
+                        href: 'https://github.com/dreamfactorysoftware/ios-sdk',
                         icon: ''
                     },
                     {
                         label: 'AngularJS',
-                        link: '',
+                        href: 'https://github.com/dreamfactorysoftware/angular-dreamfactory',
                         icon: ''
                     },
                     {
                         label: 'Javascript',
-                        link: '',
+                        href: 'https://github.com/dreamfactorysoftware/javascript-sdk',
                         icon: ''
                     },
                     {
                         label: 'Titanium',
-                        link: '',
+                        href: 'https://github.com/dreamfactorysoftware/titanium-dreamfactory',
                         icon: ''
                     },
                     {
                         label: 'Windows Phone',
-                        link: '',
+                        href: 'https://github.com/dreamfactorysoftware/windows-sdk',
                         icon: ''
                     }
                 ]

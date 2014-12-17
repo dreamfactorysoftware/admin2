@@ -322,7 +322,6 @@ angular.module('dreamfactoryApp')
                     // yes
                     $scope._setActiveLinks($scope.topLevelLinks, ['login', 'register']);
 
-
                     // check if we are resetting a password
                     if ($location.path() === '/reset-password') {
 
@@ -331,6 +330,10 @@ angular.module('dreamfactoryApp')
                     else if ($location.path() === '/user-invite'){
 
                         $location.url('/user-invite')
+                    }
+                    else if ($location.path() === '/register-confirm'){
+
+                        $location.url('/register-confirm')
                     }
                     else {
 
@@ -560,6 +563,8 @@ angular.module('dreamfactoryApp')
             showTemplate: false
         };
 
+        $scope.registerLoginErrorMsg = '';
+
 
         // Listen for a confirmation success message
         // This returns a user credentials object which is just the email and password
@@ -681,6 +686,8 @@ angular.module('dreamfactoryApp')
         $scope.loginOptions = {
             showTemplate: false
         };
+
+        $scope.confirmLoginErrorMsg = '';
 
         // Listen for a confirmation success message
         // This returns a user credentials object which is just the email and password

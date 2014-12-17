@@ -1254,37 +1254,38 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
             scope: {
                 show: '=?'
             },
-            replace: true,
+            replace: false,
             templateUrl: MODUSRMNGR_ASSET_PATH + 'views/dreamfactory-waiting.html',
             link: function (scope, elem, attrs) {
 
 
-                // @TODO Need to make this auto calc
-
                 var el = $(elem),
-                    h = el.parent().outerHeight(),
-                    w = el.parent().innerWidth(),
+                    container = el.children(),
+                    h = el.parent('.panel-body').outerHeight(),
+                    w = el.parent('.panel-body').outerWidth(),
                     t = (el.position().top + parseInt(el.parent().css('padding-top'))) + 'px',
                     l = (el.position().left + parseInt(el.parent().css('padding-left'))) + 'px';
 
 
                function size() {
 
-                    h = el.parent().outerHeight(),
-                    w = el.parent().innerWidth();
+                   h = el.parent('.panel-body').outerHeight();
+                   w = el.parent('.panel-body').outerWidth();
+                   t = el.parent('.panel-body').position().top;
+                   l = el.parent('.panel-body').position().left;
 
-                   el.css({
+                   container.css({
                        height: h + 'px',
                        width: w + 'px',
                        position: 'absolute',
-                       left: 21,
-                       top: 42
+                       left: l,
+                       top: t
 
                    });
 
-                   el.children('.df-spinner').css({
+                   container.children('.df-spinner').css({
                        position: 'absolute',
-                       top: (h - 50) /2,
+                       top: (h - 110) /2,
                        left: (w - 70) /2
                    });
                }
@@ -1293,27 +1294,25 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                 scope._showWaiting = function() {
 
                     size();
-                    el.fadeIn('fast');
+                    container.fadeIn('fast');
                 };
 
                 scope._hideWaiting = function() {
 
-                    el.hide();
+                    container.hide();
                 };
 
                 scope.$watch('show', function (n, o) {
 
 
                     if (n) {
-
                         scope._showWaiting()
-
-
                     }
                     else {
                         scope._hideWaiting();
                     }
                 });
+
 
                 $(window).on('resize load', function () {
                     size();
