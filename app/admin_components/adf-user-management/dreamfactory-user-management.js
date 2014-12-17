@@ -73,7 +73,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                 scope: {
 
                     // define optional options attribute
-                    options: '=?'
+                    options: '=?',
+                    inErrorMsg: '=?'
                 },
 
                 // template path
@@ -113,8 +114,9 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                         password: ''
                     }
 
-                    scope.errorMsg = '';
+                    scope.errorMsg = scope.inErrorMsg || '';
                     scope.successMsg = '';
+                    scope.loginWaiting = false;
 
                     scope.loginForm = {};
 
@@ -213,6 +215,9 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // Run login implementation
                     scope._login = function (credsDataObj) {
 
+                        // fire up waiting directive
+                        scope.loginWaiting = true;
+
                         // call private login request function with a credentials object
                         scope._loginRequest(credsDataObj).then(
 
@@ -246,7 +251,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                                 // Handle Login error with template error message
                                 scope.errorMsg = reject.data.error[0].message;
-
+                                scope.$emit(scope.es.loginError, reject);
 
                                 // Emit error message so we can hook in
 //                                scope.$emit(scope.es.loginError, reject);
@@ -261,7 +266,12 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 //                                }
 
                             }
-                        )
+                        ).finally(
+                                function () {
+                                    // shutdown waiting directive
+                                    scope.loginWaiting = false;
+                                }
+                            )
                     };
 
                     scope._toggleForms = function () {
@@ -298,7 +308,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
         }])
 
     // Forgot Password Email Confirmation
-    .directive('dreamfactoryForgotPwordEmail', ['MODUSRMNGR_ASSET_PATH', 'DSP_URL', '$http', 'UserEventsService', function (MODUSRMNGR_ASSET_PATH, DSP_URL, $http, UserEventsService) {
+    .directive('dreamfactoryForgotPwordEmail', ['MODUSRMNGR_ASSET_PATH', 'DSP_URL', '$http', '_dfStringService', 'UserEventsService', function (MODUSRMNGR_ASSET_PATH, DSP_URL, $http, _dfStringService, UserEventsService) {
 
 
         return {
@@ -312,8 +322,21 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                 // CREATE SHORT NAMES
                 scope.es = UserEventsService.password;
 
-                scope.successMsg = '';
-                scope.errorMsg = '';
+
+                scope.emailForm = true;
+                scope.securityQuestionForm = false;
+
+                scope.sq = {
+                    email: null,
+                    security_question: null,
+                    security_answer: null,
+                    new_password: null,
+                    verify_password: null
+                }
+
+                scope.identical = true;
+                scope.requestWaiting = false;
+                scope.questionWaiting = false;
 
 
                 // PUBLIC API
@@ -329,10 +352,32 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     scope.successMsg = '';
                 }
 
+
                 scope.requestPasswordReset = function (emailDataObj) {
 
                     // Pass email address in object to the _requestPasswordReset function
                     scope._requestPasswordReset(emailDataObj);
+                };
+
+                scope.securityQuestionSubmit = function (reset) {
+
+                    if (!scope.identical) {
+                        scope.errorMsg = 'Passwords do not match.'
+                        return;
+                    }
+
+                    if (!scope._verifyPasswordLength(reset)) {
+                        scope.errorMsg = 'Password must be at least 5 characters.'
+                        return;
+                    }
+
+
+                    scope._securityQuestionSubmit(reset);
+                }
+
+                scope.verifyPassword = function (user) {
+
+                    scope._verifyPassword(user);
                 };
 
 
@@ -343,6 +388,24 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     return $http.post(DSP_URL + '/rest/user/password?reset=true', requestDataObj);
                 };
 
+                scope._resetPasswordSQ = function (requestDataObj) {
+
+                    // Post request for password change and return promise
+                    return $http.post(DSP_URL + '/rest/user/password?login=false', requestDataObj);
+                };
+
+                // Test if our entered passwords are identical
+                scope._verifyPassword = function (userDataObj) {
+
+                    scope.identical = _dfStringService.areIdentical(userDataObj.new_password, userDataObj.verify_password);
+                };
+
+                // Test if our passwords are long enough
+                scope._verifyPasswordLength = function (credsDataObj) {
+
+                    return credsDataObj.new_password.length >= 5;
+                };
+
 
                 // COMPLEX IMPLEMENTATION
                 scope._requestPasswordReset = function (requestDataObj) {
@@ -351,6 +414,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // this contains an object with the email address
                     requestDataObj['reset'] = true;
 
+                    // Turn on waiting directive
+                    scope.requestWaiting = true;
 
                     // Ask the DSP to resset the password via email confirmation
                     scope._resetPasswordRequest(requestDataObj).then(
@@ -358,10 +423,25 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                         // handle successful password reset
                         function (result) {
 
-                            scope.successMsg = 'A password reset email has been sent to the provided email address.';
 
-                            // Emit a confirm message indicating that is the next step
-                            scope.$emit(scope.es.passwordResetRequestSuccess, requestDataObj.email);
+                            if (result.data.hasOwnProperty('security_question')) {
+
+
+                                scope.emailForm = false;
+                                scope.securityQuestionForm = true;
+
+
+                                scope.sq.email = requestDataObj.email;
+                                scope.sq.security_question = result.data.security_question
+
+                            }
+                            else {
+
+                                scope.successMsg = 'A password reset email has been sent to the provided email address.';
+
+                                // Emit a confirm message indicating that is the next step
+                                scope.$emit(scope.es.passwordResetRequestSuccess, requestDataObj.email);
+                            }
                         },
 
                         // handle error
@@ -371,8 +451,41 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                             return;
 
                         }
-                    )
+                    ).finally(
+                            function () {
+
+                                // turn off waiting directive
+                                scope.requestWaiting = false;
+                            }
+                        )
                 };
+
+
+                scope._securityQuestionSubmit = function (reset) {
+
+                    scope.questionWaiting = true;
+
+                    scope._resetPasswordSQ(reset).then(
+
+                        function (result) {
+
+                            var userCredsObj = {
+                                email: reset.email,
+                                password: reset.new_password
+                            }
+
+                            scope.$emit(UserEventsService.password.passwordSetSuccess, userCredsObj)
+
+                        },
+                        function (reject) {
+
+                            scope.questionWaiting = false;
+                            scope.errorMsg = reject.data.error[0].message;
+                            scope.$emit(UserEventsService.password.passwordSetError);
+                        }
+
+                    ).finally(function() {})
+                }
 
                 // WATCHERS AND INIT
 
@@ -396,6 +509,9 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
             link: function (scope, elem, attrs) {
 
 
+
+
+
             }
         }
     }])
@@ -407,7 +523,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
             return {
                 restrict: 'E',
                 scope: {
-                    options: '=?'
+                    options: '=?',
+                    inErrorMsg: '=?'
                 },
                 templateUrl: MODUSRMNGR_ASSET_PATH + 'views/password-reset.html',
                 link: function (scope, elem, attrs) {
@@ -432,6 +549,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                     scope.successMsg = '';
                     scope.errorMsg = '';
+
+                    scope.resetWaiting = false;
 
 
                     // PUBLIC API
@@ -494,12 +613,14 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // Test if our passwords are long enough
                     scope._verifyPasswordLength = function (credsDataObj) {
 
-                        return credsDataObj.new_password.length > 5;
+                        return credsDataObj.new_password.length >= 5;
                     };
 
 
                     // COMPLEX IMPLEMENTATION
                     scope._resetPassword = function (credsDataObj) {
+
+                        scope.resetWaiting = true;
 
                         var requestDataObj = {
                             email: credsDataObj.email,
@@ -515,19 +636,32 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                                     password: credsDataObj.new_password
                                 }
 
-                                scope.$emit(scope.es.passwordSetSuccess, userCredsObj)
+                                scope.$emit(scope.es.passwordSetSuccess, userCredsObj);
+
+
                             },
                             function (reject) {
 
                                 scope.errorMsg = reject.data.error[0].message;
-                                scope.$emit(scope.es.passwordSetError)
+                                scope.$emit(scope.es.passwordSetError);
+                                scope.resetWaiting = false;
                             }
-                        )
+                        ).finally (
+
+
+
+                            )
                     };
 
 
                     // WATCHERS AND INIT
 
+                    // WATCHERS AND INIT
+                    var watchInErrorMsg = scope.$watch('inErrorMsg', function (n, o) {
+
+                        scope.confirmWaiting = false;
+                        scope.errorMsg = n;
+                    });
 
                     //HANDLE MESSAGES
 
@@ -535,6 +669,11 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                         scope._resetPassword(credsDataObj);
                     });
+
+                    scope.$on('$destroy', function (e) {
+
+                        watchInErrorMsg();
+                    })
                 }
             }
         }])
@@ -949,7 +1088,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                 replace: true,
                 templateUrl: MODUSRMNGR_ASSET_PATH + 'views/confirmation-code.html',
                 scope: {
-                    options: '=?'
+                    options: '=?',
+                    inErrorMsg: '=?'
                 },
                 link: function(scope, elem, attrs) {
 
@@ -970,6 +1110,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                     scope.errorMsg = '';
                     scope.successMsg = '';
+                    scope.confirmWaiting = false;
+
 
 
                     // I was lazy.  These two dismiss errors don't
@@ -1041,6 +1183,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // COMPLEX IMPLEMENTATION
                     scope._confirm = function (userConfirmObj) {
 
+                        scope.confirmWaiting = true;
+
                        var requestDataObj = userConfirmObj;
 
                         scope._confirmUserToServer(requestDataObj).then(
@@ -1058,16 +1202,37 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                                 scope.errorMsg = reject.data.error[0].message;
                                 scope.$emit(UserEventsService.confirm.confirmationError);
+
+                                // there was an error
+                                // stop the waiting directive
+                                scope.confirmWaiting = false;
+
                             }
-                        )
+                        ).finally(
+
+                                function () {
+
+                                    // Do nothing..  We will have asked to login
+
+                                }
+                            )
                     };
 
 
 
+                    // WATCHERS AND INIT
+                    var watchInErrorMsg = scope.$watch('inErrorMsg', function (n, o) {
+
+                        scope.confirmWaiting = false;
+                        scope.errorMsg = n;
+                    });
+
 
                     // MESSAGES
+                    scope.$on('$destroy', function (e) {
 
-
+                        watchInErrorMsg();
+                    });
 
 
 
@@ -1079,6 +1244,84 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
             }
         }])
 
+    // blockss entry forms while waiting for server
+    // pops up working icon
+    .directive('dreamfactoryWaiting', ['MODUSRMNGR_ASSET_PATH', function (MODUSRMNGR_ASSET_PATH) {
+
+
+        return {
+            restrict: 'E',
+            scope: {
+                show: '=?'
+            },
+            replace: true,
+            templateUrl: MODUSRMNGR_ASSET_PATH + 'views/dreamfactory-waiting.html',
+            link: function (scope, elem, attrs) {
+
+
+                // @TODO Need to make this auto calc
+
+                var el = $(elem),
+                    h = el.parent().outerHeight(),
+                    w = el.parent().innerWidth(),
+                    t = (el.position().top + parseInt(el.parent().css('padding-top'))) + 'px',
+                    l = (el.position().left + parseInt(el.parent().css('padding-left'))) + 'px';
+
+
+               function size() {
+
+                    h = el.parent().outerHeight(),
+                    w = el.parent().innerWidth();
+
+                   el.css({
+                       height: h + 'px',
+                       width: w + 'px',
+                       position: 'absolute',
+                       left: 21,
+                       top: 42
+
+                   });
+
+                   el.children('.df-spinner').css({
+                       position: 'absolute',
+                       top: (h - 50) /2,
+                       left: (w - 70) /2
+                   });
+               }
+
+
+                scope._showWaiting = function() {
+
+                    size();
+                    el.fadeIn('fast');
+                };
+
+                scope._hideWaiting = function() {
+
+                    el.hide();
+                };
+
+                scope.$watch('show', function (n, o) {
+
+
+                    if (n) {
+
+                        scope._showWaiting()
+
+
+                    }
+                    else {
+                        scope._hideWaiting();
+                    }
+                });
+
+                $(window).on('resize load', function () {
+                    size();
+                })
+
+            }
+        }
+    }])
 
     // This service gives us a way to pass namespaced events around our application
     // We inject this service in order to request and respond to different module events.

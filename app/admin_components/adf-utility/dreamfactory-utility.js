@@ -23,7 +23,7 @@ angular.module('dfUtility', ['dfApplication'])
     }])
 
     // declare our directive and pass in our constant
-    .directive('dfTopLevelNavStd', ['MOD_UTILITY_ASSET_PATH', '$location', function (MOD_UTILITY_ASSET_PATH, $location) {
+    .directive('dfTopLevelNavStd', ['MOD_UTILITY_ASSET_PATH', '$location', 'UserDataService', function (MOD_UTILITY_ASSET_PATH, $location, UserDataService) {
 
         return {
 
@@ -46,7 +46,6 @@ angular.module('dfUtility', ['dfApplication'])
 
                 scope.links = scope.options.links;
                 scope.activeLink = null;
-
 
                 scope.$watch(function() { return $location.path()}, function(newValue, oldValue) {
 
@@ -83,15 +82,16 @@ angular.module('dfUtility', ['dfApplication'])
                             break;
 
                         case '/register':
-                            scope.activeLink = 'register';
-                            break;
-
+                        case '/register-complete':
                         case '/register-confirm':
                             scope.activeLink = 'register';
                             break;
 
+
+
                     }
                 })
+
             }
         }
     }])
@@ -499,7 +499,7 @@ angular.module('dfUtility', ['dfApplication'])
                 // If this is the swagger iframe
                 if (_elem.is('#swagger')) {
 
-                    _elem.attr('height', winHeight - 130 + 'px');
+                    _elem.attr('height', winHeight - 200 + 'px');
                 }
                 // If this is the swagger iframe
                 else if (_elem.is('#file-manager')) {
@@ -1667,6 +1667,92 @@ angular.module('dfUtility', ['dfApplication'])
         }
     }])
 
+    // allows user to set security quesetion and answer
+    .directive('dfSetSecurityQuestion', ['MOD_UTILITY_ASSET_PATH', '$compile', function (MOD_UTILITY_ASSET_PATH, $compile) {
+
+
+        return {
+
+            restrict: 'E',
+            scope: false,
+            templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-set-security-question.html',
+            link: function(scope, elem, attrs) {
+
+
+                scope.setQuestion = false;
+
+
+                var watchSetQuestion = scope.$watch('setQuestion', function (n, o) {
+
+                    if (!n) return false;
+                    var html = '';
+
+                    html += '<div class="form-group"></div>' +
+                        '<label for="user-security-question">Security Question</label>' +
+                        '<input type="text" id="user-security-question" data-ng-model="user.record.security_question" class="form-control" placeholder="Enter security question" />' +
+                        '</div>' +
+                        '<div class="form-group"></div>' +
+                        '<label for="user-security-answer">Security Answer</label>' +
+                        '<input type="text" id="user-security-answer" data-ng-model="user.record.security_answer" class="form-control" placeholder="Enter security answer" />' +
+                        '</div>' ;
+
+
+
+                    angular.element('#set-question').append($compile(html)(scope));
+                })
+            }
+        }
+    }])
+
+    // Creates a drop down button for the sdks
+    .directive('dfDownloadSdk', ['MOD_UTILITY_ASSET_PATH', function (MOD_UTILITY_ASSET_PATH) {
+
+        return {
+            restrict: 'E',
+            scope: {
+                btnSize: '=?'
+            },
+            templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-download-sdk.html',
+            link: function (scope, elem, attrs) {
+
+
+
+                scope.sdkLinks = [
+                    {
+                        label: 'Android',
+                        link: '',
+                        icon: ''
+                    },
+                    {
+                        label: 'iOS',
+                        link: '',
+                        icon: ''
+                    },
+                    {
+                        label: 'AngularJS',
+                        link: '',
+                        icon: ''
+                    },
+                    {
+                        label: 'Javascript',
+                        link: '',
+                        icon: ''
+                    },
+                    {
+                        label: 'Titanium',
+                        link: '',
+                        icon: ''
+                    },
+                    {
+                        label: 'Windows Phone',
+                        link: '',
+                        icon: ''
+                    }
+                ]
+            }
+        }
+    }])
+
     // if a section is empty show this
     // it will bind to data stored in the section controller $scope.emptySectionOptions
     // the template will call setActiveView() from <sidebar-nav> directive
@@ -1847,14 +1933,15 @@ angular.module('dfUtility', ['dfApplication'])
 
 
                 scope.popupLoginOptions = {
-                    showTemplate: true
+                    showTemplate: true,
+
                 };
 
 
                 // PUBLIC API
-                scope.openLoginWindow = function () {
+                scope.openLoginWindow = function (errormsg) {
 
-                    scope._openLoginWindow();
+                    scope._openLoginWindow(errormsg);
                 };
 
 
@@ -1864,9 +1951,9 @@ angular.module('dfUtility', ['dfApplication'])
 
 
                 // COMPLEX IMPLEMENTATION
-                scope._openLoginWindow = function () {
-                    var html = '<div id="df-login-frame" style="overflow: hidden; position: absolute; top:0; z-index:99999; background: rgba(0, 0, 0, .8); width: 100%; height: 100%"><div style="padding-top: 120px;"><dreamfactory-user-login data-options="popupLoginOptions"></dreamfactory-user-login></div></div>';
-                    elem.append($compile(html)(scope));
+                scope._openLoginWindow = function (errormsg) {
+                    var html = '<div id="df-login-frame" style="overflow: hidden; position: absolute; top:0; z-index:99999; background: rgba(0, 0, 0, .8); width: 100%; height: 100%"><div style="padding-top: 120px;"><dreamfactory-user-login data-in-err-msg="errormsg.data.error[0].message" data-options="popupLoginOptions"></dreamfactory-user-login></div></div>';
+                    elem.html($compile(html)(scope));
                 };
 
 

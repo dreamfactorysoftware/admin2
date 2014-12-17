@@ -898,7 +898,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
     }])
 
     // Intercepts outgoing http calls.  Checks for valid session.  If 403 or 401 will trigger a pop up login screen.
-    .factory('httpValidSession', ['$q', '$rootScope', function ($q, $rootScope) {
+    .factory('httpValidSession', ['$q', '$rootScope', '$location', function ($q, $rootScope, $location) {
 
 
         return {
@@ -920,9 +920,26 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             responseError: function (reject) {
 
-                if (reject.status === 401 || reject.status === 403) {
-                    $rootScope.$$childHead.openLoginWindow();
+
+                // If we get an error from any of the
+                // login / register pages, ignore it.
+                // No need to pop up a login.
+                switch($location.path()) {
+
+                    case '/login':
+                    case '/user-invite':
+                    case '/register-confirm':
+                    case '/register':
+                    case '/register-complete':
+                    break;
+
+                    default:
+
+                        if (reject.status === 401 || reject.status === 403) {
+                            $rootScope.$$childHead.openLoginWindow(reject);
+                        }
                 }
+
 
                 return $q.reject(reject);
             }

@@ -13,6 +13,7 @@
             </div>
 
 
+
             <!-- Login Section -->
             <div data-ng-if="loginActive">
 
@@ -22,6 +23,7 @@
                         <h3 class="panel-title">Login</h3>
                     </div>
                     <div class="panel-body">
+                        <dreamfactory-waiting data-show="loginWaiting"></dreamfactory-waiting>
                         <!-- Login Form -->
                         <form name="loginForm" data-ng-submit="login(creds)" >
                             <div class="form-group">
@@ -72,6 +74,7 @@
 
             </div>
             <!-- End Login Section -->
+
             <dreamfactory-forgot-pword-email data-ng-if="!loginActive"></dreamfactory-forgot-pword-email>
         </div>
     </div>

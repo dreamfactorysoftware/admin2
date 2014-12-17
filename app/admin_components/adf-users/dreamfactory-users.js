@@ -105,7 +105,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         email: null,
                         phone: null,
                         confirmed: false,
-                        is_active: false,
+                        is_active: true,
                         is_sys_admin: false,
                         role_id: null,
                         default_app_id: null,
@@ -134,6 +134,8 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 if (scope.newUser) {
                     scope.user = new User();
                 }
+
+                scope.sendEmailOnCreate = false;
 
 
                 // PUBLIC API
@@ -195,7 +197,8 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     var requestDataObj = {
                         params: {
                             fields: '*',
-                            related: 'lookup_keys'
+                            related: 'lookup_keys',
+                            send_invite: scope.sendEmailOnCreate
                         },
                         data: scope.user.record
                     };
@@ -218,6 +221,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             scope._resetUserPasswordForm();
 
                             scope.user = new User();
+
                         },
                         function (reject) {
 
@@ -379,7 +383,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 scope.invite = function() {
 
-                    console.log(scope.user);
                     scope._invite(scope.user.record.id);
                 };
 
@@ -429,10 +432,10 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     );
                 };
 
-                scope._callSendInvite = function (promiseObj) {
+                scope._callSendInvite = function (user) {
 
                     if (scope.inviteUserOnCreate) {
-                        scope._invite(promiseObj.data.id);
+                        scope._invite(user.id);
                     }
                 };
 
@@ -785,7 +788,6 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                     ).finally(
                         function() {
 
-                            console.log('Delete App Finally')
                         }
                     )
                 };

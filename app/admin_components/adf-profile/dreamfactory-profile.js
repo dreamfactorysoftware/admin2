@@ -79,7 +79,7 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
             }
         ];
     }])
-    .directive('dfEditProfile', ['MOD_PROFILE_ASSET_PATH', 'DSP_URL', 'dfNotify', 'dfApplicationData', 'UserDataService', '$http', function(MOD_APPS_ASSET_PATH, DSP_URL, dfNotify, dfApplicationData, UserDataService, $http) {
+    .directive('dfEditProfile', ['MOD_PROFILE_ASSET_PATH', 'DSP_URL', 'dfNotify', 'dfApplicationData', 'UserDataService', 'dfObjectService', '$http', function(MOD_APPS_ASSET_PATH, DSP_URL, dfNotify, dfApplicationData, UserDataService, dfObjectService, $http) {
 
         return {
 
@@ -180,7 +180,11 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                                 message: "Profile updated successfully."
                             };
 
+                            // Flag stored on df-set-security-question directive
+                            scope.setQuestion = false;
 
+
+                            // If the user is an admin we have to update dfApplicationObj
                             if (UserDataService.getCurrentUser().is_sys_admin) {
 
 
@@ -208,6 +212,8 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                                             provider: 'dreamfactory',
                                             message: reject
                                         };
+
+                                        dfNotify.error(messageOptions);
                                     }
                                 )
                             }
@@ -215,6 +221,21 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
 
                                 dfNotify.success(messageOptions);
                             }
+
+                            // Remove these properties if they have been set
+                            // before merging and setting current user obj in
+                            // user data service;
+
+                            if (scope.user.record.hasOwnProperty('security_question')) {
+                                delete scope.user.record.security_question;
+                            }
+
+                            if (scope.user.record.hasOwnProperty('security_answer')) {
+                                delete scope.user.record.security_answer;
+                            }
+
+                            UserDataService.setCurrentUser(dfObjectService.mergeObjects(scope.user.record, UserDataService.getCurrentUser()));
+
                         },
                         function (reject) {
 

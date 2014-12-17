@@ -65,13 +65,15 @@ angular.module('dreamfactoryApp')
             },
             {
                 path: '#/profile',
-                label: $scope.currentUser.display_name || 'Guest',
+                label: UserDataService.getCurrentUser().display_name || 'Guest',
                 name: 'profile',
                 icon: dfIconService().profile,
                 show: false
             }
 
         ];
+
+
         $scope.topLevelNavOptions = {
             links: $scope.topLevelLinks
         };
@@ -183,6 +185,20 @@ angular.module('dreamfactoryApp')
             })
         };
 
+        // Sets a property on a link in the top level links
+        $scope.setTopLevelLinkValue = function (linkName, linkProp, value) {
+
+
+            for (var i = 0;  i < $scope.topLevelLinks.length; i++) {
+
+                if ($scope.topLevelLinks[i].name === linkName) {
+
+                    $scope.topLevelLinks[i][linkProp] = value;
+                    break;
+                }
+            }
+        }
+
 
         // WATCHERS
 
@@ -235,14 +251,14 @@ angular.module('dreamfactoryApp')
                 }
 
 
-
+                // We have a current user
                 if (UserDataService.getCurrentUser()) {
 
-                    // We make a call to user session to get guest user apps
+                    // We make a call to user session to get user apps
                     $http.get(DSP_URL + '/rest/user/session').then(
                         function (result) {
 
-                            // we set the current user to the guest user
+                            // we set the current user
                             UserDataService.setCurrentUser(result.data);
 
                         },
@@ -262,10 +278,6 @@ angular.module('dreamfactoryApp')
 
                     return;
                 }
-
-
-
-
             }
 
             if (newValue === '/logout') {
@@ -336,14 +348,31 @@ angular.module('dreamfactoryApp')
             // we have a current user.  Is that user an admin
             else if (newValue.is_sys_admin) {
 
-                $scope._setActiveLinks($scope.topLevelLinks, ['launchpad', 'admin', 'profile', 'logout']);
+                // Have to set this explicitly
+                $scope.setTopLevelLinkValue('profile', 'label', newValue.display_name);
+
+                // Set active links fpr this user in the UI
+                $scope._setActiveLinks($scope.topLevelLinks, ['launchpad', 'admin', 'profile']);
+
             }
 
             // is it a regular user
             else if (!newValue.is_sys_admin) {
 
-                $scope._setActiveLinks($scope.topLevelLinks, ['launchpad', 'profile', 'logout']);
+                // Have to set this explicitly
+                $scope.setTopLevelLinkValue('profile', 'label', newValue.display_name);
+
+                // Sets active links for user in the UI
+                $scope._setActiveLinks($scope.topLevelLinks, ['launchpad', 'profile']);
             }
+        })
+
+        $scope.$watch(function () {return UserDataService.getCurrentUser().display_name}, function (n, o) {
+
+
+            if (!n) return;
+
+            $scope.setTopLevelLinkValue('profile', 'label', n);
         })
     }])
 
@@ -352,12 +381,34 @@ angular.module('dreamfactoryApp')
     // We inject $location because we'll want to update our location on a successful
     // login and the UserEventsService from our DreamFactory User Management Module to be able
     // to respond to events generated from that module
-    .controller('LoginCtrl', ['$scope', '$location', '$timeout', 'UserEventsService', 'dfApplicationData', 'dfApplicationPrefs', 'SystemConfigDataService', function($scope, $location, $timeout, UserEventsService, dfApplicationData, dfApplicationPrefs, SystemConfigDataService) {
+    .controller('LoginCtrl', ['$scope', '$location', '$timeout', 'UserEventsService', 'dfApplicationData', 'dfApplicationPrefs', 'SystemConfigDataService', 'dfNotify', function($scope, $location, $timeout, UserEventsService, dfApplicationData, dfApplicationPrefs, SystemConfigDataService, dfNotify) {
 
         // Login options array
         $scope.loginOptions = {
             showTemplate: true
         };
+
+        // Listen for a password set success message
+        // This returns a user credentials object which is just the email and password
+        // from the register form
+        // on success we...
+        $scope.$on(UserEventsService.password.passwordSetSuccess, function(e, userCredsObj) {
+
+            // alert success to user
+            var messageOptions = {
+                module: 'Users',
+                type: 'success',
+                provider: 'dreamfactory',
+                message: 'Password reset successful.'
+            }
+
+            dfNotify.success(messageOptions);
+
+            // Send a message to our login directive requesting a login.
+            // We send our user credentials object that we received from our successful
+            // registration along to it can log us in.
+            $scope.$broadcast(UserEventsService.login.loginRequest, userCredsObj);
+        });
 
 
         // Listen for the login success message which returns a user data obj
@@ -366,7 +417,6 @@ angular.module('dreamfactoryApp')
 
             // Set our parent's current user var
             $scope.$parent.currentUser = userDataObj;
-
 
             // API Options
             var options = {
@@ -403,13 +453,18 @@ angular.module('dreamfactoryApp')
             // not an admin.
             else {
 
+                // Set our parent's current user var
+                $scope.$parent.currentUser = userDataObj;
+
+                // Init the application
                 dfApplicationData.init();
+
+                // Send em to launchpad
                 $location.url('/launchpad');
             }
         });
 
     }])
-
 
     // Our LogoutCtrl controller inherits from out TopLevelAppCtrl controller
     // This controller provides an attachment point for our logout functionality
@@ -433,7 +488,6 @@ angular.module('dreamfactoryApp')
             $location.url('/login')
         });
     }])
-
 
     // Our RegisterCtrl controller inherits from our TopLevelAppCtrl controller
     // This controller provides an attachment point for our register users functionality
@@ -486,24 +540,25 @@ angular.module('dreamfactoryApp')
         })
     }])
 
+    // displays our thanks for registering page
     .controller('RegisterCompleteCtrl', ['$scope', function($scope) {
 
         // Don't need anything in here.  Just yet anyway.
     }])
 
     // Controls confirmation flow
-    .controller('RegisterConfirmCtrl', ['$scope', '$location', 'dfApplicationData', 'UserEventsService', 'SystemConfigDataService',  function($scope, $location, dfApplicationData, UserEventsService, SystemConfigDataService) {
+    .controller('RegisterConfirmCtrl', ['$scope', '$location', 'dfApplicationData', 'UserEventsService', 'SystemConfigDataService', 'dfNotify',  function($scope, $location, dfApplicationData, UserEventsService, SystemConfigDataService, dfNotify) {
 
 
         $scope.confirmOptions = {
 
             showTemplate: true,
             title: 'Registration Confirmation'
-        }
+        };
 
         $scope.loginOptions = {
             showTemplate: false
-        }
+        };
 
 
         // Listen for a confirmation success message
@@ -526,6 +581,16 @@ angular.module('dreamfactoryApp')
         // we would probably write more code trying not to repeat ourselves.
         $scope.$on(UserEventsService.login.loginSuccess, function(e, userDataObj) {
 
+            // alert success to user
+            var messageOptions = {
+                module: 'Users',
+                type: 'success',
+                provider: 'dreamfactory',
+                message: 'Registration Confirmation successful.'
+            }
+
+            dfNotify.success(messageOptions);
+
             // Assign the user to the parent current user var
             $scope.$parent.currentUser = userDataObj;
 
@@ -535,18 +600,28 @@ angular.module('dreamfactoryApp')
             // redirect to the app home page
             $location.url('/launchpad');
         })
+
+        // Handle a login error
+        $scope.$on(UserEventsService.login.loginError, function(e, errMsg) {
+
+            e.stopPropagation();
+            $scope.registerLoginErrorMsg = errMsg.data.error[0].message;
+        });
     }])
 
     // Controls Reset of password
-    .controller('ResetPasswordEmailCtrl', ['$scope', '$location', 'dfApplicationData', 'UserEventsService', 'SystemConfigDataService',  function($scope, $location, dfApplicationData, UserEventsService, SystemConfigDataService) {
+    .controller('ResetPasswordEmailCtrl', ['$scope', '$location', 'dfApplicationData', 'UserEventsService', 'SystemConfigDataService', 'dfNotify',  function($scope, $location, dfApplicationData, UserEventsService, SystemConfigDataService, dfNotify) {
 
-
+        $scope.resetPasswordLoginErrorMsg = '';
 
         // Listen for a confirmation success message
         // This returns a user credentials object which is just the email and password
         // from the register form
         // on success we...
         $scope.$on(UserEventsService.password.passwordSetSuccess, function(e, userCredsObj) {
+
+            e.stopPropagation();
+
 
             // Send a message to our login directive requesting a login.
             // We send our user credentials object that we received from our successful
@@ -562,21 +637,40 @@ angular.module('dreamfactoryApp')
         // we would probably write more code trying not to repeat ourselves.
         $scope.$on(UserEventsService.login.loginSuccess, function(e, userDataObj) {
 
+
+            // alert success to user
+            var messageOptions = {
+                module: 'Users',
+                type: 'success',
+                provider: 'dreamfactory',
+                message: 'Password reset successful.'
+            }
+
+            dfNotify.success(messageOptions);
+
             // Assign the user to the parent current user var
             $scope.$parent.currentUser = userDataObj;
+
 
             // setup the app
             dfApplicationData.init();
 
             // redirect to the app home page
             $location.url('/launchpad');
-        })
+        });
+
+
+        // Handle a login error
+        $scope.$on(UserEventsService.login.loginError, function(e, errMsg) {
+
+            e.stopPropagation();
+            $scope.resetPasswordLoginErrorMsg = errMsg.data.error[0].message;
+        });
 
     }])
 
-
     // Controls User Invite Page
-    .controller('UserInviteCtrl', ['$scope', '$location', 'dfApplicationData', 'UserEventsService', 'SystemConfigDataService',  function($scope, $location, dfApplicationData, UserEventsService, SystemConfigDataService) {
+    .controller('UserInviteCtrl', ['$scope', '$location', 'dfApplicationData', 'UserEventsService', 'SystemConfigDataService', 'dfNotify',  function($scope, $location, dfApplicationData, UserEventsService, SystemConfigDataService, dfNotify) {
 
         $scope.confirmOptions = {
 
@@ -608,6 +702,16 @@ angular.module('dreamfactoryApp')
         // we would probably write more code trying not to repeat ourselves.
         $scope.$on(UserEventsService.login.loginSuccess, function(e, userDataObj) {
 
+            // alert success to user
+            var messageOptions = {
+                module: 'Users',
+                type: 'success',
+                provider: 'dreamfactory',
+                message: 'User Confirmation successful.'
+            }
+
+            dfNotify.success(messageOptions);
+
             // Assign the user to the parent current user var
             $scope.$parent.currentUser = userDataObj;
 
@@ -616,7 +720,15 @@ angular.module('dreamfactoryApp')
 
             // redirect to the app home page
             $location.url('/launchpad');
-        })
+        });
+
+
+        // Handle a login error
+        $scope.$on(UserEventsService.login.loginError, function(e, errMsg) {
+
+            e.stopPropagation();
+            $scope.confirmLoginErrorMsg = errMsg.data.error[0].message;
+        });
     }]);
 
 

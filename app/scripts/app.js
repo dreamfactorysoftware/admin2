@@ -216,9 +216,7 @@ angular
                             return;
                         }
                     }]
-
                 }
-
             })
             .otherwise({
                 redirectTo: '/launchpad'
