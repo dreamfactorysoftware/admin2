@@ -2690,6 +2690,8 @@ angular.module('dfTable', ['dfUtility'])
             link: function (scope, elem, attrs) {
 
 
+                console.log(scope.field);
+
 
                 scope._parseEditable = function (fieldObj) {
 
@@ -2749,22 +2751,22 @@ angular.module('dfTable', ['dfUtility'])
                         editable: true
                     },
                     datetime: {
-                        template: 'df-input-date-time-picker.html',
+                        template: 'df-input-text.html',
                         placeholder: '',
-                        type: '',
-                        editable: false
+                        type: 'text',
+                        editable: true
                     },
                     date: {
-                        template: 'df-input-date-picker.html',
+                        template: 'df-input-text.html',
                         placeholder: '',
-                        type: '',
-                        editable: false
+                        type: 'text',
+                        editable: true
                     },
                     time: {
-                        template: 'df-input-datetime.html',
+                        template: 'df-input-text.html',
                         placeholder: '',
-                        type: '',
-                        editable: false
+                        type: 'text',
+                        editable: true
                     },
                     reference: {
                         template: 'df-input-reference.html',
@@ -2791,13 +2793,13 @@ angular.module('dfTable', ['dfUtility'])
                         editable: false
                     },
                     timestamp_on_update: {
-                        template: 'df-input-date-time-picker.html',
+                        template: 'df-input-text.html',
                         placeholder: 'Enter Text Value',
                         type: 'text',
                         editable: false
                     },
                     timestamp_on_create: {
-                        template: 'df-input-date-time-picker.html',
+                        template: 'df-input-text.html',
                         placeholder: 'Enter Text Value',
                         type: 'text',
                         editable: false
@@ -2807,6 +2809,8 @@ angular.module('dfTable', ['dfUtility'])
 
 
                 scope.fieldTypes = dfObjectService.mergeObjects(scope.extendFieldTypes, scope.defaultFieldTypes);
+
+
 
                 if (scope.overrideFields[scope.field.name]) {
 

@@ -1,2 +1,57 @@
-{"id":290,"created_date":"2014-06-24 22:21:47","created_by_id":1,"last_modified_date":"2014-10-20 21:43:56","last_modified_by_id":1,"display_name":"test31","first_name":"test31","last_name":"Test","email":"test31@hundreds.org","phone":null,"confirmed":false,"is_active":true,"is_sys_admin":false,"role_id":null,"default_app_id":null,"user_source":0,"user_data":[],"lookup_keys":[{"name":"a","value":"a","private":false,"allow_user_update":false}]}
-{"id":290,"created_date":"2014-06-24 22:21:47","created_by_id":1,"last_modified_date":"2014-10-20 21:43:56","last_modified_by_id":1,"display_name":"test31","first_name":"test31","last_name":"Test","email":"test31@hundreds.org","phone":null,"confirmed":false,"is_active":true,"is_sys_admin":false,"role_id":null,"default_app_id":null,"user_source":0,"user_data":[]}
+[
+    {
+        "id": 17,
+        "created_date": "2014-12-18 14:37:23",
+        "created_by_id": 1,
+        "last_modified_date": "2014-12-18 14:37:23",
+        "last_modified_by_id": 1,
+        "name": "a",
+        "api_name": "a",
+        "description": "a",
+        "is_active": true,
+        "type": "Remote SQL DB",
+        "type_id": 4100,
+        "is_system": false,
+        "storage_type": null,
+        "storage_type_id": null,
+        "credentials": {
+            "dsn": "dblib:host=mssql.dfdev.co;dbname=AdventureWorksDW2008R2",
+            "user": "sa",
+            "pwd": "Dream123!"
+        },
+        "native_format": null,
+        "native_format_id": null,
+        "base_url": null,
+        "parameters": [],
+        "headers": []
+    },
+    {
+        "id": 17,
+        "created_date": "2014-12-18 14:37:23",
+        "created_by_id": 1,
+        "last_modified_date": "2014-12-18 14:37:23",
+        "last_modified_by_id": 1,
+        "name": "a",
+        "api_name": "a",
+        "description": "a",
+        "is_active": true,
+        "type": "Remote SQL DB",
+        "type_id": 4100,
+        "is_system": false,
+        "storage_type": null,
+        "storage_type_id": null,
+        "credentials": {
+            "dsn": "dblib:host=mssql.dfdev.co;dbname=AdventureWorksDW2008R2",
+            "user": "sa",
+            "pwd": "Dream123!",
+            "prefix": "dblib:"
+        },
+        "native_format": null,
+        "native_format_id": null,
+        "base_url": null,
+        "parameters": [],
+        "headers": []
+    }
+]
+
+

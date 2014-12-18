@@ -240,10 +240,8 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
 
                 systemInfo: {
                     title: 'System Information Overview',
-                    text: 'Molior eros verto nimis nunc esse. Blandit quidem duis augue suscipit quidne te nulla ' +
-                        'persto consequat vereor. Saluto paratus tation consequat proprius feugiat abigo te eu tum ' +
-                        'incassum abico. Humo et inhibeo consequat suscipit consectetuer nullus lobortis. Accumsan ' +
-                        'os roto feugiat vel ingenium facilisi commoveo odio.'
+                    text: 'Displays current system information.  If you have made changes to any of your system configuration values ' +
+                        'you can be sure they will take effect by using the cache clearing functions below.'
                 },
                 corsConfig: {
                     title: 'CORS Configuration Overview',
@@ -257,30 +255,22 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 },
                 openRegistration: {
                     title: 'Open Registration Overview',
-                    text: 'Enable open registration to allow people to add themselves as new users on the DSP. They will ' +
-                        'start out with the privileges allowed by the default open registration role. The role for ' +
-                        'any user can be changed by a system admin.'
+                    text: 'Turn on Open Registration to allow users to sign up for access to your DSP.  Set a Role for newly registered users, ' +
+                        'select an email service to turn on email registration confirmation, and optionally select a custom email template.  ' +
+                        '<span style="color: red;">An email service should be configured to prevent spam, bots, and scripts from abusing the open registration function.</span>'
                 },
                 userInvites: {
                     title: 'User Invites Overview',
-                    text: 'Molior eros verto nimis nunc esse. Blandit quidem duis augue suscipit quidne te nulla ' +
-                        'persto consequat vereor. Saluto paratus tation consequat proprius feugiat abigo te eu tum ' +
-                        'incassum abico. Humo et inhibeo consequat suscipit consectetuer nullus lobortis. Accumsan ' +
-                        'os roto feugiat vel ingenium facilisi commoveo odio.'
+                    text: 'Set an email service and optional custom template for user invitations.'
                 },
                 passwordReset: {
                     title: 'Password Reset Overview',
-                    text: 'Molior eros verto nimis nunc esse. Blandit quidem duis augue suscipit quidne te nulla ' +
-                        'persto consequat vereor. Saluto paratus tation consequat proprius feugiat abigo te eu tum ' +
-                        'incassum abico. Humo et inhibeo consequat suscipit consectetuer nullus lobortis. Accumsan ' +
-                        'os roto feugiat vel ingenium facilisi commoveo odio.'
+                    text: 'Set an email service and optional custom template for user password reset.'
                 },
                 emailTemplates: {
                     title: 'Email Templates Overview',
-                    text: 'Molior eros verto nimis nunc esse. Blandit quidem duis augue suscipit quidne te nulla ' +
-                        'persto consequat vereor. Saluto paratus tation consequat proprius feugiat abigo te eu tum ' +
-                        'incassum abico. Humo et inhibeo consequat suscipit consectetuer nullus lobortis. Accumsan ' +
-                        'os roto feugiat vel ingenium facilisi commoveo odio.'
+                    text: 'Create and edit custom email templates that can be used with the DSP Open Registration, ' +
+                        'User Invitation, and Forgotten Password functions as well as any of your configured email services.'
                 },
                 globalLookupKeys: {
                     title: 'Global Lookup Keys Overview',

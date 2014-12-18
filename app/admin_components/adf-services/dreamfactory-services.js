@@ -509,7 +509,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
                 };
 
-                scope.hcv = dfServiceValues;
+                scope.hcv = new dfServiceValues();
 
                 scope._script = {};
                 scope.serviceInfo = {};
@@ -610,6 +610,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     scope.serviceInfo.record.credentials = data;
                     scope.service.record = dfObjectService.mergeObjects(scope.serviceInfo.record, scope.service.record);
+
+                    console.log(scope.serviceInfo);
                 };
                 
                 scope._prepareRWS = function() {
@@ -693,7 +695,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope._prepareRSQLDB = function () {
 
                     return {
-                        dsn: scope._fieldsToDsn(),
+                        dsn: scope._storageType.dsn,
                         user: scope._storageType.user,
                         pwd: scope._storageType.pwd
                     };
@@ -735,10 +737,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     scope._storageType['prefix'] = dsn.slice(0, dsn.indexOf(":"));
 
-
                     switch(scope._storageType.prefix) {
 
                         case 'oci':
+                            scope.sql_server_host_identifier = "host";
+                            scope.sql_server_db_identifier = "sid";
+
 
                             scope._storageType['host'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_host_identifier), nth_ocurrence(dsn, ')', 2)).split("=")[1];
                             scope._storageType['dbname'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_db_identifier), nth_ocurrence(dsn, ')', 6)).split("=")[1];
@@ -746,14 +750,27 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
 
                         case 'ibm':
+                            scope.sql_server_host_identifier = "HOSTNAME";
+                            scope.sql_server_db_identifier = "DATABASE";
 
                             scope._storageType['host'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_host_identifier), nth_ocurrence(dsn, ';', 3)).split("=")[1];
                             scope._storageType['dbname'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_db_identifier), nth_ocurrence(dsn, ';', 2)).split("=")[1];
                             break;
 
                         case 'sqlsrv':
+
+                            // set the host/db identifiers
+                            scope.sql_server_host_identifier = "Server";
+                            scope.sql_server_db_identifier = "Database";
+
+
                         default:
+
+                            scope.sql_server_host_identifier = "host";
+                            scope.sql_server_db_identifier = "dbname";
+
                             scope._storageType['host'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_host_identifier), dsn.indexOf(";")).split("=")[1];
+
 
                             if (dsn.indexOf('port=') > dsn.indexOf(scope.sql_server_db_identifier)) {
                                 scope._storageType['dbname'] = dsn.slice(dsn.lastIndexOf(scope.sql_server_db_identifier), nth_ocurrence(dsn, ';', 2)).split("=")[1];
@@ -822,7 +839,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope._fieldsToDsn = function () {
 
-                    return scope._storageType.prefix + ':' + scope.sql_server_host_identifier + '=' + scope._storageType.host + scope.sql_server_db_identifier + '=' + scope._storageType.dbname
+                    return scope._storageType.prefix + ':' + scope.sql_server_host_identifier + '=' + scope._storageType.host + ';' + scope.sql_server_db_identifier + '=' + scope._storageType.dbname
                 };
 
 
@@ -1014,7 +1031,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                             scope._setTabs(false, false, false, true);
                             scope._storageType = new dfStorageTypeFactory('sql', scope.serviceInfo.record.credentials);
-                            // scope._dsnToFields(scope._storageType.dsn);
+                            scope._dsnToFields(scope._storageType.dsn);
 
                             scope._buildFieldSet(
                                 [
@@ -1133,7 +1150,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     // Create a ServiceInfo object
                     scope.serviceInfo = new ServiceInfo(newValue.record);
 
-                    console.log(scope.serviceInfo);
                     // We set this to null and then during the _renderServiceFields function
                     // a storage type will be assigned
                     scope._storageType = null;
@@ -1291,6 +1307,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
 
                 }
+
+
             }
         }
     }])
@@ -2146,10 +2164,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
             var SQLServer = function (data) {
 
-                var _new = {
-                    prefix: null,
+                /*prefix: null,
                     host: null,
-                    dbname: null,
+                    dbname: null,*/
+
+                var _new = {
+
                     dsn: null,
                     user: null,
                     pwd: null
@@ -2222,8 +2242,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 case 'email':
                     return new Email(data);
                 case 'sql':
-
-                    console.log(new SQLServer(data))
                     return new SQLServer(data);
                 case 'local file storage':
                     return new LocalFileStorage(data);
@@ -2234,114 +2252,122 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             }
         }
     }])
-    .service('dfServiceValues', [function() {
+    .factory('dfServiceValues', ['SystemConfigDataService', function(SystemConfigDataService) {
 
 
-        // Set microsoft sql vendor prefeix
-        // @TODO: setup init vars
-        /*if(systemConfig.server_os.indexOf("win") !== -1 && systemConfig.server_os.indexOf("darwin") === -1){
-            Scope.sql_placeholder="mysql:Server=my_server;Database=my_database";
-            Scope.microsoft_sql_server_prefix = "sqlsrv:"
-        }else{
-            Scope.microsoft_sql_server_prefix = "dblib:"
-        }*/
+        return function () {
 
-        var sql_placeholder="mysql:Server=my_server;Database=my_database";
-        var microsoft_sql_server_prefix = "sqlsrv";
+            // Set prefixes for db drivers
+            var sql_placeholder="mysql:Server=my_server;Database=my_database";
+            var microsoft_sql_server_prefix = "sqlsrv";
 
-        return {
+            if(SystemConfigDataService.getSystemConfig().server_os.indexOf("win") !== -1 && SystemConfigDataService.getSystemConfig().server_os.indexOf("darwin") === -1){
 
-            serviceTypes: [
-                {
-                    name: 'remote_web_service',
-                    label: 'Remote Web Service',
-                    value: 'Remote Web Service'
-                },
-                {
-                    name: 'local_sql_db',
-                    label: 'Local SQL DB',
-                    value: 'Local SQL DB'
-                },
-                {
-                    name: 'remote_sql_db',
-                    label: 'Remote SQL DB',
-                    value: 'Remote SQL DB'
-                },
-                {
-                    name: 'nosql_db',
-                    label: 'NoSQL DB',
-                    value: 'NoSQL DB'
-                },
-                {
-                    name: 'salesforce',
-                    label: 'Salesforce',
-                    value: 'Salesforce'
-                },
-                {
-                    name: 'local_file_storage',
-                    label: 'Local File Storage',
-                    value: 'Local File Storage'
-                },
-                {
-                    name: 'remote_file_storage',
-                    label: 'Remote File Storage',
-                    value: 'Remote File Storage'
-                },
-                {
-                    name: 'email_service',
-                    label: 'Email Service',
-                    value: 'Email Service'
-                }
-            ],
+                sql_placeholder="mysql:Server=my_server;Database=my_database";
+                microsoft_sql_server_prefix = "sqlsrv:"
+            }else{
 
-            emailOptions: [
-                {name: "Server Default", value: 'default'},
-                {name: "Server Command", value: "command"},
-                {name: "SMTP", value:"smtp"}
-            ],
+                microsoft_sql_server_prefix = "dblib:"
+            }
 
-            securityOptions: [
-                {name: "SSL", value: "SSL"},
-                {name: "TLS", value: "TLS"}
-            ],
-            sqlVendors: [
-                {name:"MySQL", prefix:"mysql"},
-                {name:"Microsoft SQL Server", prefix: microsoft_sql_server_prefix},
-                {name:"PostgreSQL", prefix:"pgsql"},
-                {name:"Oracle", prefix:"oci"},
-                {name:"IBM DB2", prefix:"ibm"}
+            var values = {
 
-            ],
-            NoSQLOptions: [
-                {name: "Amazon DynamoDB", value: "aws dynamodb"},
-                {name: "Amazon SimpleDB", value: "aws simpledb"},
-                {name: "Windows Azure Tables", value: "azure tables"},
-                {name: "CouchDB", value: "couchdb"},
-                {name: "MongoDB", value: "mongodb"}
+                serviceTypes: [
+                    {
+                        name: 'remote_web_service',
+                        label: 'Remote Web Service',
+                        value: 'Remote Web Service'
+                    },
+                    {
+                        name: 'local_sql_db',
+                        label: 'Local SQL DB',
+                        value: 'Local SQL DB'
+                    },
+                    {
+                        name: 'remote_sql_db',
+                        label: 'Remote SQL DB',
+                        value: 'Remote SQL DB'
+                    },
+                    {
+                        name: 'nosql_db',
+                        label: 'NoSQL DB',
+                        value: 'NoSQL DB'
+                    },
+                    {
+                        name: 'salesforce',
+                        label: 'Salesforce',
+                        value: 'Salesforce'
+                    },
+                    {
+                        name: 'local_file_storage',
+                        label: 'Local File Storage',
+                        value: 'Local File Storage'
+                    },
+                    {
+                        name: 'remote_file_storage',
+                        label: 'Remote File Storage',
+                        value: 'Remote File Storage'
+                    },
+                    {
+                        name: 'email_service',
+                        label: 'Email Service',
+                        value: 'Email Service'
+                    }
+                ],
 
-            ],
-            awsRegions: [
-                {name: "US EAST (N Virgina)", value: "us-east-1"},
-                {name: "US WEST (N California)", value: "us-west-1"},
-                {name: "US WEST (Oregon)", value: "us-west-2"},
-                {name: "EU WEST (Ireland)", value: "eu-west-1"},
-                {name: "Asia Pacific (Singapore)", value: "ap-southeast-1"},
-                {name: "Asia Pacific (Sydney)", value: "ap-southeast-2"},
-                {name: "Asia Pacific (Tokyo)", value: "ap-northeast-1"},
-                {name: "South America (Sao Paulo)", value: "sa-east-1"}
-            ],
-            rackspaceRegions: [
-                {name: "London", value: "LON"},
-                {name: "Chicago", value: "ORD"},
-                {name: "Dallas / Fort Worth", value: "DFW"}
-            ],
-            remoteOptions: [
-                {name: "Amazon S3", value: "aws s3"},
-                {name: "Windows Azure Storage", value: "azure blob"},
-                {name: "RackSpace CloudFiles", value: "rackspace cloudfiles"},
-                {name: "OpenStack Object Storage", value: "openstack object storage"}
-            ]
+                emailOptions: [
+                    {name: "Server Default", value: 'default'},
+                    {name: "Server Command", value: "command"},
+                    {name: "SMTP", value:"smtp"}
+                ],
+
+                securityOptions: [
+                    {name: "SSL", value: "SSL"},
+                    {name: "TLS", value: "TLS"}
+                ],
+                sqlVendors: [
+                    {name:"MySQL", prefix:"mysql"},
+                    {name:"Microsoft SQL Server", prefix: microsoft_sql_server_prefix},
+                    {name:"PostgreSQL", prefix:"pgsql"},
+                    {name:"Oracle", prefix:"oci"},
+                    {name:"IBM DB2", prefix:"ibm"}
+
+                ],
+                NoSQLOptions: [
+                    {name: "Amazon DynamoDB", value: "aws dynamodb"},
+                    {name: "Amazon SimpleDB", value: "aws simpledb"},
+                    {name: "Windows Azure Tables", value: "azure tables"},
+                    {name: "CouchDB", value: "couchdb"},
+                    {name: "MongoDB", value: "mongodb"}
+
+                ],
+                awsRegions: [
+                    {name: "US EAST (N Virgina)", value: "us-east-1"},
+                    {name: "US WEST (N California)", value: "us-west-1"},
+                    {name: "US WEST (Oregon)", value: "us-west-2"},
+                    {name: "EU WEST (Ireland)", value: "eu-west-1"},
+                    {name: "Asia Pacific (Singapore)", value: "ap-southeast-1"},
+                    {name: "Asia Pacific (Sydney)", value: "ap-southeast-2"},
+                    {name: "Asia Pacific (Tokyo)", value: "ap-northeast-1"},
+                    {name: "South America (Sao Paulo)", value: "sa-east-1"}
+                ],
+                rackspaceRegions: [
+                    {name: "London", value: "LON"},
+                    {name: "Chicago", value: "ORD"},
+                    {name: "Dallas / Fort Worth", value: "DFW"}
+                ],
+                remoteOptions: [
+                    {name: "Amazon S3", value: "aws s3"},
+                    {name: "Windows Azure Storage", value: "azure blob"},
+                    {name: "RackSpace CloudFiles", value: "rackspace cloudfiles"},
+                    {name: "OpenStack Object Storage", value: "openstack object storage"}
+                ]
+            }
+
+            return values;
         }
+
+
     }])
 
 
@@ -2487,21 +2513,21 @@ angular.module('dfServiceTemplates', [])
         );
 
         $templateCache.put('_service-sql-vendor.html',
-            '<div class="form-group">' +
+            '<div data-ng-hide="!newService" class="form-group">' +
             '<label>SQL Vendor</label><df-simple-help data-options="dfSimpleHelp.sqlVendor"></df-simple-help>' +
             '<select class="form-control" data-ng-model="_storageType.prefix" data-ng-change="_updateDsn()"  data-ng-options="server.prefix as server.name for server in hcv.sqlVendors"></select>' +
             '</div>'
         );
 
         $templateCache.put('_service-sql-host.html',
-            '<div class="form-group">' +
+            '<div data-ng-hide="!newService" class="form-group">' +
             '<label>Host</label><df-simple-help data-options="dfSimpleHelp.sqlHost"></df-simple-help>' +
             '<input data-ng-disabled="!_storageType.prefix" class="form-control" data-ng-keyup="_updateDsn()" data-ng-model="_storageType.host"/>' +
                 '</div>'
         );
 
         $templateCache.put('_service-sql-database-name.html',
-            '<div class="form-group">' +
+            '<div data-ng-hide="!newService" class="form-group">' +
             '<label>Database Name</label><df-simple-help data-options="dfSimpleHelp.sqlDatabaseName"></df-simple-help>' +
             '<input data-ng-disabled="!_storageType.host" class="form-control" data-ng-keyup="_updateDsn()" data-ng-model="_storageType.dbname"/>' +
             '</div>'
