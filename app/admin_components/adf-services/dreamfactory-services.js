@@ -80,7 +80,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         "name": null,
                         "api_name": null,
                         "description": null,
-                        "is_active": false,
+                        "is_active": true,
                         "type": "Remote Web Service",
                         "type_id": null,
                         "is_system": false,
@@ -481,7 +481,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         "name": null,
                         "api_name": null,
                         "description": null,
-                        "is_active": false,
+                        "is_active": true,
                         "type": "Remote Web Service",
                         "type_id": null,
                         "is_system": false,
@@ -972,7 +972,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope._renderServiceFields = function (serviceType) {
 
-
                     switch(serviceType) {
 
                         case 'Remote Web Service':
@@ -1009,16 +1008,13 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                                 ]);
 
                             scope._renderAdditionalEmailFields();
-
-                            console.log('Rendering Email Service');
-
                             break;
 
                         case 'Remote SQL DB':
 
                             scope._setTabs(false, false, false, true);
                             scope._storageType = new dfStorageTypeFactory('sql', scope.serviceInfo.record.credentials);
-                            scope._dsnToFields(scope._storageType.dsn);
+                            // scope._dsnToFields(scope._storageType.dsn);
 
                             scope._buildFieldSet(
                                 [
@@ -1137,6 +1133,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     // Create a ServiceInfo object
                     scope.serviceInfo = new ServiceInfo(newValue.record);
 
+                    console.log(scope.serviceInfo);
                     // We set this to null and then during the _renderServiceFields function
                     // a storage type will be assigned
                     scope._storageType = null;
@@ -2225,6 +2222,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 case 'email':
                     return new Email(data);
                 case 'sql':
+
+                    console.log(new SQLServer(data))
                     return new SQLServer(data);
                 case 'local file storage':
                     return new LocalFileStorage(data);

@@ -413,6 +413,13 @@ angular.module('dreamfactoryApp')
             $scope.$broadcast(UserEventsService.login.loginRequest, userCredsObj);
         });
 
+        // Handle a login error
+        // The directive will handle showing the message.  We just have to
+        // stop the event propagation
+        $scope.$on(UserEventsService.login.loginError, function (e) {
+            e.stopPropagation();
+        });
+
 
         // Listen for the login success message which returns a user data obj
         // When we have a successful login...
@@ -541,6 +548,10 @@ angular.module('dreamfactoryApp')
             // redirect to the app home page
             $location.url('/launchpad');
         })
+
+        $scope.$on(UserEventsService.login.loginError, function (e) {
+            e.stopPropagation();
+        });
     }])
 
     // displays our thanks for registering page

@@ -1234,6 +1234,11 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                         watchInErrorMsg();
                     });
 
+                    scope.$on(scope.es.confirmationRequest, function (e, confirmationObj) {
+
+                        scope._confirm(confirmationObj);
+                    });
+
 
 
                     // HELP
@@ -1356,7 +1361,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
             },
             confirm: {
                 confirmationSuccess: 'user:confirmation:success',
-                confirmationError: 'user:confirmation:error'
+                confirmationError: 'user:confirmation:error',
+                confirmationRequest: 'user:confirmation:request'
             }
         }
     }])
