@@ -2690,8 +2690,6 @@ angular.module('dfTable', ['dfUtility'])
             link: function (scope, elem, attrs) {
 
 
-                console.log(scope.field);
-
 
                 scope._parseEditable = function (fieldObj) {
 
