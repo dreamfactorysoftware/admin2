@@ -65,7 +65,7 @@
                 </div>
 
                 <div class="form-group">
-                    <button id="btn-step-1" class="btn btn-primary"
+                    <button id="btn-step-1" class="btn btn-primary" title="Continue to the next step"
                             data-ng-disabled="!app.record.api_name || form.$invalid || !_isApiNameUnique()" data-ng-click="setStep(2)">Continue
                     </button>
                 </div>
@@ -113,8 +113,8 @@
             </div>
 
             <div class="form-group pull-right" style="clear: both;padding-top: 10px;margin-bottom: 5px;">
-                <button class="btn btn-primary" data-ng-click="setStep(1)">Previous</button>
-                <button data-ng-disabled="app.__dfUI.devLocal === null"
+                <button class="btn btn-primary" data-ng-click="setStep(1)" title="Go back to the previous step">Previous</button>
+                <button data-ng-disabled="app.__dfUI.devLocal === null" title="Continue to the next step"
                         class="btn btn-primary"
                         data-ng-click="_createApp(3)">Continue
                 </button>
@@ -202,7 +202,7 @@
                         </p>
                     </div>
 
-                    <button type="button" data-ng-click="downloadSDK()" class="btn btn-primary">Download the SDK</button>
+                    <button type="button" data-ng-click="downloadSDK()" class="btn btn-primary" title="Download the sdk">Download the SDK</button>
 
                     <span class="pull-right"><img src="images/local.png" /></span>
 

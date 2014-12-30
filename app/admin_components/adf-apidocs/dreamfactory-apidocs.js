@@ -42,7 +42,7 @@ angular.module('dfApiDocs', ['ngRoute', 'dfUtility'])
     }])
     .controller('ApiDocsCtrl', ['$scope', 'DSP_URL', 'dfApplicationData', function($scope, DSP_URL, dfApplicationData) {
 
-        $scope.$parent.title = 'Api/Docs';
+        $scope.$parent.title = 'API Docs';
 
         // Set module links
         $scope.links = [

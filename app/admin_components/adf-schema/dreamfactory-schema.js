@@ -826,7 +826,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         return {
             restrict: 'E',
             scope: {
-                fieldData: '='
+                fieldData: '=',
+                currentTable: '='
             },
             templateUrl: MOD_SCHEMA_ASSET_PATH + 'views/df-field-details.html',
             link: function (scope, elem, attrs) {
@@ -899,6 +900,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     scope._closeField();
                 };
 
+                scope.saveField = function () {
+
+                    scope._saveField();
+                }
+
 
                 // PRIVATE API
                 scope._loadReferenceFields = function () {
@@ -932,12 +938,39 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 };
 
+                scope._saveFieldToServer = function (requestDataObj) {
+
+                    return $http.patch(DSP_URL + '/rest/' + scope.fieldData.currentService.api_name + '/_schema/' + scope.currentTable, requestDataObj)
+                };
+
 
                 // COMPLEX IMPLEMENTATION
                 scope._closeField = function () {
 
                     scope.field = null;
                     scope.fieldData = null;
+                };
+
+                scope._saveField = function () {
+
+                    var requestDataObj = {};
+
+
+                    scope._saveFieldToServer().then(
+
+                        function (result) {
+
+                            console.log(result);
+
+                        },
+
+                        function (reject) {
+
+
+                            console.log(reject);
+
+                        }
+                    );
                 };
 
 

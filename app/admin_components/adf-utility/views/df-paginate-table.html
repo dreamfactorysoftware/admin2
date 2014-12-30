@@ -4,10 +4,10 @@
             <button type="button" data-ng-class="_isFirstPage() ? 'disabled' : ''"
                     class="btn btn-default btn-sm"
                     data-ng-disabled="disableTableBtns"
-                    data-ng-click="getPrevious()"><i class="fa fa-fw fa-backward"></i>
+                    data-ng-click="getPrevious()" title="Previous page"><i class="fa fa-fw fa-backward"></i>
             </button>
             <div class="btn-group">
-                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" data-ng-disabled="disableTableBtns">
+                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" data-ng-disabled="disableTableBtns" title="Select page">
                     <span class="hidden-sm hidden-xs">Page</span> {{currentPage.number}} <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
@@ -19,7 +19,7 @@
             <button type="button" data-ng-class="_isLastPage() ? 'disabled' : ''"
                     class="btn btn-default btn-sm"
                     data-ng-disabled="disableTableBtns"
-                    data-ng-click="getNext()"><i class="fa fa-fw fa-forward"></i>
+                    data-ng-click="getNext()" title="Next page"><i class="fa fa-fw fa-forward"></i>
             </button>
         </div>
     </div>

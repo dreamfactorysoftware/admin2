@@ -6,17 +6,18 @@
             <input type="text" class="form-control" data-ng-model="table.record.name" placeholder="Enter table name." data-ng-disabled="!table.__dfUI.newTable"/>
         </div>
 
-        <div class="form-group">
-            <button type="button" class="btn btn-default" data-ng-click="addField()">Add Field</button>
-            <button type="button" class="btn btn-default" data-ng-click="toggleViewMode()">
+
+        <div data-ng-show="!table.__dfUI.newTable" class="form-group well well-sm">
+            <button type="button" class="btn btn-default btn-sm" data-ng-click="addField()" title="Add new field">Add Field</button>
+            <button type="button" class="btn btn-default btn-sm" data-ng-click="toggleViewMode()" title="Switch between table and JSON view modes">
                 <span data-ng-if="viewMode === 'table'">Json</span>
                 <span data-ng-if="viewMode === 'json'">Table</span>
             </button>
-            <button type="button" data-ng-if="viewMode === 'json'" class="btn btn-default" data-ng-click="checkJSON()">Validate</button>
+            <button type="button" data-ng-if="viewMode === 'json'" class="btn btn-default btn-sm" data-ng-click="checkJSON()" title="Validate JSON">Validate</button>
         </div>
 
 
-        <div data-ng-show="viewMode === 'table'">
+        <div data-ng-show="viewMode === 'table' && !table.__dfUI.newTable">
             <table class="table table-condensed table-hover table-striped table-bordered">
                 <th></th>
                 <th>Name</th>
@@ -24,8 +25,8 @@
 
                 <tr data-ng-repeat="field in table.record.field | orderBy:'name'  track by $index ">
                     <td>
-                        <button type="button" class="btn btn-default btn-xs" data-ng-click="deleteField(field)"><i class="fa fa-fw fa-trash"></i></button>
-                        <button type="button" class="btn btn-default btn-xs" data-ng-class="field.is_primary_key ? 'btn-warning' : ''" data-ng-click="setPrimaryKey(field)"><i class="fa fa-fw fa-key"></i></button>
+                        <button type="button" class="btn btn-default btn-xs" data-ng-click="deleteField(field)" title="Delete field"><i class="fa fa-fw fa-trash"></i></button>
+                        <button type="button" class="btn btn-default btn-xs" data-ng-class="field.is_primary_key ? 'btn-warning' : ''" data-ng-click="setPrimaryKey(field)" title="Set primary key"><i class="fa fa-fw fa-key"></i></button>
                     </td>
                     <td data-ng-click="editField(field)">{{field.name}}</td>
                     <td data-ng-click="editField(field)">{{field.type}}</td>
@@ -44,9 +45,9 @@
         <div class="row df-btn-row" style="padding-bottom: 20px">
             <div class="col-xs-12">
 
-                <button data-ng-if="table.__dfUI.newTable" type="button" class="btn btn-primary" data-ng-click="saveTable()">Save</button>
+                <button data-ng-if="table.__dfUI.newTable" type="button" class="btn btn-primary" data-ng-click="saveTable()">Create</button>
                 <button data-ng-if="!table.__dfUI.newTable" type="button" class="btn btn-primary" data-ng-click="updateTable()">Update</button>
-                <button type="button" class="btn btn-primary" data-ng-click="closeTable()">Close</button>
+                <button data-ng-if="!table.__dfUI.newTable" type="button" class="btn btn-primary" data-ng-click="closeTable()">Close</button>
             </div>
         </div>
     </div>

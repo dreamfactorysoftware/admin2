@@ -239,48 +239,40 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             $scope.dfLargeHelp = {
 
                 systemInfo: {
-                    title: 'System Information Overview',
-                    text: 'Displays current system information.  If you have made changes to any of your system configuration values ' +
-                        'you can be sure they will take effect by using the cache clearing functions below.'
+                    title: 'System Info Overview',
+                    text: 'Displays current system information. Use the cache clearing functions below to refresh any changes made to your system configuration values.'
                 },
                 corsConfig: {
-                    title: 'CORS Configuration Overview',
-                    text: 'Enter allowed hosts and HTTP verbs. You can enter * for all hosts. This is useful during ' +
-                        'development when you are running app code in your local machine\'s browser that talks to your DSP.'
+                    title: 'CORS Overview',
+                    text: 'Enter allowed hosts and HTTP verbs. You can enter * for all hosts. Use the * option for development to enable application code running locally on your computer to communicate directly with your DreamFactory instance.'
                 },
                 guestUsers: {
                     title: 'Guest Users Overview',
-                    text: 'Enable guest users to allow access to apps without requiring signing in. Guest users will ' +
-                        'always have the privileges allowed by the guest role.'
+                    text: ' Enable Guest Users to allow access to applications and services without authentication. Guest User privileges are governed by the Guest Role.'
                 },
                 openRegistration: {
                     title: 'Open Registration Overview',
-                    text: 'Turn on Open Registration to allow users to sign up for access to your DSP.  Set a Role for newly registered users, ' +
-                        'select an email service to turn on email registration confirmation, and optionally select a custom email template.  ' +
-                        '<span style="color: red;">An email service should be configured to prevent spam, bots, and scripts from abusing the open registration function.</span>'
+                    text: 'Turn on Open Registration to allow users to self-register for applications. Set a Role for newly registered users, select an email service to turn on email registration confirmation, and optionally select a custom email template.'+
+                        '<span style="color: red;">Make sure to configure an email service to prevent spam, bots, and scripts from abusing the Open Registration function.</span>'
                 },
                 userInvites: {
                     title: 'User Invites Overview',
-                    text: 'Set an email service and optional custom template for user invitations.'
+                    text: 'Set an email service and optional custom template for User Invite.'
                 },
                 passwordReset: {
                     title: 'Password Reset Overview',
-                    text: 'Set an email service and optional custom template for user password reset.'
+                    text: 'Set an email service and optional custom template for Password Reset.'
                 },
                 emailTemplates: {
                     title: 'Email Templates Overview',
-                    text: 'Create and edit custom email templates that can be used with the DSP Open Registration, ' +
-                        'User Invitation, and Forgotten Password functions as well as any of your configured email services.'
+                    text: 'Create and edit email templates for User Registration, User Invite, Password Reset, and your custom email services.'
                 },
                 globalLookupKeys: {
                     title: 'Global Lookup Keys Overview',
-                    text: 'The DSP administrator can create any number of "key value" pairs attached to the DSP itself. ' +
-                        'The key values are automatically substituted on the server. For example, key names can be used in ' +
-                        'the username and password fields required to hook up a SQL or NoSQL database. They can also be ' +
-                        'used in Email Templates or as parameters for external REST services. Any Lookup Key can be ' +
-                        'marked as private, and in this case the key value is securely encrypted on the server and is no ' +
-                        'longer accessible through the platform interface.' +
-                        '<span style="color: red;">  Lookup keys for service configuration and credentials must be made private.</span>'
+                    text: 'An administrator can create any number of "key value" pairs attached to DreamFactory. The key values are automatically substituted on the server. ' +
+                        'For example, you can use Lookup Keys in Email Templates, as parameters in external REST Services, and in the username and password fields to connect ' +
+                        'to a SQL or NoSQL database. Mark any Lookup Key as private to securely encrypt the key value on the server and hide it in the user interface.' +
+                        '<span style="color: red;">  Note that Lookup Keys for REST service configuration and credentials must be private.</span>'
                 }
             }
     }])

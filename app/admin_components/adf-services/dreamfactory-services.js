@@ -2264,10 +2264,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             if(SystemConfigDataService.getSystemConfig().server_os.indexOf("win") !== -1 && SystemConfigDataService.getSystemConfig().server_os.indexOf("darwin") === -1){
 
                 sql_placeholder="mysql:Server=my_server;Database=my_database";
-                microsoft_sql_server_prefix = "sqlsrv:"
+                microsoft_sql_server_prefix = "sqlsrv"
             }else{
 
-                microsoft_sql_server_prefix = "dblib:"
+                microsoft_sql_server_prefix = "dblib"
             }
 
             var values = {

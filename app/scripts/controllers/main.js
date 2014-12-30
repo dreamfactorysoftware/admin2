@@ -136,7 +136,7 @@ angular.module('dreamfactoryApp')
             },
             {
                 name: 'apidocs',
-                label: 'Api Docs',
+                label: 'API Docs',
                 path: '/apidocs'
             },
             {
