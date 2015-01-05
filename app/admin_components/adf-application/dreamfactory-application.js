@@ -30,19 +30,19 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             dfApplicationData.init(options);
 
         }
-//        else if (dfSessionStorage.getItem('dfApplicationObj') && UserDataService.getCurrentUser()) {
-//
-//            var options = {
-//                apis: ['service', 'app', 'role', 'system','user', 'config', 'email_template', 'app_group']
-//            };
-//
-//            if (!SystemConfig.is_hosted) {
-//                options.apis.push('event')
-//            }
-//
-//            // reload app data
-//            dfApplicationData.init(options);
-//        }
+        else if (dfSessionStorage.getItem('dfApplicationObj') && UserDataService.getCurrentUser()) {
+
+            var options = {
+                apis: ['service', 'app', 'role', 'system','user', 'config', 'email_template', 'app_group']
+            };
+
+            if (!SystemConfig.is_hosted) {
+                options.apis.push('event')
+            }
+
+            // reload app data
+            dfApplicationData.init(options);
+        }
         else if (!dfSessionStorage.getItem('dfApplicationObj') && !UserDataService.getCurrentUser()) {
 
             // console.log('No user and no app object');
@@ -258,6 +258,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             // set up our params
             var params = options.params;
             params['api'] = api;
+
 
             // return response from server as promise
             return dfSystemData.resource(options).post(params, options.data, function(result) {
@@ -528,6 +529,16 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             setApplicationObj: function(appObj) {
 
                 dfApplicationObj = appObj;
+            },
+
+            // for when you just have to update the applicationObj manually
+            // certain things like updating schema components don't adhere
+            // to the resource way of updating.  Having second thoughts about
+            // the way that interface works.  Will revisit.
+            setApplicationObjOverride: function (appObj) {
+
+                dfApplicationObj = appObj;
+                this.updateApplicationStore();
             },
 
             // Update browser sessionStorage with current dfApplicationObj in memory.

@@ -8,7 +8,7 @@
 
 
         <div data-ng-show="!table.__dfUI.newTable" class="form-group well well-sm">
-            <button type="button" class="btn btn-default btn-sm" data-ng-click="addField()" title="Add new field">Add Field</button>
+            <button type="button" class="btn btn-default btn-sm" data-ng-click="addField()" title="Add new field" data-ng-disabled="viewMode === 'json'">Add Field</button>
             <button type="button" class="btn btn-default btn-sm" data-ng-click="toggleViewMode()" title="Switch between table and JSON view modes">
                 <span data-ng-if="viewMode === 'table'">Json</span>
                 <span data-ng-if="viewMode === 'json'">Table</span>
@@ -54,6 +54,6 @@
 
 
     <div data-ng-show="currentEditField !== null">
-        <df-field-details data-field-data="currentEditField"></df-field-details>
+        <df-field-details data-field-data="currentEditField" data-current-table="table.record.name" data-current-service="table.currentService"></df-field-details>
     </div>
 </div>

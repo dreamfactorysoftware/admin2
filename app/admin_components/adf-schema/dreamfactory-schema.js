@@ -375,11 +375,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             });
 
 
-            $scope.schemaManagerData = tempObj;
+
+            // console.log($scope.schemaManagerData);
         });
 
         var watchServiceComponents = $scope.$watchCollection(function() {return dfApplicationData.getApiData('service', {type: 'Local SQL DB,Remote SQL DB'})}, function (newValue, oldValue) {
-
 
             if (!newValue) return;
 
@@ -442,7 +442,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
         }
     }])
 
-    .directive('dfTableDetails', ['MOD_SCHEMA_ASSET_PATH', 'DSP_URL', 'dfNotify', '$http', 'dfObjectService',  function (MOD_SCHEMA_ASSET_PATH, DSP_URL, dfNotify, $http, dfObjectService) {
+    .directive('dfTableDetails', ['MOD_SCHEMA_ASSET_PATH', 'DSP_URL', 'dfNotify', '$http', 'dfObjectService', 'dfApplicationData',  function (MOD_SCHEMA_ASSET_PATH, DSP_URL, dfNotify, $http, dfObjectService, dfApplicationData) {
 
         return {
             restrict: 'E',
@@ -464,7 +464,13 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         name_field: null,
                         related: null,
                         access: [],
-                        field: []
+                        field: [
+                            {
+                                name: 'example_field',
+                                label: 'Example Field',
+                                type: 'string'
+                            }
+                        ]
                     };
 
                     tableData = tableData || _new;
@@ -606,6 +612,30 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     }
                 };
 
+                // Had to update the app obj manually via this function.
+                // faster than asking the server for all the services with their
+                // components.  Trust me Kage.  Its the only way.
+                scope._insertNewTableToAppObj = function (tableName) {
+
+
+                    var appObj = dfApplicationData.getApplicationObj();
+
+                    if (appObj.apis.hasOwnProperty('service') && appObj.apis.service.hasOwnProperty('record')) {
+
+                        for (var i = 0; i < appObj.apis.service.record.length; i++) {
+
+                            if (appObj.apis.service.record[i].api_name === scope.tableData.currentService.api_name) {
+
+                                appObj.apis.service.record[i].components.push(tableName);
+                                appObj.apis.service.record[i].components.push('_schema/' + tableName);
+                                break;
+                            }
+                        }
+                    }
+
+                    dfApplicationData.setApplicationObj(appObj);
+                }
+
 
 
                 // COMPLEX IMPLEMENTATION
@@ -672,6 +702,8 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                             };
 
                             scope.$emit('update:components', scope.table);
+
+                            scope._insertNewTableToAppObj(result.data.table[0].name);
 
                             scope.table = new Table(scope.table.record);
 
@@ -799,7 +831,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 }
 
 
-
                 // WATCHERS
                 var watchTableData = scope.$watch('tableData', function (newValue, oldValue) {
 
@@ -811,16 +842,21 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 });
 
 
-
                 // MESSAGES
                 scope.$on('$destroy', function (e) {
                     watchTableData();
                 });
+
+                scope.$on('update:managedtable', function (e) {
+
+                    scope.table = new Table(scope.table.record);
+
+                })
             }
         }
     }])
 
-    .directive('dfFieldDetails', ['MOD_SCHEMA_ASSET_PATH', 'DSP_URL', '$http', 'dfNotify', function (MOD_SCHEMA_ASSET_PATH, DSP_URL, $http, dfNotify) {
+    .directive('dfFieldDetails', ['MOD_SCHEMA_ASSET_PATH', 'DSP_URL', '$http', 'dfNotify', 'dfObjectService', function (MOD_SCHEMA_ASSET_PATH, DSP_URL, $http, dfNotify, dfObjectService) {
 
 
         return {
@@ -862,9 +898,10 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     return {
                         __dfUI: {
-                            newField: fieldData.type === null
+                            newField: fieldData.type == null
                         },
-                        record: fieldData
+                        record: fieldData,
+                        recordCopy: angular.copy(fieldData)
                     }
                 };
 
@@ -893,9 +930,18 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 ];
                 scope.refFields = null;
 
-
                 // PUBLIC API
                 scope.closeField = function () {
+
+                    if (!dfObjectService.compareObjectsAsJson(scope.field.record, scope.field.recordCopy)) {
+
+                        if (!dfNotify.confirmNoSave()) {
+                            return false;
+                        }
+
+                        // Undo changes to field record object
+                        dfObjectService.mergeObjects(scope.field.recordCopy, scope.field.record)
+                    }
 
                     scope._closeField();
                 };
@@ -938,9 +984,13 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 };
 
-                scope._saveFieldToServer = function (requestDataObj) {
+                scope._saveFieldToServer = function () {
 
-                    return $http.patch(DSP_URL + '/rest/' + scope.fieldData.currentService.api_name + '/_schema/' + scope.currentTable, requestDataObj)
+                    return $http({
+                        url: DSP_URL + '/rest/' + scope.fieldData.currentService.api_name + '/_schema/' + scope.currentTable + '/' + scope.field.record.name,
+                        method: 'PATCH',
+                        data: scope.field.record
+                    })
                 };
 
 
@@ -953,26 +1003,43 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope._saveField = function () {
 
-                    var requestDataObj = {};
-
-
                     scope._saveFieldToServer().then(
 
                         function (result) {
 
-                            console.log(result);
+                            var messageOptions = {
+                                module: 'Schema',
+                                type: 'success',
+                                provider: 'dreamfactory',
+                                message: 'Field saved.'
+                            }
+
+                            dfNotify.success(messageOptions);
+
+                            // Reset field object
+                            scope.field = new Field(scope.field.record);
+
+                            // Notify the Managed table object that it's record has changed.
+                            scope.$emit('update:managedtable');
+
 
                         },
 
                         function (reject) {
 
 
-                            console.log(reject);
+                            var messageOptions = {
+                                module: 'Schema',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: reject
+                            }
+
+                            dfNotify.success(messageOptions);
 
                         }
                     );
                 };
-
 
                 // WATCHERS
                 var watchFieldData = scope.$watch('fieldData', function(newValue, oldValue) {
@@ -985,6 +1052,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         scope.refFields = null;
                         return;
                     }
+
 
                     $http.get(DSP_URL + '/rest/' + scope.fieldData.currentService.api_name + '/_schema/' + scope.field.record.ref_table).then(
                         function (result) {
