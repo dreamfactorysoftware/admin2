@@ -375,8 +375,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     scope._prepareServiceData();
 
-                    console.log(angular.toJson(scope.service.record))
-                    console.log(angular.toJson(scope.service.recordCopy))
+                    // console.log(angular.toJson(scope.service.record))
+                    // console.log(angular.toJson(scope.service.recordCopy))
 
 
                     if (!dfObjectService.compareObjectsAsJson(scope.service.record, scope.service.recordCopy)) {
@@ -611,7 +611,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope.serviceInfo.record.credentials = data;
                     scope.service.record = dfObjectService.mergeObjects(scope.serviceInfo.record, scope.service.record);
 
-                    console.log(scope.serviceInfo);
+                    // console.log(scope.serviceInfo);
                 };
                 
                 scope._prepareRWS = function() {
@@ -2008,7 +2008,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
 
         return function(storageType, data) {
-
 
             // Is this object stringified
             if (Object.prototype.toString.call('data') === '[object String]') {
