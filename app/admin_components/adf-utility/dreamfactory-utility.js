@@ -594,24 +594,26 @@ angular.module('dfUtility', ['dfApplication'])
 
     // Used anywhere a admin/user has the ability to select what REST verbs to allow
     .directive('dfVerbPicker', [
-        'MOD_UTILITY_ASSET_PATH', function (MOD_UTILITY_ASSET_PATH) {
+        'MOD_UTILITY_ASSET_PATH', function (DF_UTILITY_ASSET_PATH) {
 
             return {
                 restrict: 'E',
                 scope: {
                     allowedVerbs: '=?',
-                    description: '=?'
+                    allowedVerbMask: '=?',
+                    description: '=?',
+                    size: '@'
                 },
-                templateUrl: MOD_UTILITY_ASSET_PATH + 'views/verb-picker.html',
+                templateUrl: DF_UTILITY_ASSET_PATH + 'views/df-verb-picker.html',
                 link: function (scope, elem, attrs) {
 
                     scope.verbs = {
-                        GET: {name: 'GET', active: false, description: ' (read)'},
-                        POST: {name: 'POST', active: false, description: ' (create)'},
-                        PUT: {name: 'PUT', active: false, description: ' (replace)'},
-                        PATCH: {name: 'PATCH', active: false, description: ' (update)'},
-                        MERGE: {name: 'MERGE', active: false, description: ' (update)'},
-                        DELETE: {name: 'DELETE', active: false, description: ' (remove)'}
+                        GET: {name: 'GET', active: false, description: ' (read)', mask: 1},
+                        POST: {name: 'POST', active: false, description: ' (create)', mask: 2},
+                        PUT: {name: 'PUT', active: false, description: ' (replace)', mask: 4},
+                        PATCH: {name: 'PATCH', active: false, description: ' (update)', mask: 8},
+                        MERGE: {name: 'MERGE', active: false, description: ' (update)', mask: 16},
+                        DELETE: {name: 'DELETE', active: false, description: ' (remove)', mask: 32}
                     };
 
                     scope.btnText = 'None Selected';
@@ -629,6 +631,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                         if (scope.verbs.hasOwnProperty(scope.verbs[nameStr].name)) {
                             scope.verbs[nameStr].active = !scope.verbs[nameStr].active;
+                            scope.allowedVerbMask = scope.allowedVerbMask ^ scope.verbs[nameStr].mask;
                         }
 
                         scope.allowedVerbs = [];
@@ -638,6 +641,7 @@ angular.module('dfUtility', ['dfApplication'])
                                 if (_obj.active) {
                                     scope.allowedVerbs.push(_obj.name);
                                 }
+
                             }
                         );
                     };
@@ -649,14 +653,23 @@ angular.module('dfUtility', ['dfApplication'])
 
                     scope._setButtonText = function () {
 
-                        var verbs = scope.allowedVerbs;
+                        var verbs = [];
+
+                        angular.forEach(scope.verbs, function (verbObj) {
+
+                            if (verbObj.active) {
+                                verbs.push(verbObj.name);
+                            }
+
+                        })
 
                         scope.btnText = '';
 
+                        var max = 1;
                         if (verbs.length == 0) {
                             scope.btnText = 'None Selected';
 
-                        } else if (verbs.length > 0 && verbs.length <= 3) {
+                        } else if (verbs.length > 0 && verbs.length <= max) {
 
                             angular.forEach(
                                 verbs, function (_value, _index) {
@@ -673,29 +686,169 @@ angular.module('dfUtility', ['dfApplication'])
                                 }
                             )
 
-                        } else if (verbs.length > 3) {
+                        } else if (verbs.length > max) {
                             scope.btnText = verbs.length + ' Selected';
                         }
                     };
 
-                    scope.$watch(
-                        'allowedVerbs', function (newValue, oldValue) {
+                    scope.$watch('allowedVerbs', function (newValue, oldValue) {
 
-                            if (!newValue) {
-                                return false;
+                        if (!newValue) {
+                            return false;
+                        }
+
+                        angular.forEach(
+                            scope.allowedVerbs, function (_value, _index) {
+
+                                scope._setVerbState(_value, true);
                             }
+                        );
+
+                        scope._setButtonText();
+
+                    });
+
+                    scope.$watch('allowedVerbMask', function (n, o) {
+
+                        if (n == null && n == undefined) return false;
+
+                        angular.forEach(scope.verbs, function (verbObj) {
+
+                            if (n & verbObj.mask) {
+                                verbObj.active = true;
+                            }
+                        });
+
+                        scope._setButtonText();
+                    });
+
+                    elem.css({
+                        'display': 'inline-block', 'position': 'absolute'
+                    });
+
+                }
+            }
+        }
+    ])
+
+    // Sets requestor in service/system accesses
+    .directive('dfRequestorPicker', [
+        'MOD_UTILITY_ASSET_PATH', function (DF_UTILITY_ASSET_PATH) {
+
+            return {
+                restrict: 'E',
+                scope: {
+                    allowedRequestors: '=?',
+                    allowedRequestorMask: '=?',
+                    size: '@'
+                },
+                templateUrl: DF_UTILITY_ASSET_PATH + 'views/df-requestor-picker.html',
+                link: function (scope, elem, attrs) {
+
+                    scope.requestors = {
+                        API: {name: 'API', active: false, mask: 1},
+                        SCRIPT: {name: 'SCRIPT', active: false, mask: 2}
+                    };
+
+                    scope.btnText = 'None Selected';
+
+                    scope._setRequestorState = function (nameStr, stateBool) {
+                        var requestor = scope.requestors[nameStr];
+                        if (scope.requestors.hasOwnProperty(requestor.name)) {
+                            scope.requestors[requestor.name].active = stateBool;
+                        }
+                    };
+
+                    scope._toggleRequestorState = function (nameStr, event) {
+                        event.stopPropagation();
+
+                        if (scope.requestors.hasOwnProperty(scope.requestors[nameStr].name)) {
+                            scope.requestors[nameStr].active = !scope.requestors[nameStr].active;
+                            scope.allowedRequestorMask = scope.allowedRequestorMask ^ scope.requestors[nameStr].mask;
+                        }
+
+                        scope.allowedRequestors = [];
+
+                        angular.forEach(
+                            scope.requestors, function (_obj) {
+                                if (_obj.active) {
+                                    scope.allowedRequestors.push(_obj.name);
+                                }
+                            }
+                        );
+                    };
+
+                    scope._isRequestorActive = function (requestorStr) {
+
+                        return scope.requestors[requestorStr].active
+                    };
+
+                    scope._setButtonText = function () {
+
+                        var requestors = [];
+
+                        angular.forEach(scope.requestors, function (rObj) {
+
+                            if (rObj.active) {
+                                requestors.push(rObj.name);
+                            }
+                        });
+
+                        scope.btnText = '';
+
+                        if (requestors.length == 0) {
+                            scope.btnText = 'None Selected';
+
+                        } else {
 
                             angular.forEach(
-                                scope.allowedVerbs, function (_value, _index) {
-
-                                    scope._setVerbState(_value, true);
+                                requestors, function (_value, _index) {
+                                    if (scope._isRequestorActive(_value)) {
+                                        if (_index != requestors.length - 1) {
+                                            scope.btnText +=
+                                                (
+                                                    _value + ', '
+                                                    );
+                                        } else {
+                                            scope.btnText += _value
+                                        }
+                                    }
                                 }
-                            );
-
-                            scope._setButtonText();
+                            )
 
                         }
-                    );
+                    };
+
+                    scope.$watch('allowedRequestors', function (newValue, oldValue) {
+
+                        if (!newValue) {
+                            return false;
+                        }
+
+                        angular.forEach(
+                            scope.allowedRequestors, function (_value, _index) {
+
+                                scope._setRequestorState(_value, true);
+                            }
+                        );
+
+                        scope._setButtonText();
+
+                    });
+
+                    scope.$watch('allowedRequestorMask', function (n, o) {
+
+                        if (n == null && n == undefined) return false;
+
+                        angular.forEach(scope.requestors, function (requestorObj) {
+
+                            if (n & requestorObj.mask) {
+                                requestorObj.active = true;
+                            }
+                        });
+
+                        scope._setButtonText();
+                    });
 
                     elem.css(
                         {

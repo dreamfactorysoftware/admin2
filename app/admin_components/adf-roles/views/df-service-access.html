@@ -3,7 +3,7 @@
 
         <!-- Select Service -->
         <div class="col-xs-3 form-group">
-            <select class="form-control"
+            <select class="form-control input-sm"
                     data-ng-model="serviceAccess.record.service"
                     data-ng-options="service as service.name for service in $parent.services">
             </select>
@@ -11,7 +11,7 @@
 
         <!-- Selecte Service Components -->
         <div class="col-xs-3 form-group">
-            <select class="form-control"
+            <select class="form-control input-sm"
                     data-ng-model="serviceAccess.record.component"
                     data-ng-options="component as component for component in serviceAccess.record.service.components">
             </select>
@@ -19,12 +19,17 @@
         </div>
 
         <!-- Select Allowed Verbs -->
-        <div class="col-xs-3 form-group">
-            <df-verb-picker data-allowed-verbs="serviceAccess.record.verbs"></df-verb-picker>
+        <div class="col-xs-2 form-group">
+            <df-verb-picker data-allowed-verb-mask="serviceAccess.record.verb_mask" data-size="sm"></df-verb-picker>
+        </div>
+
+        <!-- Select Allowed Requestor -->
+        <div class="col-xs-2 form-group">
+            <df-requestor-picker data-allowed-verb-mask="serviceAccess.record.requestor_mask" data-size="sm"></df-requestor-picker>
         </div>
 
         <!-- Set Service Access Filters -->
-        <div class="col-xs-2 form-group">
+        <div class="col-xs-1 form-group input-sm">
             <div class="filter-control">
                 <span data-ng-if="serviceAccess.__dfUI.allowFilters">
                     {{serviceAccess.record.filters.length}}
@@ -35,7 +40,7 @@
         </div>
 
         <!-- Remove Service -->
-        <div class="col-xs-1 form-group">
+        <div class="col-xs-1 form-group input-sm">
             <button type="button" class="btn btn-default btn-sm" data-ng-click="$parent.removeServiceAccess(index)" title="Remove service access">
                 <i class="fa fa-trash-o fa-fw"></i>
             </button>

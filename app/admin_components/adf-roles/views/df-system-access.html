@@ -4,7 +4,7 @@
     <div class="row">
 
         <!-- Select Component -->
-        <div class="col-xs-3 form-group">
+        <div class="col-xs-4 form-group">
             <select class="form-control"
                     data-ng-model="systemAccess.record.component"
                     data-ng-options="component.name as component.label for component in $parent.system">
@@ -13,11 +13,17 @@
 
         <!-- Select Verbs -->
         <div class="col-xs-3 form-group">
-            <df-verb-picker data-allowed-verbs="systemAccess.record.verbs"></df-verb-picker>
+            <df-verb-picker data-allowed-verbs="systemAccess.record.verbs" data-size="sm"></df-verb-picker>
         </div>
 
+        <!-- Select Allowed Requestor -->
+        <div class="col-xs-3 form-group">
+            <df-requestor-picker data-allowed-verb-mask="systemAccess.record.requestor_mask" data-size="sm"></df-requestor-picker>
+        </div>
+
+
         <!-- Set Service Access Filters -->
-        <div class="col-xs-2 form-group">
+        <div class="col-xs-1 form-group">
             <div class="filter-control">
                 <span data-ng-if="systemAccess.__dfUI.allowFilters">
                     {{systemAccess.record.filters.length}}

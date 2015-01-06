@@ -645,7 +645,8 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                             showFilters: false
                         },
                         record: {
-                            "verbs": [],
+                            "verb_mask": 0,
+                            "requestor_mask": 1,
                             "component": null,
                             "filters": [],
                             "filter_op": "AND",
@@ -889,7 +890,8 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                             showFilters: false
                         },
                         record: {
-                            "verbs": [],
+                            "verb_mask": 0,
+                            "requestor_mask": 1,
                             "component": "*",
                             "service": null,
                             "service_id": null,
