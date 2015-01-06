@@ -714,7 +714,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
 
-
                 scope._dsnToFields = function (dsn) {
 
 
@@ -928,7 +927,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                                     'mongo-dsn',
                                     'mongo-database',
                                     'mongo-user-name',
-                                    'mongo-password'
+                                    'mongo-password',
+                                    'mongo-options-ssl'
                                 ], true);
                             break;
 
@@ -2100,7 +2100,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     dsn: null,
                     user: null,
                     pwd: null,
-                    db: null
+                    db: null,
+                    options: {
+                        ssl: false
+                    }
                 }
 
                 if (data) {
@@ -2690,6 +2693,20 @@ angular.module('dfServiceTemplates', [])
             '<input class="form-control" data-ng-model="_storageType.pwd" type="password"/>' +
                 '</div>'
         );
+
+
+        $templateCache.put('_service-mongo-options-ssl.html',
+
+            '<div class="form-group">' +
+                '<div class="checkbox">' +
+                    '<label>' +
+                        '<input data-ng-model="_storageType.options.ssl" type="checkbox"/>' +
+                        'Connect with SSL (PHP driver and MongoDB server must support SSL)' +
+                    '</label>' +
+                '</div>' +
+            '</div>'
+        );
+
 
 
 
