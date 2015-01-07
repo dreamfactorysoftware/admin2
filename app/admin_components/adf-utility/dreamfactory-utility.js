@@ -1923,7 +1923,7 @@ angular.module('dfUtility', ['dfApplication'])
 
         return {
             restrict: 'E',
-            scope: {},
+            scope: false,
             templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-main-loading.html',
             link: function (scope, elem, attrs) {
 
@@ -2031,10 +2031,14 @@ angular.module('dfUtility', ['dfApplication'])
                     // Doesn't work during ajax calls for some reason.
                     // scope._loadingDots();
                     scope.text.module = scope._getModuleName(dfApplicationData.getMainLoadData().loadData.module);
+
                     // $(elem).find('h1').html(scope.text.operation);
                     $(elem).find('small').html(scope.text.module);
                     scope._setProgressBar(0);
+
                     $(elem).children().show();
+                    console.log($(elem));
+
                 };
 
                 scope._dfmlUpdate = function () {
@@ -2075,6 +2079,8 @@ angular.module('dfUtility', ['dfApplication'])
         }
     }])
 
+
+
     // Pop up login screen for session time outs
     .directive('dfPopupLogin', ['MOD_UTILITY_ASSET_PATH', '$compile', '$location', 'UserEventsService', function (MOD_UTILITY_ASSET_PATH, $compile, $location, UserEventsService) {
 
@@ -2086,7 +2092,7 @@ angular.module('dfUtility', ['dfApplication'])
 
 
                 scope.popupLoginOptions = {
-                    showTemplate: true,
+                    showTemplate: true
 
                 };
 
@@ -2106,7 +2112,7 @@ angular.module('dfUtility', ['dfApplication'])
                 // COMPLEX IMPLEMENTATION
                 scope._openLoginWindow = function (errormsg) {
                     var html = '<div id="df-login-frame" style="overflow: hidden; position: absolute; top:0; z-index:99999; background: rgba(0, 0, 0, .8); width: 100%; height: 100%"><div style="padding-top: 120px;"><dreamfactory-user-login data-in-err-msg="errormsg.data.error[0].message" data-options="popupLoginOptions"></dreamfactory-user-login></div></div>';
-                    elem.html($compile(html)(scope));
+                    $(elem).append($compile(html)(scope));
                 };
 
 
@@ -2117,6 +2123,7 @@ angular.module('dfUtility', ['dfApplication'])
                 //MESSAGES
                 scope.$on(UserEventsService.login.loginSuccess, function(e, userDataObj) {
 
+                    e.stopPropagation();
                     $('#df-login-frame').remove();
                 });
 
@@ -2620,13 +2627,21 @@ angular.module('dfUtility', ['dfApplication'])
 
             (function() {
 
+                var stack_topleft = {"dir1": "down", "dir2": "right", "push": "top"};
+                var stack_bottomleft = {"dir1": "right", "dir2": "up", "push": "top"};
+                var stack_bar_top = {"dir1": "down", "dir2": "right", "push": "top", "spacing1": 0, "spacing2": 0};
+                var stack_bar_bottom = {"dir1": "up", "dir2": "right", "spacing1": 0, "spacing2": 0};
+                var stack_context = {"dir1": "down", "dir2": "left", "context": $("#stack-context")};
+
                 // Set PNotify options
                 PNotify.prototype.options.styling = "fontawesome";
 
                 new PNotify({
                     title: messageOptions.module,
                     type:  messageOptions.type,
-                    text:  messageOptions.message
+                    text:  messageOptions.message,
+                    addclass: "stack_topleft",
+                    stack: stack_topleft
                 })
             })();
         }
@@ -2934,8 +2949,7 @@ angular.module('dfUtility', ['dfApplication'])
                 return a == b ? 0 : a < b ? -1 : 1;
             }
 
-            angular.forEach(
-                items, function (item) {
+            angular.forEach(items, function (item) {
                     filtered.push(item);
                 }
             );
@@ -2944,11 +2958,23 @@ angular.module('dfUtility', ['dfApplication'])
                 return filtered;
             }
 
-            switch (typeof filtered[0][field]) {
+            var filterOnThis = filtered[0].record ? filtered[0].record[field] : filtered[0][field]
+
+            switch (typeof filterOnThis) {
 
                 case 'number':
+
                     filtered.sort(
                         function numberCmp(a, b) {
+
+                            // This checks if we have passed in a 'managed ui object'
+                            // Pretty sure all the data that moves into any table
+                            // that needs to be sorted will be wrapped in an object and
+                            // the data we are looking for will be assigned to the record
+                            // property of that object
+                            a = a.record || a;
+                            b = b.record || b;
+
                             return cmp(Number(a[field]), Number(b[field]));
                         }
                     )
@@ -2958,6 +2984,10 @@ angular.module('dfUtility', ['dfApplication'])
 
                     filtered.sort(
                         function sortfn(a, b) {
+
+                            a = a.record || a;
+                            b = b.record || b;
+
                             var upA = a[field].toUpperCase();
                             var upB = b[field].toUpperCase();
                             return (
@@ -2972,6 +3002,10 @@ angular.module('dfUtility', ['dfApplication'])
                 default:
                     filtered.sort(
                         function sortfn(a, b) {
+
+                            a = a.record || a;
+                            b = b.record || b;
+
                             var upA = a[field]
                             var upB = b[field]
                             return (

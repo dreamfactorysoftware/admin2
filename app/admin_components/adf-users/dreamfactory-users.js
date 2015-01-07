@@ -655,6 +655,11 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         active: true
                     },
                     {
+                        name: 'role_id',
+                        label:'Role',
+                        active: true
+                    },
+                    {
                         name: 'first_name',
                         label: 'First Name',
                         active: true
@@ -687,6 +692,8 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 };
 
                 scope.selectedUsers = [];
+
+                scope.roles = dfApplicationData.getApiData('role');
 
 
 
@@ -728,6 +735,16 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                     return dfApplicationData.deleteApiData('user', requestDataObj).$promise;
                 };
+
+                scope._getUserRoleName = function (roleId) {
+
+                    for (var i = 0; i < scope.roles.length; i++) {
+
+                        if (roleId === scope.roles[i].id) {
+                            return scope.roles[i].name;
+                        }
+                    }
+                }
 
 
 
@@ -873,6 +890,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             }
                         )
                 };
+
 
 
                 // WATCHERS

@@ -2448,9 +2448,7 @@ angular.module('dfServiceTemplates', [])
             '<div class="form-group">' +
                 '<div class="input-group">' +
                     '<span class="input-group-addon">' +
-
-                            '<input data-ng-model="_storageType.cache_config.enabled" type="checkbox"/>' +
-
+                    '<input data-ng-model="_storageType.cache_config.enabled" type="checkbox"/>' +
                     '</span>' +
                     '<input class="form-control" data-ng-model="_storageType.cache_config.ttl" type="text" placeholder="Enter cache time to live (seconds)" data-ng-disabled="!_storageType.cache_config.enabled"/>' +
                 '</div>' +

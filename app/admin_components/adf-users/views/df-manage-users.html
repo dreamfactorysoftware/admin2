@@ -83,7 +83,17 @@
                                             </label>
                                         </div>
                                     </td>
-                                    <td data-ng-click="editUser(obj.record)" data-ng-repeat="value in obj.record | orderAndShowValue : fields track by $index">{{value}}</td>
+                                    <!-- Auto build table based on fieldorderobj in directive -->
+                                    <!-- <td data-ng-click="editUser(obj.record)" data-ng-repeat="value in obj.record | orderAndShowValue : fields track by $index">{{value}}</td>-->
+                                    <td data-ng-click="editUser(obj.record)">{{obj.record.id}}</td>
+                                    <td data-ng-click="editUser(obj.record)">{{obj.record.email}}</td>
+                                    <td data-ng-click="editUser(obj.record)">{{obj.record.display_name}}</td>
+                                    <td data-ng-click="editUser(obj.record)">{{_getUserRoleName(obj.record.role_id)}}</td>
+                                    <td data-ng-click="editUser(obj.record)">{{obj.record.first_name}}</td>
+                                    <td data-ng-click="editUser(obj.record)">{{obj.record.last_name}}</td>
+                                    <td data-ng-click="editUser(obj.record)">{{obj.record.is_active}}</td>
+                                    <td data-ng-click="editUser(obj.record)">{{obj.record.is_sys_admin}}</td>
+                                    <td data-ng-click="editUser(obj.record)">{{obj.record.confirmed}}</td>
                                 </tr>
                                 </tbody>
                             </table>

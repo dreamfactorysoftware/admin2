@@ -1,8 +1,5 @@
 'use strict';
 
-
-
-
 angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
     // This whole service is basically a facade for our bootstrapped app data.
@@ -132,7 +129,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             if (dfApplicationObj.currentUser.is_sys_admin) {
 
-                dfMainLoadData.numElemsToLoad = options.apis.length
+                dfMainLoadData.numElemsToLoad = options.apis.length;
                 dfMainLoadData.loadData.module = 'Current User';
                 $rootScope.$broadcast('dfml:start');
                 var i = 0,
