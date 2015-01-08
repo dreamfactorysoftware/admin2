@@ -2625,7 +2625,7 @@ angular.module('dfUtility', ['dfApplication'])
 
             (function() {
 
-                var stack_topleft = {"dir1": "down", "dir2": "right", "push": "top"};
+                var stack_topleft = {"dir1": "down", "dir2": "right", "push": "top", "firstpos1": 25, "firstpos2": 25};
                 var stack_bottomleft = {"dir1": "right", "dir2": "up", "push": "top"};
                 var stack_bar_top = {"dir1": "down", "dir2": "right", "push": "top", "spacing1": 0, "spacing2": 0};
                 var stack_bar_bottom = {"dir1": "up", "dir2": "right", "spacing1": 0, "spacing2": 0};
@@ -2734,7 +2734,6 @@ angular.module('dfUtility', ['dfApplication'])
 
                 switch(dfApplicationPrefs.getPrefs().application.notificationSystem.success) {
 
-
                     case 'pnotify':
                         pnotify(options);
                         break;
@@ -2764,7 +2763,7 @@ angular.module('dfUtility', ['dfApplication'])
 
 
                     case 'pnotify':
-                        pnotify(parseError(options));
+                        pnotify(parseError(options, 'message'));
                         break;
                     case 'browserAlert':
                         alert(parseError(options, 'message'));
