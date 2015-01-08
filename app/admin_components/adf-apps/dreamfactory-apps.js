@@ -86,7 +86,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
         });
     }])
 
-    .directive('dfAppDetails', ['MOD_APPS_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', function(MOD_APPS_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService) {
+    .directive('dfAppDetails', ['MOD_APPS_ASSET_PATH', '$location', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', function(MOD_APPS_ASSET_PATH, $location, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService) {
 
         return {
 
@@ -164,6 +164,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                     return newRolesArr;
                 };
+
 
                 scope.app = null;
 
@@ -534,6 +535,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             i++
                         }
                     });
+
+                    console.log(scope.app);
 
                 });
 
