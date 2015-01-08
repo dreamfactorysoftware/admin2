@@ -253,7 +253,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 openRegistration: {
                     title: 'Open Registration Overview',
                     text: 'Turn on Open Registration to allow users to self-register for applications. Set a Role for newly registered users, select an email service to turn on email registration confirmation, and optionally select a custom email template.'+
-                        '<span style="color: red;">Make sure to configure an email service to prevent spam, bots, and scripts from abusing the Open Registration function.</span>'
+                        '<span style="color: red;">  Make sure to configure an email service to prevent spam, bots, and scripts from abusing the Open Registration function.</span>'
                 },
                 userInvites: {
                     title: 'User Invites Overview',

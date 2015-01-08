@@ -666,7 +666,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                     return _getDataSetFromServer(api, options);
                 }
-
             },
 
             // retrieves the stored currentUser from local data model

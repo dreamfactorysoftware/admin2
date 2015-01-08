@@ -69,13 +69,13 @@
 
                 <div class="pull-right">
                     <a  id="forgot-password-active" type="button"
-                        data-ng-click="showForgotPassword()">Forgot Password</a>
+                        data-ng-click="forgotPassword()">Forgot Password</a>
                 </div>
 
             </div>
             <!-- End Login Section -->
 
-            <dreamfactory-forgot-pword-email data-ng-if="!loginActive"></dreamfactory-forgot-pword-email>
+            <dreamfactory-forgot-pword-email data-ng-show="!loginActive"></dreamfactory-forgot-pword-email>
         </div>
     </div>
 </div>

@@ -2037,8 +2037,6 @@ angular.module('dfUtility', ['dfApplication'])
                     scope._setProgressBar(0);
 
                     $(elem).children().show();
-                    console.log($(elem));
-
                 };
 
                 scope._dfmlUpdate = function () {

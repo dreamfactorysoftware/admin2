@@ -8,11 +8,11 @@
         <div data-ng-show="step === 1" >
             <form name="form" role="form" novalidate>
                 <div class="form-group has-feedback">
-                    <p class="lead">Choose an Application ID</p>
+                    <h3>Choose an Application ID</h3>
 
                     <p>
                         Before writing your application, you must specify an application ID. This ID is your API key for
-                        making API calls to DreamFactory. You application ID can contain letters A-Z, numbers, underscores,
+                        making API calls to DreamFactory. Your application ID can contain letters A-Z, numbers, underscores,
                         and dashes. Other characters are not allowed.
                     </p>
 
@@ -32,7 +32,7 @@
                 </div>
 
                 <div class="form-group" style="clear: both; padding-top: 15px;">
-                    <p class="lead">Application Type</p>
+                    <h3>Application Type</h3>
 
                     <p>
                         The next step is to specify the type of application you're building. Web-based applications
@@ -47,10 +47,10 @@
                                    id="app-type-web"
                                    data-ng-model="app.record.native"
                                    value="0"
-                                   checked="checked" style="margin-top: 5px;">
-                            Web-Based <i class="fa fa-html5" title="HTML5"></i><i class="fa fa-css3" title="CSS3"></i><i
-                                class="fa fa-file-text"
-                                title="Javascript"></i>
+                                   checked="checked" style="margin-top: 5px;">Web-Based
+                            &nbsp;<i class="fa fa-html5" title="HTML5"></i>
+                            &nbsp;<i class="fa fa-css3" title="CSS3"></i>
+                            &nbsp;<i class="fa fa-file-text" title="Javascript"></i>
                         </label>
                     </div>
 
@@ -60,9 +60,9 @@
                                    name="app_type"
                                    id="app-type-native"
                                    value="1"
-                                   data-ng-model="app.record.native" style="margin-top: 5px;">
-                            Native <i class="fa fa-android" title="Android SDK"></i> <i class="fa fa-apple"
-                                                                                        title="Apple iOS"></i>
+                                   data-ng-model="app.record.native" style="margin-top: 5px;">Native
+                            &nbsp;<i class="fa fa-android" title="Android SDK"></i>
+                            &nbsp;<i class="fa fa-apple" title="Apple iOS"></i>
                         </label>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
         <!-- Quickstart Step Two -->
         <div data-ng-show="step === 2">
 
-            <p class="lead">Where will you develop?</p>
+            <h3>Where will you develop?</h3>
 
             <p>
                 Some developers prefer to edit HTML, CSS, and JavaScript on their local computers, then deploy the
@@ -89,7 +89,7 @@
             </p>
 
             <br />
-            <p class="lead">Where do you want to develop your app?</p>
+            <h3>Where do you want to develop your app?</h3>
 
             <div class="col-xs-6">
                 <div class="radio">
@@ -130,7 +130,7 @@
         <!-- Quickstart Step 3 -->
         <div data-ng-show="step === 3">
 
-            <p class="lead">Congratulations!</p>
+            <h3>Congratulations!</h3>
 
             <!-- Web Apps -->
             <div data-ng-show="app.record.native == false">
@@ -150,7 +150,6 @@
                     </p>
 
                 </div>
-
 
                 <!-- Local Web Apps (Apps stored in DSP local storage) -->
                 <div ng-show="app.record.storage_service_id">
@@ -175,7 +174,7 @@
 
 
                 <!-- This pertains to ALL web based apps -->
-                <p class="lead">Download the SDK!</p>
+                <h3>Download the SDK!</h3>
 
                 <p>
                     The Javascript SDK is a convenience wrapper for DreamFactory's REST API. The SDK automatically
@@ -194,10 +193,10 @@
                     DreamFactory's REST API accepts and returns data in either JSON or XML format. The API Docs tab in
                     the Admin Console provides input and output details for both JSON and XML as well as detailed
                     documentation, example code, and a live testing system for all available services.
-                    <a href="http://www.dreamfactory.com/developers/examples"
+                    <!--<a href="http://www.dreamfactory.com/developers/examples"
                        target="_blank">http://www.dreamfactory.com/developers/examples
-                    </a>
-                    .
+                    </a>-->
+
                 </p>
 
                 <div>

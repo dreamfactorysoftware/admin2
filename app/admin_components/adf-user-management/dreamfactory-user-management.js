@@ -140,8 +140,10 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                         scope._login(credsDataObj);
                     };
 
-                    scope.showForgotPassword = function () {
-                        scope._toggleForms();
+                    scope.forgotPassword = function () {
+                        // scope._toggleForms();
+
+                        scope._forgotPassword();
                     };
 
                     scope.showLoginForm = function () {
@@ -280,6 +282,12 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                     };
 
+                    scope._forgotPassword = function () {
+
+                        scope.$broadcast(UserEventsService.password.passwordResetRequest, {email: scope.creds.email});
+
+                    }
+
                     // WATCHERS AND INIT
                     // We define any watchers or init code that needs to be run here.
                     var watchOptions = scope.$watch('options', function (newValue, oldValue) {
@@ -303,6 +311,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                         // Call the complex implementation to handle the login request
                         scope._login(userDataObj);
                     });
+
                 }
             }
         }])
@@ -323,8 +332,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                 scope.es = UserEventsService.password;
 
 
-                scope.emailForm = true;
-                scope.securityQuestionForm = false;
+                scope.emailForm = false;
+                scope.securityQuestionForm = true;
 
                 scope.sq = {
                     email: null,
@@ -426,13 +435,16 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                             if (result.data.hasOwnProperty('security_question')) {
 
+                                // This function lives in dreamfactoryUserLogin
+                                scope._toggleForms();
 
-                                scope.emailForm = false;
-                                scope.securityQuestionForm = true;
+                                // scope.emailForm = false;
+                                // scope.securityQuestionForm = true;
 
 
                                 scope.sq.email = requestDataObj.email;
                                 scope.sq.security_question = result.data.security_question
+
 
                             }
                             else {
@@ -491,7 +503,15 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
 
                 // HANDLE MESSAGES
-                scope.$on(scope.es.passwordResetRequest, function (e, resetDataObj) {
+
+
+
+                scope.$on(UserEventsService.password.passwordResetRequest, function (e, resetDataObj) {
+
+
+
+                    console.log(resetDataObj);
+
 
                     scope._requestPasswordReset(resetDataObj);
                 });

@@ -39,12 +39,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
         var Service = function (schemaData) {
 
-            function getSchemaComponents() {
+            function getSchemaComponents(array) {
 
                 var service = [];
 
-
-                angular.forEach(schemaData.components, function (component) {
+                angular.forEach(array, function (component) {
 
                     if (component.lastIndexOf('_schema/') != '-1') {
 
@@ -75,7 +74,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 },
                 name: schemaData.name,
                 api_name: schemaData.api_name,
-                components: getSchemaComponents()
+                components: getSchemaComponents(schemaData.components),
+                updateComponents : function (array) {
+
+                    this.components = getSchemaComponents(array);
+                }
             }
         };
 
@@ -222,7 +225,12 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             $scope.currentEditTable = null;
             $scope._addByJson();
 
-        }
+        };
+
+        $scope.refreshService = function () {
+
+            $scope._refreshService();
+        };
 
 
 
@@ -231,7 +239,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
             return $http({
                 method: 'GET',
-                url: DSP_URL + '/rest/'+ $scope.currentService.api_name + '/' + requestDataObj.componentPath
+                url: DSP_URL + '/rest/'+ $scope.currentService.api_name + '/' + requestDataObj.componentPath,
+                params: {
+                    refresh: true
+                }
+
             });
         };
 
@@ -250,6 +262,11 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 url: DSP_URL + '/rest/' + $scope.currentService.api_name + '/_schema',
                 data: requestDataObj.data
             })
+        };
+
+        $scope._refreshServiceFromServer = function () {
+
+            return $http.get(DSP_URL + '/rest/' + $scope.currentService.api_name + '/_schema', {params: {refresh: true, fields: 'name'}});
         };
 
 
@@ -297,7 +314,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 }
             )
-        }
+        };
 
         $scope._deleteTable = function () {
 
@@ -358,7 +375,77 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
         };
 
+        $scope._refreshService = function () {
 
+            var tableObj = null;
+
+            for (var i = 0; i < $scope.currentService.components.length; i++) {
+
+                if ($scope.currentService.components[i].path === $scope.currentTablePath) {
+                     tableObj = $scope.currentService.components[i]
+                }
+            }
+
+            $scope._refreshServiceFromServer().then(
+                function (result) {
+
+                    // Update application obj directly
+                    // Get the applicationObj
+                    var appObj = dfApplicationData.getApplicationObj(),
+                        tempArr = [];
+
+                    // rebuild components array
+                    angular.forEach(result.data.resource, function (schemaObj) {
+
+                        tempArr.push (schemaObj.name);
+                        tempArr.push('_schema/' + schemaObj.name);
+                    });
+
+                    for (var i = 0; i < appObj.apis.service.record.length; i++) {
+                        if (appObj.apis.service.record[i].api_name === $scope.currentService.api_name) {
+                            appObj.apis.service.record[i].components = tempArr;
+                            break;
+                        }
+                    }
+
+                    // set application obj back
+                    dfApplicationData.setApplicationObjOverride(appObj);
+
+                    // update service components
+                    $scope.currentService.updateComponents(tempArr);
+
+                    // Build notification
+                    var messageOptions = {
+                        module: 'Schema',
+                        type: 'success',
+                        provider: 'dreamfactory',
+                        message: $scope.currentService.name + ' refreshed.'
+                    }
+
+                    // Send notification to user
+                    dfNotify.success(messageOptions);
+
+
+                    // Set the current table back and reload it
+                    if (tableObj) {
+                        $scope.currentTable = tableObj;
+                        $scope.getTable();
+                    }
+
+                },
+                function (reject) {
+
+                    var messageOptions = {
+                        module: 'Schema',
+                        type: 'error',
+                        provider: 'dreamfactory',
+                        message: reject
+                    }
+
+                    dfNotify.error(messageOptions);
+                }
+            )
+        };
 
 
 
@@ -391,6 +478,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
             });
 
             $scope.schemaManagerData = tempObj;
+
         });
 
         var watchCurrentEditTable = $scope.$watch('currentEditTable', function (newValue, oldValue) {
@@ -571,8 +659,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 scope.checkJSON = function () {
 
                     scope._checkJSON();
-                }
-
+                };
 
 
                 // PRIVATE API
@@ -635,7 +722,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                     dfApplicationData.setApplicationObj(appObj);
                 }
-
 
 
                 // COMPLEX IMPLEMENTATION
@@ -879,6 +965,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                         fixed_length: false,
                         is_foreign_key: false,
                         is_primary_key: false,
+                        is_unique: false,
                         label: null,
                         length: null,
                         name: null,

@@ -474,6 +474,7 @@ angular.module('dreamfactoryApp')
             }
         });
 
+
     }])
 
     // Our LogoutCtrl controller inherits from out TopLevelAppCtrl controller
