@@ -1182,7 +1182,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // Test if our passwords are long enough
                     scope._verifyPasswordLength = function (user) {
 
-                        return user.new_password.length > 5;
+                        return user.new_password.length >= 5;
                     };
 
                     // Send confim obj to the server for...you guessed it...confirmation
