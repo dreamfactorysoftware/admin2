@@ -127,3 +127,26 @@ body {
   display: none;
 
 }
+
+#df-copyright-footer {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  right: 0;
+  z-index: 1031;
+  color: $brand-grey-light;
+  background: $brand-grey;
+}
+
+.df-footer-text {
+  padding: 10px;
+  display: inline-block;
+
+  font-size: 12px;
+
+  @media screen and (max-width: $break-small) {
+
+    font-size: 10px;
+  }
+
+}

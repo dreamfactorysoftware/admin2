@@ -11,6 +11,13 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     templateUrl: MOD_SERVICES_ASSET_PATH + 'views/main.html',
                     controller: 'ServicesCtrl',
                     resolve: {
+                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
+
+                            if (dfApplicationData.initInProgress) {
+
+                                return dfApplicationData.initDeferred.promise;
+                            }
+                        }],
                         checkCurrentUser: ['UserDataService', '$location', function (UserDataService, $location) {
 
                             var currentUser = UserDataService.getCurrentUser();
@@ -427,32 +434,20 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.dfLargeHelp = {
 
                     basic: {
-                        title: 'Service Overview',
-                        text: 'Molior eros verto nimis nunc esse. Blandit quidem duis augue suscipit quidne te nulla ' +
-                            'persto consequat vereor. Saluto paratus tation consequat proprius feugiat abigo te eu tum ' +
-                            'incassum abico. Humo et inhibeo consequat suscipit consectetuer nullus lobortis. Accumsan ' +
-                            'os roto feugiat vel ingenium facilisi commoveo odio.'
+                        title: 'Services Overview',
+                        text: 'Services are where you set up REST API connections to databases, file storage, email, and remote web services.'
                     },
                     parameters: {
                         title: 'Parameters Overview',
-                        text: 'Molior eros verto nimis nunc esse. Blandit quidem duis augue suscipit quidne te nulla ' +
-                            'persto consequat vereor. Saluto paratus tation consequat proprius feugiat abigo te eu tum ' +
-                            'incassum abico. Humo et inhibeo consequat suscipit consectetuer nullus lobortis. Accumsan ' +
-                            'os roto feugiat vel ingenium facilisi commoveo odio.'
+                        text: 'Specify any required parameters below.'
                     },
                     headers: {
                         title: 'Headers Overview',
-                        text: 'Molior eros verto nimis nunc esse. Blandit quidem duis augue suscipit quidne te nulla ' +
-                            'persto consequat vereor. Saluto paratus tation consequat proprius feugiat abigo te eu tum ' +
-                            'incassum abico. Humo et inhibeo consequat suscipit consectetuer nullus lobortis. Accumsan ' +
-                            'os roto feugiat vel ingenium facilisi commoveo odio.'
+                        text: 'Specify any required headers below.'
                     },
                     privates: {
                         title: 'Private Files and Folders Overview',
-                        text: 'Molior eros verto nimis nunc esse. Blandit quidem duis augue suscipit quidne te nulla ' +
-                            'persto consequat vereor. Saluto paratus tation consequat proprius feugiat abigo te eu tum ' +
-                            'incassum abico. Humo et inhibeo consequat suscipit consectetuer nullus lobortis. Accumsan ' +
-                            'os roto feugiat vel ingenium facilisi commoveo odio.'
+                        text: 'Manage private folders and files below.'
                     },
                     serviceDef: {
                         title: 'Service Definition Overview',
@@ -1175,140 +1170,147 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 scope.dfSimpleHelp = {
 
                     serviceType: {
-                        title: 'Service Type Information',
-                        text: 'Text goes here'
+                        title: 'Service Type ',
+                        text: 'Select the type of service you\'re adding.'
                     },
                     apiName: {
-                        title: 'Service Api Name Information',
-                        text: 'The service name used when making API requests such as \'db\' in /rest/db.'
+                        title: 'Api Name ',
+                        text: 'Select a name for making API requests, such as \'db\' in /rest/db.'
                     },
                     name: {
-                        title: 'Service Name Information',
+                        title: 'Name ',
                         text: 'The display name or label for the service.'
                     },
                     description: {
-                        title: 'Service Description Information',
-                        text: 'Text goes here'
+                        title: 'Description ',
+                        text: 'Write a brief description of the API (optional).'
                     },
                     baseUrl: {
-                        title: 'Service Base Url Information',
-                        text: 'The base URL for the service from which all other URL\'s are derived.' +
-                            '<br/>  For example if the service API name is \'mydb\' and base URL is ' +
-                            '\'http://api.myservice.com/v1/api/\' a REST call to /rest/mydb/mytable would ' +
-                            'result in the DSP calling http://api.myservice.com/v1/api/mytable on your behalf.'
+                        title: 'Base Url ',
+                        text: 'Specify the base URL for the remote web service. For example, if you named the API \'mydb\'' +
+                            ' and the base URL is http://api.myservice.com/v1/api/, then a REST call to /rest/mydb/mytable' +
+                            ' would tell DreamFactory to call http://api.myservice.com/v1/api/mydb/mytable.'
                     },
                     userName: {
-                        title: 'Service User Name Information',
-                        text: 'Text goes here'
+                        title: 'Username ',
+                        text: 'Specify the username for the service you\'re connecting to.'
+                    },
+                    password: {
+                        title: 'Password ',
+                        text: 'Specify the password for the service you\'re connecting to.'
                     },
                     connectionString: {
-                        title: 'Service Connection String Information',
-                        text: 'Text goes here'
+                        title: 'Connection String ',
+                        text: 'Specify the connection string for the database you\'re connecting to. '
                     },
                     sqlVendor: {
-                        title: 'Service SQL Vendor Information',
-                        text: 'Text goes here'
+                        title: 'SQL Vendor ',
+                        text: 'Specify the type of database you\'re connecting to.'
                     },
                     sqlHost: {
-                        title: 'Service SQL Host Information',
-                        text: 'Text goes here'
+                        title: 'SQL Host ',
+                        text: 'Specify the database host for the database you\'re connecting to.'
                     },
                     sqlDatabaseName: {
-                        title: 'Service SQL Database Name Information',
-                        text: 'Text goes here'
+                        title: 'SQL Database Name ',
+                        text: 'Specify the name of the database you\'re connecting to.'
                     },
+
                     sfSecurityToken: {
-                        title: 'SalesForce Security Token Information',
-                        text: 'Text goes here'
+                        title: 'SalesForce Security Token ',
+                        text: 'Specify the security token for the Salesforce Org you\'re connecting to.'
                     },
                     sfApiVersion: {
-                        title: 'SalesForce APi Version Information',
-                        text: 'Text goes here'
+                        title: 'SalesForce APi Version ',
+                        text: 'Specify the version of the Salesforce API you\'re using'
                     },
                     noSqlType: {
-                        title: 'NoSQL Service Type Information',
-                        text: 'Text goes here'
+                        title: 'NoSQL Service Type ',
+                        text: 'Specify the type of database you\'re connecting to.'
                     },
                     awsAccessKey: {
-                        title: 'AWS Access Key Information',
-                        text: 'Text goes here'
+                        title: 'AWS Access Key ',
+                        text: 'Specify the AWS Access Key for the database you\'re connecting to.'
                     },
                     awsSecretKey: {
-                        title: 'AWS Secret Key Information',
-                        text: 'Text goes here'
+                        title: 'AWS Secret Key ',
+                        text: 'Specify the AWS Secret Key for the database you\'re connecting to.'
                     },
                     awsRegion: {
-                        title: 'Service Password Information',
-                        text: 'Text goes here'
+                        title: 'Service Password ',
+                        text: 'Select the AWS Region for the database you\'re connecting to.'
                     },
                     azureAcctName: {
-                        title: 'Azure Account Name Information',
-                        text: 'Text goes here'
+                        title: 'Azure Account Name ',
+                        text: 'Specify the Azure Account Name for the database you\'re connecting to.'
                     },
                     azureAcctKey: {
-                        title: 'Azure Account Key Information',
-                        text: 'Text goes here'
+                        title: 'Azure Account Key ',
+                        text: 'Specify the Azure Account Key for the database you\'re connecting to.'
                     },
                     azureDefaultPartitionKey: {
-                        title: 'Azure Partition Key Information',
-                        text: 'Text goes here'
+                        title: 'Azure Partition Key ',
+                        text: 'Specify the Azure Default Partition Key for the database you\'re connecting to.'
                     },
                     storageType: {
-                        title: 'Service Storage Type Information',
-                        text: 'Text goes here'
+                        title: 'Storage Type ',
+                        text: 'Specify the type of storage you\'re connecting to.'
                     },
                     rsApiKey: {
-                        title: 'RackSpace Api Key Information',
-                        text: 'Text goes here'
+                        title: 'RackSpace Api Key ',
+                        text: 'Specify the API Key for the storage you\'re connecting to.'
                     },
                     rsTenantName: {
-                        title: 'RackSpace Tenant Name Information',
-                        text: 'Text goes here'
+                        title: 'RackSpace Tenant Name ',
+                        text: 'Specify the Tenant Name for the storage you\'re connecting to.'
                     },
                     rsTenantRegion: {
-                        title: 'RackSpace Tenant Region Information',
-                        text: 'Text goes here'
+                        title: 'RackSpace Tenant Region ',
+                        text: 'Specify the Region for the storage you\'re connecting to.'
                     },
                     rsEndpoint: {
-                        title: 'RackSpace Endpoint/URL Information',
-                        text: 'Text goes here'
+                        title: 'RackSpace Endpoint/URL ',
+                        text: 'Specify the URL Endpoint for the storage you\'re connecting to.'
                     },
                     osApiKey: {
-                        title: 'OpenStack Api Key Information',
-                        text: 'Text goes here'
+                        title: 'OpenStack Api Key ',
+                        text: 'Specify the API Key for the storage you\'re connecting to.'
                     },
                     osTenantName: {
-                        title: 'OpenStack Tenant Name Information',
-                        text: 'Text goes here'
+                        title: 'OpenStack Tenant Name ',
+                        text: 'Specify the Tenant Name for the storage you\'re connecting to.'
                     },
                     osRegion: {
-                        title: 'OpenStack Region Information',
-                        text: 'Text goes here'
+                        title: 'OpenStack Region ',
+                        text: 'Specify the Region for the storage you\'re connecting to.'
                     },
                     emailTransportType: {
-                        title: 'Email Transport Type Information',
-                        text: 'Text goes here'
+                        title: 'Email Provider',
+                        text: 'Specify the type of provider.'
+                    },
+                    emailBaseUrl: {
+                        title: 'Email Base URL',
+                        text: 'Base URL - Specify the base URL for the email service. For example, if you named the API \'myemail\'' +
+                            ' and the base URL is http://api.bestemail.com/v1/api/, then a REST call to /rest/myemail/all ' +
+                            'would tell DreamFactory to call http://api.bestemail.com/v1/api/myemail/all.'
                     },
                     emailHost: {
-                        title: 'Email Host Information',
-                        text: 'Text goes here'
+                        title: 'Email Host ',
+                        text: 'Specify the email host.'
                     },
                     emailPort: {
-                        title: 'Email Port Information',
-                        text: 'Text goes here'
+                        title: 'Email Port ',
+                        text: 'Specify the port number.'
                     },
                     emailSecurity: {
-                        title: 'Email Security Information',
-                        text: 'Text goes here'
+                        title: 'Email Security ',
+                        text: 'Specify the type of security (e.g. TLS).'
                     },
                     emailCommand: {
-                        title: 'Email Command Information',
-                        text: 'Text goes here'
+                        title: 'Email Command ',
+                        text: 'Specify the command path for email.'
                     }
-
                 }
-
-
             }
         }
     }])
@@ -2409,7 +2411,9 @@ angular.module('dfServiceTemplates', [])
 
         $templateCache.put('_service-base-url.html',
             '<div class="form-group">' +
-            '<label>Base URL</label><df-simple-help data-options="dfSimpleHelp.baseUrl"></df-simple-help>' +
+            '<label>Base URL</label>' +
+                '<df-simple-help data-ng-if="_storageType.transport_type" data-options="dfSimpleHelp.emailBaseUrl"></df-simple-help>' +
+                '<df-simple-help data-ng-if="!_storageType.transport_type" data-options="dfSimpleHelp.baseUrl"></df-simple-help>' +
             '<input class="form-control" data-ng-model="serviceInfo.record.base_url" type="text"/>' +
                 '</div>'
         );
@@ -2580,7 +2584,7 @@ angular.module('dfServiceTemplates', [])
 
         $templateCache.put('_service-nosql-type.html',
             '<div class="form-group">' +
-            '<label>NoSQL Type</label><df-simple-help data-options="dfSimpleHelp.noSqlType"></df-simple-help>' +
+            '<label>NoSQL Vendor</label><df-simple-help data-options="dfSimpleHelp.noSqlType"></df-simple-help>' +
             '<select class="form-control" data-ng-change="_renderAdditionalFields(serviceInfo.record.storage_type)" data-ng-options="option.value as option.name for option in hcv.NoSQLOptions" data-ng-model="serviceInfo.record.storage_type"></select>' +
                 '</div>'
         );
@@ -2605,7 +2609,7 @@ angular.module('dfServiceTemplates', [])
 
         $templateCache.put('_service-aws-region.html',
             '<div class="form-group">' +
-            '<label>Select Region</label><df-simple-help data-options="dfSimpleHelp.awsRegion"></df-simple-help>' +
+            '<label>Region</label><df-simple-help data-options="dfSimpleHelp.awsRegion"></df-simple-help>' +
             '<select class="form-control" data-ng-options="region.value as region.name for region in hcv.awsRegions" data-ng-model="_storageType.region"></select>' +
                 '</div>'
         );

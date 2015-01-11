@@ -31,6 +31,14 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                     templateUrl: MODSYSCONFIG_ASSET_PATH + 'views/main.html',
                     controller: 'SystemConfigurationCtrl',
                     resolve: {
+                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
+
+                            if (dfApplicationData.initInProgress) {
+
+                                return dfApplicationData.initDeferred.promise;
+                            }
+                        }],
+
                         checkCurrentUser: ['UserDataService', '$location', function (UserDataService, $location) {
 
                             var currentUser = UserDataService.getCurrentUser();
@@ -277,7 +285,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
             }
     }])
 
-    .directive('dreamfactorySystemInfo', ['MODSYSCONFIG_ASSET_PATH', 'DSP_URL', '$http', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, DSP_URL, $http, dfNotify) {
+    .directive('dreamfactorySystemInfo', ['MODSYSCONFIG_ASSET_PATH', 'DSP_URL', 'APP_VERSION', '$http', 'dfNotify', function (MODSYSCONFIG_ASSET_PATH, DSP_URL, APP_VERSION, $http, dfNotify) {
 
         return {
             restrict: 'E',

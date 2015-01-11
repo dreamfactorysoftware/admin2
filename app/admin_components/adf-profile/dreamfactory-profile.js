@@ -11,6 +11,13 @@ angular.module('dfProfile', ['ngRoute', 'dfUtility', 'dfUserManagement', 'dfAppl
                     templateUrl: MOD_PROFILE_ASSET_PATH + 'views/main.html',
                     controller: 'ProfileCtrl',
                     resolve: {
+                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
+
+                            if (dfApplicationData.initInProgress) {
+
+                                return dfApplicationData.initDeferred.promise;
+                            }
+                        }],
 
                         checkProfileRoute: ['dfApplicationData', 'SystemConfigDataService', '$location', 'dfNotify', function (dfApplicationData, SystemConfigDataService, $location, dfNotify) {
 

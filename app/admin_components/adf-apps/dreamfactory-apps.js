@@ -15,6 +15,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     templateUrl: MOD_APPS_ASSET_PATH + 'views/main.html',
                     controller: 'AppsCtrl',
                     resolve: {
+                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
+
+                            if (dfApplicationData.initInProgress) {
+
+                                return dfApplicationData.initDeferred.promise;
+                            }
+                        }],
 
                         checkCurrentUser: ['UserDataService', '$location', function (UserDataService, $location) {
 

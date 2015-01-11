@@ -14,10 +14,16 @@ angular.module('dfDashboard', ['dfUtility'])
                     templateUrl: MOD_DASHBOARD_ASSET_PATH + 'views/main.html',
                     controller: 'DashboardCtrl',
                     resolve: {
-                        checkCurrentUser: ['UserDataService', '$location', function (UserDataService, $location) {
+                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
+
+                            if (dfApplicationData.initInProgress) {
+
+                                return dfApplicationData.initDeferred.promise;
+                            }
+                        }],
+                        checkCurrentUser: ['$rootScope', 'UserDataService', '$location', function ($rootScope, UserDataService, $location) {
 
                             var currentUser = UserDataService.getCurrentUser();
-
 
                             // If there is no currentUser and we don't allow guest users
                             if (!currentUser) {
@@ -34,11 +40,7 @@ angular.module('dfDashboard', ['dfUtility'])
                 });
         }])
 
-    .run(['DSP_URL', '$http', function (DSP_URL, $http) {
-
-    }])
-
-    .controller('DashboardCtrl', ['$scope', function($scope) {
+    .controller('DashboardCtrl', ['$scope', '$rootScope', 'dfApplicationData',  function($scope, $rootScope, dfApplicationData) {
 
 
         $scope.$parent.title = 'Quickstart';

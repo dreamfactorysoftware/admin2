@@ -38,6 +38,9 @@ angular
         'dfPackageManager'
     ])
 
+    // Set application version number
+    .constant('APP_VERSION', '0.9.0')
+
     // Set global url for this application
     .constant('DSP_URL', '')
 

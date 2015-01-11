@@ -384,7 +384,7 @@ angular.module('dreamfactoryApp')
     // We inject $location because we'll want to update our location on a successful
     // login and the UserEventsService from our DreamFactory User Management Module to be able
     // to respond to events generated from that module
-    .controller('LoginCtrl', ['$scope', '$location', '$timeout', 'UserEventsService', 'dfApplicationData', 'dfApplicationPrefs', 'SystemConfigDataService', 'dfNotify', function($scope, $location, $timeout, UserEventsService, dfApplicationData, dfApplicationPrefs, SystemConfigDataService, dfNotify) {
+    .controller('LoginCtrl', ['dfAvailableApis', '$scope', '$location', '$timeout', 'UserEventsService', 'dfApplicationData', 'dfApplicationPrefs', 'SystemConfigDataService', 'dfNotify', function(dfAvailableApis, $scope, $location, $timeout, UserEventsService, dfApplicationData, dfApplicationPrefs, SystemConfigDataService, dfNotify) {
 
         // Login options array
         $scope.loginOptions = {
@@ -445,18 +445,24 @@ angular.module('dreamfactoryApp')
                 $timeout(function () {
 
                     // Set the apis we want
-                    options.apis = ['service', 'app', 'role', 'system','user', 'config', 'email_template', 'app_group'];
+                    options.apis = dfAvailableApis.getApis().apis;
 
-                    if (!SystemConfigDataService.getSystemConfig().is_hosted) {
-                        options.apis.push('event')
+                    if (SystemConfigDataService.getSystemConfig().is_hosted) {
+                        options.apis = dfAvailableApis.getApis().addEventApi().apis;
                     }
 
-                    // Init the app
-                    dfApplicationData.init(options);
+                    console.log(options.apis);
 
-                    // Change our app location back to the home page
-                    $location.url('/quickstart');
-//                    $location.url('/dashboard');
+                    // Init the app
+                    dfApplicationData.init(options.apis).then(
+                        function () {
+
+                            // Change our app location back to the home page
+                            $location.url('/quickstart');
+                            // $location.url('/dashboard');
+                        }
+                    );
+
                 }, 250);
             }
 
@@ -473,6 +479,7 @@ angular.module('dreamfactoryApp')
                 $location.url('/launchpad');
             }
         });
+
 
 
     }])

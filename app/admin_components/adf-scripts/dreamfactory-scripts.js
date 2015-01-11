@@ -29,6 +29,14 @@ angular.module('dfScripts', ['ngRoute', 'dfUtility'])
                     templateUrl: MODSCRIPTING_ASSET_PATH + 'views/main.html',
                     controller: 'ScriptsCtrl',
                     resolve: {
+                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
+
+                            if (dfApplicationData.initInProgress) {
+
+                                return dfApplicationData.initDeferred.promise;
+                            }
+                        }],
+
                         checkCurrentUser: ['UserDataService', '$location', function (UserDataService, $location) {
 
                             var currentUser = UserDataService.getCurrentUser();

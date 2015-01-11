@@ -30,6 +30,14 @@ angular.module('dfApiDocs', ['ngRoute', 'dfUtility'])
                     templateUrl: MOD_APIDOCS_ASSET_PATH + 'views/main.html',
                     controller: 'ApiDocsCtrl',
                     resolve: {
+                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
+
+                            if (dfApplicationData.initInProgress) {
+
+                                return dfApplicationData.initDeferred.promise;
+                            }
+                        }],
+
                         checkCurrentUser: ['dfRouteChecker', function (dfRouteChecker) {
                             dfRouteChecker();
                         }]

@@ -1919,7 +1919,7 @@ angular.module('dfUtility', ['dfApplication'])
     }])
 
     // Init loading screen
-    .directive('dfMainLoading', ['MOD_UTILITY_ASSET_PATH', 'dfApplicationData', '$interval', function (MOD_UTILITY_ASSET_PATH, dfApplicationData, $interval) {
+    .directive('__dfMainLoading', ['MOD_UTILITY_ASSET_PATH', 'dfApplicationData', '$interval', function (MOD_UTILITY_ASSET_PATH, dfApplicationData, $interval) {
 
         return {
             restrict: 'E',
@@ -2036,7 +2036,10 @@ angular.module('dfUtility', ['dfApplication'])
                     $(elem).find('small').html(scope.text.module);
                     scope._setProgressBar(0);
 
-                    $(elem).children().show();
+                    $.each($(elem).children(), function (index, value) {
+
+                        $(value).show();
+                    });
                 };
 
                 scope._dfmlUpdate = function () {
@@ -2077,7 +2080,78 @@ angular.module('dfUtility', ['dfApplication'])
         }
     }])
 
+    // Init loading screen
+    .service('dfMainLoading', ['$timeout', '$window', function ($timeout, $window) {
 
+        var appendTo = 'dreamfactoryApp';
+        var containerName = 'df-main-loading-container'
+        var title = 'df-loading-title';
+
+        var template = '<div id="' + containerName + '" class="col-xs-10 col-sm-6 col-md-4 col-xs-offset-1 col-sm-offset-3 col-md-offset-4 df-main-loading df-auth-container">' +
+                            '<div class="panel panel-default">' +
+                                '<div class="panel-heading">' +
+                            '<span id="' + title + '"></span>&nbsp;<span id="loading-dots"></span>' +
+                                '</div>' +
+                                '<div class="panel-body">' +
+                                    '<!--<h1 class="df-main-loading">{{text.operation}}</h1>-->' +
+                                    '<p></p>' +
+                                    '<div style="clear: both"></div>' +
+                                    '<div class="progress">' +
+                                        '<div class="progress-bar df-main-loading-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" >' +
+                                            '<span class="sr-only"></span>' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>';
+
+
+        function calcPercent (totalApis) {
+
+            return (100 / totalApis);
+        }
+
+        function setProgressBar (percent) {
+
+            $('.progress-bar').css({'width' :  percent + '%'});
+        };
+
+
+        return {
+
+            percentIncrease: 0,
+            currentPercent: 0,
+
+            start: function (totalApis) {
+
+
+                this.percentIncrease = calcPercent(totalApis);
+                $('#' + appendTo).append(template);
+
+            },
+
+            update: function (apiName) {
+
+                this.currentPercent += this.percentIncrease;
+                setProgressBar(this.currentPercent);
+                $('#' + title).html(apiName.substr(0,1).toUpperCase() + apiName.substr(1, apiName.length));
+
+
+            },
+
+
+            finish: function (apiName) {
+
+                this.currentPercent += this.percentIncrease;
+                setProgressBar(this.currentPercent);
+
+                $('#' + containerName).remove();
+                this.currentPercent = 0;
+
+
+            }
+        }
+    }])
 
     // Pop up login screen for session time outs
     .directive('dfPopupLogin', ['MOD_UTILITY_ASSET_PATH', '$compile', '$location', 'UserEventsService', function (MOD_UTILITY_ASSET_PATH, $compile, $location, UserEventsService) {
@@ -2131,6 +2205,28 @@ angular.module('dfUtility', ['dfApplication'])
                     $('#df-login-frame').remove();
                     $location.url('/logout');
                 });
+            }
+        }
+    }])
+
+    // Display App Version
+    .directive('dfCopyrightFooter', ['MOD_UTILITY_ASSET_PATH', 'APP_VERSION', function (MOD_UTILITY_ASSET_PATH, APP_VERSION) {
+
+        return {
+
+            // restrict to element tag
+            restrict: 'E',
+
+            // Shared scope
+            scope: false,
+
+            // duh
+            templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-copyright-footer.html',
+
+            link: function (scope, elem, attrs) {
+
+                scope.version = APP_VERSION;
+
             }
         }
     }])
@@ -2866,8 +2962,6 @@ angular.module('dfUtility', ['dfApplication'])
             }
         }
     }])
-
-
 
     // Various Filters.  All used in dfTable.  Possibly elsewhere.
     // I'll find out if so.

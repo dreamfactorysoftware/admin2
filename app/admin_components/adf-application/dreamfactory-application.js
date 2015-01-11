@@ -1,44 +1,69 @@
 'use strict';
 
+
+
 angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
     // This whole service is basically a facade for our bootstrapped app data.
     // It provides accessor functions that will invoke the proper service
     // for the manipulation of application data
-    .run(['dfApplicationData', 'dfApplicationPrefs', 'dfSessionStorage', 'UserDataService', 'SystemConfigDataService', function(dfApplicationData, dfApplicationPrefs, dfSessionStorage, UserDataService, SystemConfigDataService) {
+    .run(['$q', 'dfApplicationData', 'dfApplicationPrefs', 'dfAvailableApis', 'dfSessionStorage', 'UserDataService', 'SystemConfigDataService', function($q, dfApplicationData, dfApplicationPrefs, dfAvailableApis, dfSessionStorage, UserDataService, SystemConfigDataService) {
+
 
         var SystemConfig = SystemConfigDataService.getSystemConfigFromServerSync();
+
 
         SystemConfigDataService.setSystemConfig(SystemConfig);
 
 
         if (!dfSessionStorage.getItem('dfApplicationObj') && UserDataService.getCurrentUser()) {
 
-            var options = {
-                apis: ['service', 'app', 'role', 'system','user', 'config', 'email_template', 'app_group']
-            };
+            dfApplicationData.initInProgress = true;
+            dfApplicationData.initDeferred = $q.defer();
 
-            if (!SystemConfig.is_hosted) {
-                options.apis.push('event')
+            if (SystemConfig.is_hosted) {
+
+                // reload app data
+                dfApplicationData.init(dfAvailableApis.getApis().addEventApi().apis).then(
+                    function () {
+                        dfApplicationData.initDeferred.resolve();
+                        dfApplicationData.initInProgress = false;
+                    }
+                )
             }
-
-
-            // reload app data
-            dfApplicationData.init(options);
+            else {
+                dfApplicationData.init(dfAvailableApis.getApis().apis).then(
+                    function () {
+                        dfApplicationData.initDeferred.resolve();
+                        dfApplicationData.initInProgress = false;
+                    }
+                )
+            }
 
         }
         else if (dfSessionStorage.getItem('dfApplicationObj') && UserDataService.getCurrentUser()) {
 
-            var options = {
-                apis: ['service', 'app', 'role', 'system','user', 'config', 'email_template', 'app_group']
-            };
+            dfApplicationData.initInProgress = true;
+            dfApplicationData.initDeferred = $q.defer();
 
-            if (!SystemConfig.is_hosted) {
-                options.apis.push('event')
+            if (SystemConfig.is_hosted) {
+
+                // reload app data
+                dfApplicationData.init(dfAvailableApis.getApis().addEventApi().apis).then(
+                    function () {
+                        dfApplicationData.initDeferred.resolve();
+                        dfApplicationData.initInProgress = false;
+                    }
+                )
             }
-
-            // reload app data
-            dfApplicationData.init(options);
+            else {
+                dfApplicationData.init(dfAvailableApis.getApis().apis).then(
+                    function () {
+                        dfApplicationData.initDeferred.resolve();
+                        dfApplicationData.initInProgress = false;
+                    }
+                )
+            }
         }
         else if (!dfSessionStorage.getItem('dfApplicationObj') && !UserDataService.getCurrentUser()) {
 
@@ -56,10 +81,9 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             // screen was refreshed.  reload app obj from session storage
             dfApplicationData.setApplicationObj(angular.fromJson(dfSessionStorage.getItem('dfApplicationObj')));
         }
-
     }])
 
-    .service('dfApplicationData', ['dfObjectService', 'UserDataService', 'dfSystemData', 'dfSessionStorage', 'dfApplicationPrefs', '$rootScope', '$location', function(dfObjectService, UserDataService, dfSystemData, dfSessionStorage, dfApplicationPrefs, $rootScope, $location) {
+    .service('dfApplicationData', ['$q', 'dfObjectService', 'UserDataService', 'dfSystemData', 'dfSessionStorage', 'dfApplicationPrefs', '$rootScope', '$location', 'dfMainLoading', function($q, dfObjectService, UserDataService, dfSystemData, dfSessionStorage, dfApplicationPrefs, $rootScope, $location, dfMainLoading) {
 
 
         var dfApplicationObj = {
@@ -131,7 +155,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
                 dfMainLoadData.numElemsToLoad = options.apis.length;
                 dfMainLoadData.loadData.module = 'Current User';
-                $rootScope.$broadcast('dfml:start');
+
+                // $rootScope.$broadcast('dfml:start');
+                dfMainLoading.start();
+
                 var i = 0,
                     authorized = true;
 
@@ -149,7 +176,8 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     // Set loading screen
                     dfMainLoadData.loadData.module = apiName;
                     dfMainLoadData.loadData.percent += parseInt(100/dfMainLoadData.numElemsToLoad);
-                    $rootScope.$broadcast('dfml:update');
+                    // $rootScope.$broadcast('dfml:update');
+                    dfMainLoading.update();
 
 
 
@@ -234,7 +262,136 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 }
             }
 
-            $rootScope.$broadcast('dfml:finish');
+            // $rootScope.$broadcast('dfml:finish');
+
+            dfMainLoading.finish();
+        }
+
+        // Loads modules data and builds application object from async calls
+        function _asyncInit(options) {
+
+            var result,
+                api = {
+                    api_name: null,
+                    params: {}
+                };
+
+            // Load our current user into the application obj
+            dfApplicationObj.currentUser = UserDataService.getCurrentUser();
+
+            // Are we an admin
+            if (dfApplicationObj.currentUser.is_sys_admin) {
+
+                // Get admin prefs
+                var result = _getAdminPrefs();
+
+                result = angular.fromJson(result.response);
+
+                // were they retrieved successfully
+                if (result !== null && result.hasOwnProperty('adminPreferences') && result.adminPreferences !== null) {
+
+                    // store them for following calls
+                    dfApplicationPrefs.setPrefs(result.adminPreferences);
+                }
+            }
+
+            if (dfApplicationObj.currentUser.is_sys_admin) {
+
+                var promises = [],
+                    defer = $q.defer();
+
+                var totalApis = options.length;
+
+
+                dfMainLoading.start(totalApis);
+
+                angular.forEach(options, function (apiName) {
+
+                    var api = {
+                        api_name: apiName,
+                        params: {}
+                    };
+
+                    api.params = dfApplicationPrefs.getPrefs().data[apiName];
+
+
+                    // check for and remove null value params
+                    _checkParams(api);
+
+                    // This is a special case and could be handled better
+                    // do we just want a list of system components
+                    if (api.api_name === 'system') {
+
+                        // set the name to empty string because already build the
+                        // url with 'system' in it.
+                        api.api_name = '';
+                    }
+
+
+
+
+                    promises.push(dfSystemData.getSystemApisFromServer(api).then(
+
+                        function (result) {
+
+                            switch(apiName) {
+
+                                case 'system':
+
+                                    // Set our application object system prop
+                                    dfApplicationObj['apis']['system'] = {};
+                                    dfApplicationObj.apis.system['record'] = result.data.resource;
+
+                                    break;
+
+                                case 'config':
+
+                                    // Set our application object config prop
+                                    dfApplicationObj['apis']['config'] = {};
+
+                                    // This returns an object so store in an array to mimick other apis
+                                    dfApplicationObj.apis.config['record'] = new Array(result.data);
+
+                                    break;
+
+                                default:
+
+                                    dfApplicationObj['apis'][apiName] = result.data;
+                            }
+
+                            // Set the loading screen
+                            dfMainLoading.update(apiName);
+                        },
+                        function (reject) {
+
+                            if (reject.readyState == 4 && (reject.status === 401 || reject.status === 403)) {
+
+                                // redirect to logout
+                                // it has all the logic to handle this.
+                                $location.url('/logout');
+                            }
+                        }
+                    ));
+                });
+
+
+
+                $q.all(promises).then(
+                    function () {
+
+                        // All apis finished loading
+                        dfMainLoading.finish();
+
+                        // Set our bootstrapped application object into sessionStorage
+                        dfSessionStorage.setItem('dfApplicationObj', angular.toJson(dfApplicationObj, true));
+
+                        defer.resolve();
+                    }
+                );
+
+                return defer.promise;
+
+            }
         }
 
         // Resets the dfApplicationObj to initial state
@@ -347,7 +504,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             return UserDataService.getUserSetting('adminPreferences', true);
         }
-
 
         // Insert data into local model dfApplicationObj
         function __insertApiData (api, dataObj) {
@@ -505,12 +661,16 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
         return {
 
+            initInProgress: false,
+            initDeferred: null,
+
             // Public function to init the app
             init: function(options) {
 
                 options = options || [];
 
-                _init(options);
+                return _asyncInit(options);
+                // _init(options);
             },
 
             // Returns app obj that is stored in the service
@@ -699,13 +859,16 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
         }
     }])
 
-    .service('dfSystemData', ['XHRHelper', 'DSP_URL', '$resource', 'dfObjectService', function(XHRHelper, DSP_URL, $resource, dfObjectService) {
+    .service('dfSystemData', ['$http', 'XHRHelper', 'DSP_URL', '$resource', 'dfObjectService', function($http, XHRHelper, DSP_URL, $resource, dfObjectService) {
 
 
         // Private synchronous function to retrieve services when app is bootstrapped
         function _getServiceDataFromServerSync(requestDataObj) {
 
             var xhr = XHRHelper.ajax(requestDataObj);
+
+
+            var xhr = $.ajax(requestDataObj);
 
             // Check response
             if (xhr.readyState == 4 && xhr.status == 200) {
@@ -734,6 +897,16 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 };
 
                 return _getServiceDataFromServerSync(requestDataObj);
+            },
+
+            getSystemApisFromServer: function (api) {
+
+                return $http({
+                    url: DSP_URL + '/rest/system/' + api.api_name,
+                    method: 'GET',
+                    params: api.params
+                });
+
             },
 
 
@@ -870,6 +1043,24 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             setPrefs: function (data) {
 
                 prefs = data;
+            }
+        }
+    }])
+
+    .service('dfAvailableApis', [function () {
+
+
+        return {
+
+            apis: ['system', 'config', 'service', 'app', 'role', 'user', 'email_template', 'app_group'],
+
+            getApis: function () {
+                return this;
+            },
+
+            addEventApi: function () {
+                this.apis.push('event');
+                return this;
             }
         }
     }])

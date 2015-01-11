@@ -8542,23 +8542,43 @@ body {
   display: none;
 }
 
-/* line 1, ../sass/partials/_df-main-loading.scss */
-.df-main-loading {
-  display: none;
+/* line 131, ../sass/partials/_base.scss */
+#df-copyright-footer {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  right: 0;
+  z-index: 1031;
+  color: #d5d5d5;
+  background: #888;
 }
-/* line 5, ../sass/partials/_df-main-loading.scss */
-.df-main-loading h1 {
+
+/* line 141, ../sass/partials/_base.scss */
+.df-footer-text {
+  padding: 10px;
+  display: inline-block;
+  font-size: 12px;
+}
+@media screen and (max-width: 992px) {
+  /* line 141, ../sass/partials/_base.scss */
+  .df-footer-text {
+    font-size: 10px;
+  }
+}
+
+/* line 4, ../sass/partials/_df-main-loading.scss */
+#df-main-loading-container h1 {
   color: #222222;
   display: inline-block;
 }
-/* line 10, ../sass/partials/_df-main-loading.scss */
-.df-main-loading p {
+/* line 9, ../sass/partials/_df-main-loading.scss */
+#df-main-loading-container p {
   color: #95a5a6;
   font-size: 24px;
   display: inline-block;
 }
 
-/* line 18, ../sass/partials/_df-main-loading.scss */
+/* line 17, ../sass/partials/_df-main-loading.scss */
 .df-main-loading-bar {
   background: #7b8a8b;
   color: #7b8a8b;

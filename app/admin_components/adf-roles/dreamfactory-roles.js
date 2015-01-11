@@ -11,6 +11,14 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     templateUrl: MOD_ROLES_ASSET_PATH + 'views/main.html',
                     controller: 'RolesCtrl',
                     resolve: {
+                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
+
+                            if (dfApplicationData.initInProgress) {
+
+                                return dfApplicationData.initDeferred.promise;
+                            }
+                        }],
+
                         checkCurrentUser: ['UserDataService', '$location', function (UserDataService, $location) {
 
                             var currentUser = UserDataService.getCurrentUser();

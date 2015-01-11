@@ -8,6 +8,14 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     templateUrl: MOD_PACKAGE_MANAGER_ASSET_PATH + 'views/main.html',
                     controller: 'PackageCtrl',
                     resolve: {
+                        checkAppObj:['dfApplicationData', function (dfApplicationData) {
+
+                            if (dfApplicationData.initInProgress) {
+
+                                return dfApplicationData.initDeferred.promise;
+                            }
+                        }],
+
                         checkCurrentUser: ['UserDataService', '$location', function (UserDataService, $location) {
 
                             var currentUser = UserDataService.getCurrentUser();
