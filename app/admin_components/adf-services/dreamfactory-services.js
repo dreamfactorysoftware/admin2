@@ -207,6 +207,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope._resetServiceDetails = function () {
 
+
                     if (scope.newService) {
 
                         scope.service = new Service();
@@ -217,7 +218,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
 
                     // reset tabs
-                    angular.element('#basic-tab').trigger('click');
+                    angular.element('#info-tab').trigger('click');
+
                 };
 
 

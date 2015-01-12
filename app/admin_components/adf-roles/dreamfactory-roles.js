@@ -150,6 +150,10 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 scope.services = dfApplicationData.getApiData('service');
                 scope.system = dfApplicationData.getApiData('system');
 
+                // add All component to array of system components
+                // because it's not sent to us from the server
+                scope.system.unshift({label: 'All', name: '*'});
+
                 // PUBLIC API
                 scope.saveRole = function() {
 
@@ -654,7 +658,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         record: {
                             "verb_mask": 0,
                             "requestor_mask": 1,
-                            "component": scope.system[0].name || null,
+                            "component": scope.system[scope.system.length -1].name || null,
                             "filters": [],
                             "filter_op": "AND",
                             "show_filters": false
