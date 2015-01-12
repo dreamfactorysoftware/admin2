@@ -73,13 +73,17 @@
                     </div>
 
                     <!-- Your app url -->
-<!--
-                    <div class="form-group" data-ng-if="!newApp && app.record.is_url_external == 0">
+
+                    <div class="form-group" data-ng-if="app.record.is_url_external == 0">
                         <div class="alert alert-info">
-                            <p>Your URL will be: {{currentServer}}{{storageContainers[app.record.storage_service_id].name}}/{{app.record.storage_container}}/{{app.record.api_name}}<span>{{app.record.url}}</span></p>
+                            <p><i class="fa fa-fw fa-cloud">&nbsp;</i>Your URL will be: {{currentServer}}{{storageContainers[app.record.storage_service_id].name}}/{{app.record.storage_container}}/{{app.record.api_name}}<span>{{app.record.url}}</span></p>
                         </div>
-                    </div>-->
+                    </div>
+
+
                 </div>
+
+
                 <div class="col-md-6">
                     <!-- Assign a Role -->
                     <div class="form-group">

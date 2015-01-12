@@ -1052,14 +1052,14 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
         return {
 
-            apis: ['system', 'config', 'service', 'app', 'role', 'user', 'email_template', 'app_group'],
+            apis: ['system', 'config', 'service', 'app', 'role', 'user', 'email_template', 'app_group', 'event'],
 
             getApis: function () {
                 return this;
             },
 
             addEventApi: function () {
-                this.apis.push('event');
+                // this.apis.push('event');
                 return this;
             }
         }

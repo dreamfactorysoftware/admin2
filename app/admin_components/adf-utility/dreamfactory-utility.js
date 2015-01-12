@@ -2956,6 +2956,18 @@ angular.module('dfUtility', ['dfApplication'])
         }
     }])
 
+    // ServerInfo Service
+    .service('dfServerInfoService', ['$window', function ($window) {
+
+        return {
+
+            currentServer: function () {
+                return $window.location.origin;
+            }
+        }
+
+    }])
+
     // Various Filters.  All used in dfTable.  Possibly elsewhere.
     // I'll find out if so.
     .filter('orderAndShowSchema', [function () {

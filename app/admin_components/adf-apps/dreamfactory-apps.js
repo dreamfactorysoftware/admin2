@@ -93,7 +93,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
         });
     }])
 
-    .directive('dfAppDetails', ['MOD_APPS_ASSET_PATH', '$location', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', function(MOD_APPS_ASSET_PATH, $location, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService) {
+    .directive('dfAppDetails', ['MOD_APPS_ASSET_PATH', '$location', 'dfServerInfoService', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', function(MOD_APPS_ASSET_PATH, $location, dfServerInfoService, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService) {
 
         return {
 
@@ -105,6 +105,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
             templateUrl: MOD_APPS_ASSET_PATH + 'views/df-app-details.html',
             link: function (scope, elem, attrs) {
 
+                var getLocalFileStorageServiceId = function () {
+
+                    var a = dfApplicationData.getApiData('service', {type: 'Local File Storage'});
+
+
+                    return  a && a.length ? a[0].id : null;
+                }
 
                 var App = function  (appData) {
 
@@ -114,7 +121,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         is_url_external: '0',
                         api_name: '',
                         description: '',
-                        storage_service_id: null,
+                        storage_service_id: getLocalFileStorageServiceId(),
                         storage_container: 'applications',
                         launch_url: '',
                         url: '',
@@ -173,13 +180,11 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 };
 
 
+                scope.currentServer = dfServerInfoService.currentServer();
+
                 scope.app = null;
 
                 scope.roles = null;
-
-                if (scope.newApp) {
-                    scope.app = new App();
-                }
 
                 // Radio button options
                 scope.locations = [
@@ -203,6 +208,9 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 scope.storageServices = dfApplicationData.getApiData('service', {type: 'Local File Storage,File Storage'});
                 scope.storageContainers = [];
 
+                if (scope.newApp) {
+                    scope.app = new App();
+                }
 
                 // PUBLIC API
                 scope.saveApp = function () {

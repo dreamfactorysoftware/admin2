@@ -469,9 +469,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 tempObj[serviceData.name] = new Service(serviceData);
             });
 
-
-
-            // console.log($scope.schemaManagerData);
         });
 
         var watchServiceComponents = $scope.$watchCollection(function() {return dfApplicationData.getApiData('service', {type: 'Local SQL DB,Remote SQL DB'})}, function (newValue, oldValue) {
@@ -689,6 +686,15 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                     })
                 };
 
+                scope._deleteFieldFromTableOnServer = function (requestDataObj) {
+
+                    return $http({
+                        method: 'DELETE',
+                        url: DSP_URL + '/rest/' + requestDataObj.path
+                    })
+
+                }
+
                 scope._validateJSON = function () {
 
                     try {
@@ -744,16 +750,51 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope._deleteField = function (field) {
 
-                    var i = 0;
-                    while(i < scope.table.record.field.length) {
+                    var requestDataObj = {
 
-                        if (scope.table.record.field[i].name === field.name) {
-                            scope.table.record.field.splice(i, 1);
+                        path: scope.tableData.currentService.api_name + '/_schema/' + scope.table.record.name + '/' + field.name
+                    };
+
+                    scope._deleteFieldFromTableOnServer(requestDataObj).then (
+                        function (result) {
+
+                            var i = 0;
+                            while(i < scope.table.record.field.length) {
+
+                                if (scope.table.record.field[i].name === field.name) {
+                                    scope.table.record.field.splice(i, 1);
+                                    break;
+                                }
+
+                                i++
+                            }
+
+                            scope.table.recordCopy = angular.copy(scope.table.record);
+
+                            var messageOptions = {
+                                module: 'Schema',
+                                type: 'success',
+                                provider: 'dreamfactory',
+                                message: 'Field deleted.'
+                            }
+
+                            dfNotify.success(messageOptions);
+
+                        },
+                        function (reject) {
+
+
+                            var messageOptions = {
+                                module: 'Schema',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: reject
+                            }
+
+                            dfNotify.error(messageOptions);
+
                         }
-
-                        i++
-                    }
-
+                    )
                 };
 
                 scope._closeTable = function () {
@@ -927,7 +968,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                 // WATCHERS
                 var watchTableData = scope.$watch('tableData', function (newValue, oldValue) {
 
-
                     if (newValue === null) return;
 
                     scope.table = newValue.__dfUI.newTable ? new Table() : new Table(newValue.record);
@@ -942,7 +982,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope.$on('update:managedtable', function (e) {
 
-                    scope.table = new Table(scope.table.record);
+                    // scope.table = new Table(scope.table.record);
 
                 })
             }
@@ -1137,6 +1177,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 // WATCHERS
                 var watchFieldData = scope.$watch('fieldData', function(newValue, oldValue) {
+
 
                     if (!newValue) return;
 
