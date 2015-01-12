@@ -2116,7 +2116,6 @@ angular.module('dfUtility', ['dfApplication'])
             $('.progress-bar').css({'width' :  percent + '%'});
         };
 
-
         return {
 
             percentIncrease: 0,
@@ -2124,19 +2123,15 @@ angular.module('dfUtility', ['dfApplication'])
 
             start: function (totalApis) {
 
-
                 this.percentIncrease = calcPercent(totalApis);
                 $('#' + appendTo).append(template);
-
             },
 
             update: function (apiName) {
 
                 this.currentPercent += this.percentIncrease;
                 setProgressBar(this.currentPercent);
-                $('#' + title).html(apiName.substr(0,1).toUpperCase() + apiName.substr(1, apiName.length));
-
-
+                $('#' + title).html(apiName.substr(0,1).toUpperCase() + apiName.substr(1, apiName.length).split('_').join(' '));
             },
 
 
@@ -2147,8 +2142,6 @@ angular.module('dfUtility', ['dfApplication'])
 
                 $('#' + containerName).remove();
                 this.currentPercent = 0;
-
-
             }
         }
     }])
@@ -2857,9 +2850,10 @@ angular.module('dfUtility', ['dfApplication'])
 
                 switch(dfApplicationPrefs.getPrefs().application.notificationSystem.error) {
 
-
                     case 'pnotify':
-                        pnotify(parseError(options, 'message'));
+
+                        options.message = parseError(options, 'message');
+                        pnotify(options);
                         break;
                     case 'browserAlert':
                         alert(parseError(options, 'message'));
@@ -2921,7 +2915,6 @@ angular.module('dfUtility', ['dfApplication'])
                     default:
                         return confirm(msg);
                 }
-
             },
 
             alert: function (msg) {

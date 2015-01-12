@@ -671,7 +671,6 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
 
                 // PRIVATE API
-
                 scope._saveTableToServer = function (requestDataObj) {
 
                     return $http({

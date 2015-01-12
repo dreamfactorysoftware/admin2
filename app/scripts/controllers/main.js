@@ -451,8 +451,6 @@ angular.module('dreamfactoryApp')
                         options.apis = dfAvailableApis.getApis().addEventApi().apis;
                     }
 
-                    console.log(options.apis);
-
                     // Init the app
                     dfApplicationData.init(options.apis).then(
                         function () {
