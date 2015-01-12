@@ -711,6 +711,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
 
+
                 scope._dsnToFields = function (dsn) {
 
 
@@ -975,6 +976,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                                 ], true);
                             break;
 
+
                         default:
                             scope._buildFieldSet(
                                 null, true);
@@ -982,7 +984,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
 
                 };
-
 
                 scope._renderServiceFields = function (serviceType) {
 
@@ -1002,7 +1003,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                                     'remote-web-service-cache'
                                 ]);
 
-                            scope._renderAdditionalFields(scope.serviceInfo.record.storage_type);
+                            scope.serviceInfo.record.storage_type = null;
 
                             break;
 
@@ -1130,13 +1131,12 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
                 };
 
-
                 var watchEmailProvider = scope.$watch('_storageType.transport_type', function (newValue, oldValue) {
 
                     if (!newValue) return false;
                     scope._renderAdditionalEmailFields();
-                });
 
+                });
 
                 // Watch the service for changes.
                 var watchService = scope.$watch('service', function (newValue, oldValue) {
@@ -1159,14 +1159,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 });
 
-
                 scope.$on('$destroy', function (e) {
 
                     watchService();
                     watchEmailProvider();
                 });
-
-
 
                 // HELP
                 scope.dfSimpleHelp = {
@@ -2153,10 +2150,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             var Email = function (data) {
 
                 var _new = {
-                    transport_type: '',
+                    transport_type: 'default',
                     host: null,
                     port: null,
-                    security: null,
+                    security: 'SSL',
                     command: null
                 };
 
@@ -2187,7 +2184,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 else {
                     return _new;
                 }
-
             }
 
             var LocalFileStorage = function (data) {
@@ -2521,7 +2517,9 @@ angular.module('dfServiceTemplates', [])
         $templateCache.put('_service-sql-vendor.html',
             '<div data-ng-hide="!newService" class="form-group">' +
             '<label>SQL Vendor</label><df-simple-help data-options="dfSimpleHelp.sqlVendor"></df-simple-help>' +
-            '<select class="form-control" data-ng-model="_storageType.prefix" data-ng-change="_updateDsn()"  data-ng-options="server.prefix as server.name for server in hcv.sqlVendors"></select>' +
+            '<select class="form-control" data-ng-model="_storageType.prefix" data-ng-change="_updateDsn()"  data-ng-options="server.prefix as server.name for server in hcv.sqlVendors">' +
+                '<option value="">-- Select Vendor --</option>' +
+                '</select>' +
             '</div>'
         );
 
@@ -2587,7 +2585,9 @@ angular.module('dfServiceTemplates', [])
         $templateCache.put('_service-nosql-type.html',
             '<div class="form-group">' +
             '<label>NoSQL Vendor</label><df-simple-help data-options="dfSimpleHelp.noSqlType"></df-simple-help>' +
-            '<select class="form-control" data-ng-change="_renderAdditionalFields(serviceInfo.record.storage_type)" data-ng-options="option.value as option.name for option in hcv.NoSQLOptions" data-ng-model="serviceInfo.record.storage_type"></select>' +
+            '<select class="form-control" data-ng-change="_renderAdditionalFields(serviceInfo.record.storage_type)" data-ng-options="option.value as option.name for option in hcv.NoSQLOptions" data-ng-model="serviceInfo.record.storage_type">' +
+                '<option value="">-- Select Vendor --</option>' +
+                '</select>' +
                 '</div>'
         );
 
@@ -2718,7 +2718,10 @@ angular.module('dfServiceTemplates', [])
         $templateCache.put('_service-storage-type.html',
             '<div class="form-group">' +
             '<label>Storage Type</label><df-simple-help data-options="dfSimpleHelp.storageType"></df-simple-help>' +
-            '<select class="form-control" data-ng-change="_renderAdditionalFields(serviceInfo.record.storage_type)" data-ng-options="option.value as option.name for option in hcv.remoteOptions" data-ng-model="serviceInfo.record.storage_type" type="text"></select>' +
+            '<select class="form-control" data-ng-change="_renderAdditionalFields(serviceInfo.record.storage_type)" data-ng-options="option.value as option.name for option in hcv.remoteOptions" data-ng-model="serviceInfo.record.storage_type" type="text">' +
+                '<option value="">-- Select Storage Type --</option>' +
+                '</select>' +
+
                 '</div>'
         );
 
