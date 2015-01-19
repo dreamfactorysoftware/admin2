@@ -492,6 +492,8 @@ angular.module('dfUtility', ['dfApplication'])
         return function (scope, elem, attrs) {
 
             var setSize = function () {
+
+
                 var _elem = $(elem),
                     winHeight = $(window).height(),
                     winWidth = $(window).width();
@@ -519,6 +521,7 @@ angular.module('dfUtility', ['dfApplication'])
                         height: winHeight - 280 + 'px'
                     })
                 }
+
                 else if (_elem.hasClass('package-export-table')) {
 
                     _elem.css({
@@ -589,6 +592,8 @@ angular.module('dfUtility', ['dfApplication'])
 
                setSize();
            })
+
+
         }
     }])
 
@@ -961,7 +966,7 @@ angular.module('dfUtility', ['dfApplication'])
                 var _elem = $(elem),
                     _rand = Math.floor((Math.random() * 100) + 1);
 
-                _elem.children('.ide-attach').append($compile('<div id="ide_' + _rand + '" dreamfactory-auto-height auto-height-parent="window" auto-height-padding="0" auto-height-top="155px" data-bottom-height="230"></div>')(scope))
+                _elem.children('.ide-attach').append($compile('<div id="ide_' + _rand + '" class="df-fs-height" style="height:400px"></div>')(scope))
 
                 scope.editor = null;
                 scope.currentScriptObj = '';

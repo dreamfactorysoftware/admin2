@@ -113,6 +113,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     return  a && a.length ? a[0].id : null;
                 }
 
+                // Need to refactor into factory.
                 var App = function  (appData) {
 
                     var _app = {
@@ -139,6 +140,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     }
                 };
 
+                // Need to refactor into factory.
                 var Role = function (roleData) {
 
                     return {

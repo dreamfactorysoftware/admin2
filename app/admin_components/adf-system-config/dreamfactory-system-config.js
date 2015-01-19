@@ -338,7 +338,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 module: 'Config',
                                 type: 'success',
                                 provider: 'dreamfactory',
-                                message: 'Platform cache flushed.'
+                                message: 'Swagger cache flushed.'
                             }
 
                             dfNotify.success(messageOptions);

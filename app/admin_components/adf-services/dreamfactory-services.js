@@ -200,9 +200,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         delete scope.service.recordCopy.docs;
 
                     }
-
-                    // scope._prepareServiceDefinitionData();
-
+                    else {
+                        scope._prepareServiceDefinitionData();
+                    }
                 };
 
                 scope._resetServiceDetails = function () {
@@ -216,6 +216,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         scope.serviceData = null;
                     }
+
+
 
                     // reset tabs
                     angular.element('#info-tab').trigger('click');
@@ -453,10 +455,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     },
                     serviceDef: {
                         title: 'Service Definition Overview',
-                        text: 'Molior eros verto nimis nunc esse. Blandit quidem duis augue suscipit quidne te nulla ' +
-                            'persto consequat vereor. Saluto paratus tation consequat proprius feugiat abigo te eu tum ' +
-                            'incassum abico. Humo et inhibeo consequat suscipit consectetuer nullus lobortis. Accumsan ' +
-                            'os roto feugiat vel ingenium facilisi commoveo odio.'
+                        text: 'Specify the definition of the service below. Refer to the Swagger docs for examples <a target="_blank" href="https://github.com/swagger-api/swagger-spec/blob/master/versions/1.2.md" title="Link to Swagger">Swagger docs</a>'
                     }
                 }
             }
@@ -472,6 +471,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             link: function(scope, elem, attrs) {
 
 
+                // @TODO: Refactor to factory
                 var ServiceInfo = function (serviceInfoData) {
 
                     var _new = {
@@ -1996,11 +1996,58 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             link: function (scope, elem, attrs) {
 
 
+                scope.isEditorClean = true;
+                scope.isEditable = true;
+                scope.currentEditor = null;
+                scope.currentFile = null;
+
+
+
                 scope._prepareServiceDefinitionData = function () {
 
-                    // called from swagger editor bc they share scope.
-                    scope.service.docs[0].content = scope._prepareSwaggerFile();
+                    scope.service.record.docs[0].content = scope.currentEditor.session.getValue().split('/n').join('');
                 }
+
+
+                scope.$watch('service', function (newValue, oldValue) {
+
+                    if (!newValue) return;
+
+                    if (newValue.record.hasOwnProperty('docs') && newValue.record.docs.length) {
+
+                        scope.currentFile = newValue.record.docs[0].content;
+                    }
+
+                    switch(newValue.record.type) {
+
+                        case 'Remote Web Service':
+                            scope.isEditable = true;
+                            break;
+
+                        default:
+                            scope.isEditable = false;
+                    }
+
+                })
+
+
+                // Hack way to update text in editor;
+                $('#service-definition-tab').on('click', function () {
+                    scope.currentEditor.renderer.updateText();
+                    scope.currentEditor.focus();
+                    $(window).trigger('resize');
+                })
+
+
+                $(window).on('resize', function () {
+
+                    var h = $(window).height();
+
+                    $('div[id^="ide_"]').css({
+                        height: h - 400 + 'px'
+                    })
+                })
+
 
             }
         }

@@ -22,6 +22,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
         $scope.apps = [];
         $scope.noAppsMsg = false;
         $scope.onlyNoGroupApps = false;
+        $scope.noGroupTitle = 'Other Apps';
 
 
         $scope.$watch(function() {return UserDataService.getCurrentUser()}, function (newValue, oldValue) {
@@ -65,7 +66,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                     $scope.apps = temp
                 }
                 else {
-                    $scope.apps.push({name: 'Your Apps', id:'000', apps: temp});
+                    $scope.apps.push({name: $scope.noGroupTitle, id:'000', apps: temp});
                 }
             }
 

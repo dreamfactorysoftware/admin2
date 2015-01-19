@@ -111,7 +111,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
             templateUrl: MOD_ROLES_ASSET_PATH + 'views/df-role-details.html',
             link: function(scope, elem, attrs) {
 
-
+                // @TODO: Refactor to factory.
                 var Role = function(roleData) {
 
                     var newRole = {
@@ -152,7 +152,10 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 // add All component to array of system components
                 // because it's not sent to us from the server
-                scope.system.unshift({label: 'All', name: '*'});
+                if (scope.system[0].name !== '*') {
+                    scope.system.unshift({label: 'All', name: '*'});
+                }
+
 
                 // PUBLIC API
                 scope.saveRole = function() {
@@ -648,6 +651,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
             templateUrl: MOD_ROLES_ASSET_PATH + 'views/df-assign-system-access.html',
             link: function(scope, elem, attrs) {
 
+                // @TODO: Refactor to factory.
                 var SystemAccess = function () {
 
                     return {
@@ -772,6 +776,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
             templateUrl: MOD_ROLES_ASSET_PATH + 'views/df-system-access.html',
             link: function (scope, elem, attrs) {
 
+                // @TODO: Refactor to factory.
                 var SystemAccessFilter = function () {
 
                     return {
@@ -893,6 +898,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
             templateUrl: MOD_ROLES_ASSET_PATH + 'views/df-assign-service-access.html',
             link: function(scope, elem, attrs) {
 
+                // @TODO: Refactor to factory.
                 var ServiceAccess = function () {
 
                     return {
@@ -1059,6 +1065,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
             templateUrl: MOD_ROLES_ASSET_PATH + 'views/df-service-access.html',
             link: function(scope, elem, attrs) {
 
+                // @TODO: Refactor to factory.
                 var ServiceAccessFilter = function () {
 
                     return {
@@ -1195,7 +1202,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
             templateUrl: MOD_ROLES_ASSET_PATH + 'views/df-manage-roles.html',
             link: function(scope, elem, attrs) {
 
-
+                // @TODO: Refactor to factory.
                 var ManagedRole = function (roleData) {
 
                     return {
@@ -1509,7 +1516,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 scope: false,
                 link: function (scope, elem, attrs) {
 
-
+                    // @TODO: Refactor to factory.
                     var User = function (userData) {
                         return {
 
@@ -1714,6 +1721,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
             templateUrl: MOD_ROLES_ASSET_PATH + 'views/df-assign-apps-role.html',
             link: function(scope, elem, attrs) {
 
+                // @TODO: Refactor to factory.
                 var App = function (appData) {
 
                     return {
@@ -1726,6 +1734,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     }
                 };
 
+                // @TODO: Refactor to factory.
                 var AppToRoleObj = function (appObjData) {
 
                     return {
@@ -2010,6 +2019,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
             templateUrl: MOD_ROLES_ASSET_PATH + 'views/df-assign-lookup-keys.html',
             link: function(scope, elem, attrs) {
 
+                // @TODO: Refactor to factory.
                 var LookUpKey = function (lookupKeyData) {
 
                     var _new = {
