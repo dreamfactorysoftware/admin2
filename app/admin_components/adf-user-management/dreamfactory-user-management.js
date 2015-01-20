@@ -98,6 +98,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     // controls whether the template is rendered or not.
                     scope.showTemplate = scope.options.showTemplate;
 
+                    scope.loginFormTitle = 'Login';
                     scope.loginActive = true;
 
                     // PUBLIC API
@@ -333,7 +334,9 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
 
                 scope.emailForm = false;
+                scope.emailError = false;
                 scope.securityQuestionForm = true;
+                scope.hidePasswordField = false;
 
                 scope.sq = {
                     email: null,
@@ -441,6 +444,10 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                                 // scope.emailForm = false;
                                 // scope.securityQuestionForm = true;
 
+                                // Turn off email error if it is on
+                                scope.emailError = false;
+                                scope.hidePasswordField = false;
+                                scope.errorMsg = '';
 
                                 scope.sq.email = requestDataObj.email;
                                 scope.sq.security_question = result.data.security_question
@@ -451,6 +458,12 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                                 scope.successMsg = 'A password reset email has been sent to the provided email address.';
 
+                                // Turn off email error if it is on
+                                scope.loginFormTitle = 'Login';
+                                scope.emailError = false;
+                                scope.hidePasswordField = false;
+                                scope.errorMsg = '';
+
                                 // Emit a confirm message indicating that is the next step
                                 scope.$emit(scope.es.passwordResetRequestSuccess, requestDataObj.email);
                             }
@@ -459,7 +472,17 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                         // handle error
                         function (reject) {
 
-                            scope.errorMsg = reject.data.error[0].message;
+                            // Message received from server
+                            // scope.errorMsg = reject.data.error[0].message;
+
+                            // Message to display instead because server message is too confusing.
+                            scope.loginFormTitle = 'Forgot Password';
+                            scope.errorMsg = "Please enter a valid email address to reset your password.";
+                            scope.hidePasswordField = true;
+                            scope.emailError = true;
+
+                            scope.
+
                             return;
 
                         }
@@ -507,10 +530,6 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
 
                 scope.$on(UserEventsService.password.passwordResetRequest, function (e, resetDataObj) {
-
-
-
-                    console.log(resetDataObj);
 
 
                     scope._requestPasswordReset(resetDataObj);
