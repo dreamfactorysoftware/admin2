@@ -202,97 +202,6 @@ angular.module('dreamfactoryApp')
 
         // WATCHERS
 
-        // Watch our current location
-        $scope.$watch(function() {return $location.path()}, function (newValue, oldValue) {
-
-
-            // If we are at launchpad
-            // || newValue === '/logout'
-            if (newValue === '/launchpad') {
-
-
-                $scope.showAdminComponentNav = false;
-
-                // Do we allow guest users and if there is no current user.
-                if (SystemConfigDataService.getSystemConfig().allow_guest_user && !UserDataService.getCurrentUser()) {
-
-                    // We make a call to user session to get guest user apps
-                    $http.get(DSP_URL + '/rest/user/session').then(
-                        function (result) {
-
-                            // we set the current user to the guest user
-                            UserDataService.setCurrentUser(result.data);
-
-                        },
-                        function (reject) {
-
-                            var messageOptions = {
-                                module: 'DreamFactory Application',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
-
-                            };
-
-                            dfNotify.error(messageOptions);
-
-                        }
-                    )
-
-                    return;
-                }
-
-
-                // We don't allow guset users and there is no currentUser
-                if (!SystemConfigDataService.getSystemConfig().allow_guest_user && !UserDataService.getCurrentUser()) {
-
-                    $location.url('/login');
-                    return;
-                }
-
-
-                // We have a current user
-                if (UserDataService.getCurrentUser()) {
-
-                    // We make a call to user session to get user apps
-                    $http.get(DSP_URL + '/rest/user/session').then(
-                        function (result) {
-
-                            // we set the current user
-                            UserDataService.setCurrentUser(result.data);
-
-                        },
-                        function (reject) {
-
-                            var messageOptions = {
-                                module: 'DreamFactory Application',
-                                type: 'error',
-                                provider: 'dreamfactory',
-                                message: reject
-
-                            };
-
-                            dfNotify.error(messageOptions);
-                        }
-                    );
-
-                    return;
-                }
-            }
-
-            if (newValue === '/logout') {
-
-                $scope.showAdminComponentNav = false;
-                return;
-            }
-
-            // this is not a launchpad or logout route so check is user is sys admin
-            if ($scope.currentUser.is_sys_admin) {
-
-                // yes.  show the component nav
-                $scope.showAdminComponentNav = true;
-            }
-        });
 
         $scope.$watch('currentUser', function(newValue, oldValue) {
 
@@ -376,6 +285,34 @@ angular.module('dreamfactoryApp')
             if (!n) return;
 
             $scope.setTopLevelLinkValue('profile', 'label', n);
+        })
+
+        // on routechangesuccess deal with hide showing admin nav
+        $scope.$on('$routeChangeSuccess', function (e) {
+
+            if ($location.path() === '/launchpad') {
+                $scope.showAdminComponentNav = false;
+                return;
+            }
+
+            if ($location.path() === '/profile') {
+                $scope.showAdminComponentNav = false;
+                return;
+            }
+
+            if ($location.path() === '/logout') {
+
+                $scope.showAdminComponentNav = false;
+                return;
+            }
+
+            // this is not a launchpad or logout route so check is user is sys admin
+            if ($scope.currentUser.is_sys_admin) {
+
+                // yes.  show the component nav
+                $scope.showAdminComponentNav = true;
+                return;
+            }
         })
     }])
 

@@ -84,9 +84,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     var newService = {
                         "id": null,
-                        "name": null,
-                        "api_name": null,
-                        "description": null,
+                        "name": '',
+                        "api_name": '',
+                        "description": '',
                         "is_active": true,
                         "type": "Remote Web Service",
                         "type_id": null,

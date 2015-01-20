@@ -3073,10 +3073,14 @@ angular.module('dfUtility', ['dfApplication'])
                             // that needs to be sorted will be wrapped in an object and
                             // the data we are looking for will be assigned to the record
                             // property of that object
-                            a = a.record || a;
-                            b = b.record || b;
+                            a = a.record[field] || a[field];
+                            b = b.record[field] || b[field];
 
-                            return cmp(Number(a[field]), Number(b[field]));
+                            // if the value is null of undefined set to zero
+                            a = a === null || a === undefined ? 0 : a;
+                            b = b === null || b === undefined ? 0 : b;
+
+                            return cmp(Number(a), Number(b));
                         }
                     )
                     break;
@@ -3086,11 +3090,15 @@ angular.module('dfUtility', ['dfApplication'])
                     filtered.sort(
                         function sortfn(a, b) {
 
-                            a = a.record || a;
-                            b = b.record || b;
+                            a = a.record[field] || a[field];
+                            b = b.record[field] || b[field];
 
-                            var upA = a[field].toUpperCase();
-                            var upB = b[field].toUpperCase();
+                            // if the value is null of undefined set to zero
+                            a = a === null || a === undefined ? '' : a;
+                            b = b === null || b === undefined ? '' : b;
+
+                            var upA = a.toUpperCase();
+                            var upB = b.toUpperCase();
                             return (
                                 upA < upB
                                 ) ? -1 : (
@@ -3104,11 +3112,15 @@ angular.module('dfUtility', ['dfApplication'])
                     filtered.sort(
                         function sortfn(a, b) {
 
-                            a = a.record || a;
-                            b = b.record || b;
+                            a = a.record[field] || a[field];
+                            b = b.record[field] || b[field];
 
-                            var upA = a[field]
-                            var upB = b[field]
+                            // if the value is null of undefined set to empty string
+                            a = a === null || a === undefined ? '' : a;
+                            b = b === null || b === undefined ? '' : b;
+
+                            var upA = a
+                            var upB = b
                             return (
                                 upA < upB
                                 ) ? -1 : (

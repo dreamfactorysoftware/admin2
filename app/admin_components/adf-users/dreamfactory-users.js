@@ -224,7 +224,7 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             dfNotify.success(messageOptions);
 
                             // This func comes from the SetUserPassword directive
-                            // which is stored in utility.
+                            // which is stored in dfutility.
                             scope._resetUserPasswordForm();
 
                             scope.user = new User();
@@ -279,6 +279,10 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                             }
 
                             dfNotify.success(messageOptions);
+                            
+                            // This func comes from the SetUserPassword directive
+                            // which is stored in dfutility.
+                            scope._resetUserPasswordForm();
 
                             scope.user = new User(result);
 
