@@ -386,8 +386,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     scope._prepareServiceData();
 
-                    console.log(angular.toJson(scope.service.record))
-                    console.log(angular.toJson(scope.service.recordCopy))
+                    // console.log(angular.toJson(scope.service.record))
+                    // console.log(angular.toJson(scope.service.recordCopy))
 
 
                     if (!dfObjectService.compareObjectsAsJson(scope.service.record, scope.service.recordCopy)) {
@@ -1323,6 +1323,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
             link: function(scope, elem, attrs) {
 
 
+                // @TODO: refactor to factory
                 var ServiceParam = function(params) {
 
                     var _new = {
@@ -1341,6 +1342,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     return params;
                 };
 
+                // @TODO: refactor to factory
                 var ExcludeParam = function (params) {
 
 
@@ -1387,7 +1389,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     scope.service.record.parameters = scope.params;
 
-                    if (scope.service.record.credentials !== null && scope.service.record.credentials.hasOwnProperty('client_exclusions')) {
+                    if (scope.service.record.credentials !== null && scope.service.record.credentials !== undefined && scope.service.record.credentials.hasOwnProperty('client_exclusions')) {
                         scope.service.record.credentials.client_exclusions.parameters = scope.excludeParams;
                     }
 
@@ -2632,7 +2634,7 @@ angular.module('dfServiceTemplates', [])
         $templateCache.put('_service-nosql-type.html',
             '<div class="form-group">' +
             '<label>NoSQL Vendor</label><df-simple-help data-options="dfSimpleHelp.noSqlType"></df-simple-help>' +
-            '<select class="form-control" data-ng-change="_renderAdditionalFields(serviceInfo.record.storage_type)" data-ng-options="option.value as option.name for option in hcv.NoSQLOptions" data-ng-model="serviceInfo.record.storage_type">' +
+            '<select class="form-control" data-ng-change="_renderAdditionalFields(serviceInfo.record.storage_type)" data-ng-options="option.value as option.name for option in hcv.NoSQLOptions" data-ng-model="serviceInfo.record.storage_type" data-ng-required="true">' +
                 '<option value="">-- Select Vendor --</option>' +
                 '</select>' +
                 '</div>'
