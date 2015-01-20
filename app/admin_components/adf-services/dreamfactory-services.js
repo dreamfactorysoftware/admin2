@@ -386,8 +386,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     scope._prepareServiceData();
 
-                    // console.log(angular.toJson(scope.service.record))
-                    // console.log(angular.toJson(scope.service.recordCopy))
+                    console.log(angular.toJson(scope.service.record))
+                    console.log(angular.toJson(scope.service.recordCopy))
 
 
                     if (!dfObjectService.compareObjectsAsJson(scope.service.record, scope.service.recordCopy)) {
