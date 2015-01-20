@@ -904,7 +904,8 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     return {
                         __dfUI: {
                             allowFilters: false,
-                            showFilters: false
+                            showFilters: false,
+                            hasError: false
                         },
                         record: {
                             "verb_mask": 0,
@@ -999,7 +1000,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                 };
 
 
-
                 // WATCHERS
                 var watchRole = scope.$watch('role', function(newValue, oldValue) {
 
@@ -1028,6 +1028,29 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                             // Get the service for this serviceAccess's service_id
                             _newSA.record['service'] = scope._getService(obj.service_id);
 
+
+                            if (_newSA.record.service.hasOwnProperty('components') && typeof _newSA.record.service.components === 'string') {
+
+                                // Set error to true.  This will trigger the ui changes
+                                _newSA.__dfUI.hasError = true;
+
+                                // Set component to null;
+                                _newSA.record.component = null;
+
+                                var messageOptions = {
+                                    module: 'Roles',
+                                    type: 'error',
+                                    provider: 'dreamfactory',
+                                    message: _newSA.record.service.components
+                                }
+
+                                dfNotify.error(messageOptions);
+
+                            }
+
+
+
+
                             // store on the scope
                             scope.roleServiceAccesses.push(_newSA);
 
@@ -1052,7 +1075,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
         }
     }])
 
-    .directive('dfServiceAccess', ['MOD_ROLES_ASSET_PATH', function (MOD_ROLES_ASSET_PATH) {
+    .directive('dfServiceAccess', ['MOD_ROLES_ASSET_PATH', 'dfNotify', function (MOD_ROLES_ASSET_PATH, dfNotify) {
 
         return {
 
@@ -1154,6 +1177,37 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     scope.serviceAccess.record.filter_op = scope.serviceAccess.record.filter_op === 'AND' ? 'OR' : 'AND';
                 };
 
+                scope._checkForFailure = function () {
+
+                    // Check if service components is a string.  If it is it's an error
+                    if (scope.serviceAccess.record.service.hasOwnProperty('components') && typeof scope.serviceAccess.record.service.components === 'string') {
+
+                        // Set error to true.  This will trigger the ui changes
+                        scope.serviceAccess.__dfUI.hasError = true;
+
+                        // Set component to null;
+                        scope.serviceAccess.record.component = null;
+
+                        var messageOptions = {
+                            module: 'Roles',
+                            type: 'error',
+                            provider: 'dreamfactory',
+                            message: scope.serviceAccess.record.service.components
+                        }
+
+                        dfNotify.error(messageOptions);
+
+                    }
+                    else {
+
+                        // set error to false. ditto
+                        scope.serviceAccess.__dfUI.hasError = false;
+
+                        // Set component to default;
+                        scope.serviceAccess.record.component = '*';
+
+                    }
+                }
 
 
                 // WATCHERS
@@ -1166,6 +1220,8 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     // set filters if allowed
                     scope.allowFilters();
 
+
+
                 });
 
                 var watchServiceAccessRecordService = scope.$watch('serviceAccess.record.service', function(newValue, oldValue) {
@@ -1177,6 +1233,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                     // update service_id prop
                     scope.serviceAccess.record.service_id = newValue.id;
+                    scope._checkForFailure();
                 });
 
 

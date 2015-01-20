@@ -5,16 +5,24 @@
         <div class="col-xs-3 form-group">
             <select class="form-control input-sm"
                     data-ng-model="serviceAccess.record.service"
-                    data-ng-options="service as service.name for service in $parent.services">
+                    data-ng-options="service as service.name for service in $parent.services"
+                    >
             </select>
         </div>
 
         <!-- Selecte Service Components -->
-        <div class="col-xs-3 form-group">
-            <select class="form-control input-sm"
-                    data-ng-model="serviceAccess.record.component"
-                    data-ng-options="component as component for component in serviceAccess.record.service.components">
-            </select>
+        <div class="col-xs-3 form-group" data-ng-class="serviceAccess.__dfUI.hasError ? 'has-error' : ''">
+            <div data-ng-if="!serviceAccess.__dfUI.hasError">
+                <select class="form-control input-sm"
+                        data-ng-model="serviceAccess.record.component"
+                        data-ng-options="component as component for component in serviceAccess.record.service.components">
+                </select>
+            </div>
+
+            <div data-ng-if="serviceAccess.__dfUI.hasError">
+                <input type="text" class="form-control" value="Service Error" readonly/>
+            </div>
+
 
         </div>
 
