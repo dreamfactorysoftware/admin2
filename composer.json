@@ -37,7 +37,10 @@
         "source": "https://github.com/dreamfactorysoftware/dsp-admin"
     },
     "minimum-stability": "dev",
-    "prefer-stable":     true,
+    "prefer-stable":     false,
+    "require": {
+        "dreamfactory/installers": "*"
+    },
     "extra":             {
         "branch-alias":    {
             "dev-develop": "1.0.x-dev"
