@@ -2208,7 +2208,7 @@ angular.module('dfUtility', ['dfApplication'])
     }])
 
     // Display App Version
-    .directive('dfCopyrightFooter', ['MOD_UTILITY_ASSET_PATH', 'APP_VERSION', function (MOD_UTILITY_ASSET_PATH, APP_VERSION) {
+    .directive('dfCopyrightFooter', ['MOD_UTILITY_ASSET_PATH', 'SystemConfigDataService', function (MOD_UTILITY_ASSET_PATH, SystemConfigDataService) {
 
         return {
 
@@ -2223,8 +2223,7 @@ angular.module('dfUtility', ['dfApplication'])
 
             link: function (scope, elem, attrs) {
 
-                scope.version = APP_VERSION;
-
+                scope.version = SystemConfigDataService.getSystemConfig().dsp_version;
             }
         }
     }])
