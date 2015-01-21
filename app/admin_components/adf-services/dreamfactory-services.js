@@ -455,7 +455,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     },
                     serviceDef: {
                         title: 'Service Definition Overview',
-                        text: 'Specify the definition of the service below. Refer to the Swagger docs for examples <a target="_blank" href="https://github.com/swagger-api/swagger-spec/blob/master/versions/1.2.md" title="Link to Swagger">Swagger docs</a>'
+                        text: 'Specify the definition of the service below. Refer to the <a target="_blank" href="https://github.com/swagger-api/swagger-spec/blob/master/versions/1.2.md" title="Link to Swagger">Swagger docs</a> for examples.'
                     }
                 }
             }
@@ -650,7 +650,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     switch ( scope.serviceInfo.record.storage_type ) {
                         case "aws s3":
-                            delete scope._storageType.region;
+
                             return scope._storageType;
                         case "azure blob":
                             delete scope._storageType.PartitionKey
@@ -936,7 +936,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             scope._buildFieldSet(
                                 [
                                     'aws-access-key',
-                                    'aws-secret-key'
+                                    'aws-secret-key',
+                                    'aws-region'
                                 ], true);
                             break;
 
@@ -1227,6 +1228,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         title: 'NoSQL Service Type ',
                         text: 'Specify the type of database you\'re connecting to.'
                     },
+                    databaseName: {
+                        title: 'Database Name',
+                        text: 'Specify the name of the database you\'re connecting to.'
+                    },
                     awsAccessKey: {
                         title: 'AWS Access Key ',
                         text: 'Specify the AWS Access Key for the database you\'re connecting to.'
@@ -1236,7 +1241,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         text: 'Specify the AWS Secret Key for the database you\'re connecting to.'
                     },
                     awsRegion: {
-                        title: 'Service Password ',
+                        title: 'AWS Region ',
                         text: 'Select the AWS Region for the database you\'re connecting to.'
                     },
                     azureAcctName: {
@@ -1283,6 +1288,11 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         title: 'OpenStack Region ',
                         text: 'Specify the Region for the storage you\'re connecting to.'
                     },
+                    osEndpoint: {
+                        title: 'OpenStack Endpoint/URL ',
+                        text: 'Specify the URL Endpoint for the storage you\'re connecting to.'
+                    },
+
                     emailTransportType: {
                         title: 'Email Provider',
                         text: 'Specify the type of provider.'
@@ -1470,9 +1480,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 var ServiceHeader = function (headerData) {
 
                     var _new = {
-
                         name: null,
-                        value: null
+                        value: null,
+                        pass_from_client: false
                     };
 
                     headerData = angular.copy(headerData) || _new;
@@ -2422,7 +2432,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
     }])
 
 
-
 angular.module('dfServiceTemplates', [])
     .run(['$templateCache', function ($templateCache) {
 
@@ -2615,14 +2624,14 @@ angular.module('dfServiceTemplates', [])
 
         $templateCache.put('_service-sf-security-token.html',
             '<div class="form-group">' +
-            '<label>Security Token</label><df-simple-help data-options="dfSimpleHelp.securityToken"></df-simple-help>' +
+            '<label>Security Token</label><df-simple-help data-options="dfSimpleHelp.sfSecurityToken"></df-simple-help>' +
             '<input class="form-control" data-ng-model="_storageType.security_token" type="text"/>' +
                 '</div>'
         );
 
         $templateCache.put('_service-sf-api-version.html',
             '<div class="form-group">' +
-            '<label>API Version</label><df-simple-help data-options="dfSimpleHelp.apiVersion"></df-simple-help>' +
+            '<label>API Version</label><df-simple-help data-options="dfSimpleHelp.sfApiVersion"></df-simple-help>' +
             '<input class="form-control" data-ng-model="_storageType.version" placeholder="v28.0" type="text"/>' +
                 '</div>'
         );
@@ -2727,7 +2736,7 @@ angular.module('dfServiceTemplates', [])
 
         $templateCache.put('_service-mongo-database.html',
             '<div class="form-group">' +
-            '<label>Database</label><df-simple-help data-options="dfSimpleHelp.databaseName"></df-simple-help>' +
+            '<label>Database Name</label><df-simple-help data-options="dfSimpleHelp.databaseName"></df-simple-help>' +
             '<input class="form-control" data-ng-model="_storageType.db" type="text"/>' +
                 '</div>'
         );
@@ -2806,7 +2815,7 @@ angular.module('dfServiceTemplates', [])
 
         $templateCache.put('_service-rs-endpoint.html',
             '<div class="form-group">' +
-            '<label>URL/Endpoint</label><df-simple-help data-options="dfSimpleHelp.rsEndPoint"></df-simple-help>' +
+            '<label>URL/Endpoint</label><df-simple-help data-options="dfSimpleHelp.rsEndpoint"></df-simple-help>' +
                 '<input class="form-control" data-ng-disabled="!_storageType.region" type="text" data-ng-model="_storageType.url"/>' +
                 '</div>'
         );

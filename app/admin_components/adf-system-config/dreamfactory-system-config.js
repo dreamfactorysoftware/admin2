@@ -356,7 +356,9 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                             dfNotify.error(messageOptions);
 
                         })
-                }
+                };
+
+                scope.APP_VERSION = APP_VERSION;
             }
         }
     }])

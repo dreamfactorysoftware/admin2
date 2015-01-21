@@ -266,7 +266,7 @@ angular.module('dfUtility', ['dfApplication'])
                 scope._setActiveView = function (linkObj) {
 
                     scope.activeView = linkObj;
-                    scope.closeMenu();
+                    scope._closeMenu();
                     scope.$broadcast('sidebar-nav:view:change');
                 };
 
@@ -333,7 +333,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                     oldValue.active = false;
                     newValue.active = true;
-                })
+                });
 
 
                 // Hsve to set margin for title when this directive loads.
