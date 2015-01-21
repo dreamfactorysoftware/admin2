@@ -1,4 +1,4 @@
- {
+{
     "name":              "dreamfactory/dsp-admin",
     "type":              "dreamfactory-app",
     "description":       "DreamFactory Services Platform(tm) Admin Console",
@@ -32,21 +32,18 @@
     ],
     "support":           {
         "email":  "support@dreamfactory.com",
-        "issues": "https://github.com/dreamfactorysoftware/dsp-core/issues",
-        "wiki":   "https://github.com/dreamfactorysoftware/dsp-core/wiki",
-        "source": "https://github.com/dreamfactorysoftware/dsp-core"
+        "issues": "https://github.com/dreamfactorysoftware/dsp-admin/issues",
+        "wiki":   "https://github.com/dreamfactorysoftware/dsp-admin/wiki",
+        "source": "https://github.com/dreamfactorysoftware/dsp-admin"
     },
     "minimum-stability": "dev",
     "prefer-stable":     true,
-    "require":           {
-        "composer/installers": "~1.0"
-    }
     "extra":             {
         "branch-alias":    {
-            "dev-develop": "1.8.x-dev"
+            "dev-develop": "1.0.x-dev"
         },
         "installer-paths": {
-            "web/{$name}": ["type:dreamfactory-app"]
+            "installer-name": "admin"
         }
     }
 }
