@@ -38,15 +38,13 @@
     },
     "minimum-stability": "dev",
     "prefer-stable":     false,
-    "require": {
+    "require":           {
         "dreamfactory/installers": "*"
     },
     "extra":             {
-        "branch-alias":    {
+        "branch-alias":   {
             "dev-develop": "1.0.x-dev"
         },
-        "installer-paths": {
-            "installer-name": "dreamfactory"
-        }
+        "installer-name": "dreamfactory"
     }
 }
