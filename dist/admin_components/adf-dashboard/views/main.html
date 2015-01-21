@@ -1,0 +1,13 @@
+<div class=""> <!--<div class="col-md-2 df-sidebar-nav">--> <!--<df-sidebar-nav></df-sidebar-nav>--> <!--</div>--> <div class="col-xs-12 df-section" df-fs-height> <!--<df-dashboard-home data-ng-if="activeView.path === 'dashboard-home'"></df-dashboard-home>--> <df-quick-start></df-quick-start> <!--<df-about data-ng-if="activeView.path === 'about'"></df-about>--> <!--<df-usage data-ng-if="activeView.path === 'usage'"></df-usage>--> </div> </div> <!--
+<div class="">
+    <div class="col-md-2 df-sidebar-nav">
+        <df-sidebar-nav></df-sidebar-nav>
+    </div>
+    <div class="col-md-10 df-section"  data-ng-class="activeView.path === 'quick-start' ? 'df-section-3-round' : 'df-section-all-round'" df-fs-height>
+        &lt;!&ndash;<df-dashboard-home data-ng-if="activeView.path === 'dashboard-home'"></df-dashboard-home>&ndash;&gt;
+        <df-quick-start data-ng-if="activeView.path === 'quick-start'"></df-quick-start>
+        &lt;!&ndash;<df-about data-ng-if="activeView.path === 'about'"></df-about>&ndash;&gt;
+        &lt;!&ndash;<df-usage data-ng-if="activeView.path === 'usage'"></df-usage>&ndash;&gt;
+    </div>
+</div>
+-->
