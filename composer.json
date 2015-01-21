@@ -43,7 +43,7 @@
             "dev-develop": "1.0.x-dev"
         },
         "installer-paths": {
-            "installer-name": "admin"
+            "installer-name": "dreamfactory"
         }
     }
 }
