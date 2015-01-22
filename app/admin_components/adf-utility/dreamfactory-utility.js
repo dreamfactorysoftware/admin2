@@ -2160,10 +2160,8 @@ angular.module('dfUtility', ['dfApplication'])
             // templateUrl: MOD_UTILITY_ASSET_PATH + 'views/df-popup-login.html',
             link: function (scope, elem, attrs) {
 
-
                 scope.popupLoginOptions = {
                     showTemplate: true
-
                 };
 
 
@@ -2182,7 +2180,7 @@ angular.module('dfUtility', ['dfApplication'])
                 // COMPLEX IMPLEMENTATION
                 scope._openLoginWindow = function (errormsg) {
                     var html = '<div id="df-login-frame" style="overflow: hidden; position: absolute; top:0; z-index:99999; background: rgba(0, 0, 0, .8); width: 100%; height: 100%"><div style="padding-top: 120px;"><dreamfactory-user-login data-in-err-msg="errormsg.data.error[0].message" data-options="popupLoginOptions"></dreamfactory-user-login></div></div>';
-                    $(elem).append($compile(html)(scope));
+                    $('#popup-login-container').html($compile(html)(scope));
                 };
 
 

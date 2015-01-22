@@ -40,7 +40,7 @@
                     </th>
                     </thead>
                     <tbody>
-                    <tr data-ng-repeat="obj in services | orderObjectBy:order.orderBy:order.orderByReverse" class="repeated-item">
+                    <tr data-ng-repeat="obj in services | orderObjectBy:order.orderBy:order.orderByReverse" class="repeated-item" class="repeated-item" data-ng-class="obj.__dfUI.selected ? 'danger' : ''">
                         <td style="width: 80px">
                             <div data-ng-if="obj.record.is_system != true">
                                 <div class="checkbox" style="margin: 0">

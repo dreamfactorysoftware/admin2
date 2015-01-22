@@ -1374,7 +1374,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 scope._deleteAppGroup = function () {
 
 
-
                     // If this is a recently add/new appgroup that hasn't been saved yet.
                     if (scope.selectedAppGroup.__dfUI.newAppGroup === null) {
 
@@ -1427,6 +1426,20 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                             dfNotify.success(messageOptions);
 
+                            // Find where this group is in the array of app groups and
+                            // remove
+                            var i = 0;
+
+                            while (i < scope.appGroups.length) {
+
+                                if (scope.appGroups[i].record.name === result.name) {
+
+                                    scope.appGroups.splice(i, 1);
+                                }
+
+                                i++;
+                            }
+
                             scope.selectedAppGroup = null;
 
                         },
@@ -1472,7 +1485,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             };
 
                             dfNotify.success(messageOptions);
-
 
                             // Reinsert into the matrix.....HA!
                             // No Seriously
@@ -1603,19 +1615,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     }
                 });
 
-                var watchdfApplicationData = scope.$watchCollection(function () {return dfApplicationData.getApiData('app_group')}, function(newValue, oldValue) {
-
-                    if (!newValue) return;
-
-                    var tempArr = [];
-                    angular.forEach(newValue, function (appGroupData) {
-
-                        tempArr.push(new AppGroup(appGroupData));
-                    })
-
-                    scope.appsGroups = tempArr;
-                });
-
 
                 // HANDLE MESSAGES
                 scope.$on('$destroy', function (e) {
@@ -1623,7 +1622,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     watchAppGroups();
                     watchApps();
                     watchSelectedAppGroup();
-                    watchdfApplicationData();
                 });
 
 
