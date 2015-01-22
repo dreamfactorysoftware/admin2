@@ -39,7 +39,7 @@
     "minimum-stability": "dev",
     "prefer-stable":     false,
     "require":           {
-        "dreamfactory/installers": "*"
+        "dreamfactory/installer": "*"
     },
     "extra":             {
         "branch-alias":   {
