@@ -41,7 +41,7 @@
                             </th>
                             </thead>
                             <tbody>
-                            <tr data-ng-repeat="obj in apps | orderObjectBy:order.orderBy:order.orderByReverse" class="repeated-item">
+                            <tr data-ng-repeat="obj in apps | orderObjectBy:order.orderBy:order.orderByReverse" class="repeated-item" data-ng-class="obj.__dfUI.selected ? 'danger' : ''">
                                 <td style="width: 80px;">
                                     <div class="checkbox" style="margin: 0">
                                         <label>

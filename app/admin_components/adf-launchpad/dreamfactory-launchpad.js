@@ -95,7 +95,6 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
     }])
     .controller('LaunchpadCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', 'loadApps', function($scope, UserDataService, SystemConfigDataService, loadApps) {
 
-
         $scope.apps = [];
         $scope.noAppsMsg = false;
         $scope.onlyNoGroupApps = false;
@@ -143,7 +142,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                 if ($scope.onlyNoGroupApps) {
                     $scope.apps = temp
                 }
-                else {
+                else if (temp.length > 0) {
                     $scope.apps.push({name: $scope.noGroupTitle, id:'000', apps: temp});
                 }
             }
