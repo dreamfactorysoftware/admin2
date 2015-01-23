@@ -251,22 +251,12 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                             // Error method
                             function (reject) {
 
-
                                 // Handle Login error with template error message
                                 scope.errorMsg = reject.data.error[0].message;
                                 scope.$emit(scope.es.loginError, reject);
 
-                                // Emit error message so we can hook in
-//                                scope.$emit(scope.es.loginError, reject);
+                                console.log(scope);
 
-
-                                // Throw a DreamFactory error object
-//                                throw {
-//                                    module: 'DreamFactory User Management',
-//                                    type: 'error',
-//                                    provider: 'dreamfactory',
-//                                    exception: reject
-//                                }
 
                             }
                         ).finally(
@@ -299,6 +289,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                             scope.showTemplate = newValue.showTemplate;
                         }
                     }, true);
+
 
                     // HANDLE MESSAGES
                     // We handle messages passed to our directive here.  Most commonly this will
@@ -333,9 +324,9 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                 scope.es = UserEventsService.password;
 
 
-                scope.emailForm = false;
+                scope.emailForm = true;
                 scope.emailError = false;
-                scope.securityQuestionForm = true;
+                scope.securityQuestionForm = false;
                 scope.hidePasswordField = false;
 
                 scope.sq = {
@@ -344,7 +335,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     security_answer: null,
                     new_password: null,
                     verify_password: null
-                }
+                };
 
                 scope.identical = true;
                 scope.requestWaiting = false;
@@ -438,31 +429,15 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                             if (result.data.hasOwnProperty('security_question')) {
 
-                                // This function lives in dreamfactoryUserLogin
-                                scope._toggleForms();
-
-                                // scope.emailForm = false;
-                                // scope.securityQuestionForm = true;
-
-                                // Turn off email error if it is on
-                                scope.emailError = false;
-                                scope.hidePasswordField = false;
-                                scope.errorMsg = '';
+                                scope.emailForm = false;
+                                scope.securityQuestionForm = true;
 
                                 scope.sq.email = requestDataObj.email;
                                 scope.sq.security_question = result.data.security_question
-
-
                             }
                             else {
 
                                 scope.successMsg = 'A password reset email has been sent to the provided email address.';
-
-                                // Turn off email error if it is on
-                                scope.loginFormTitle = 'Login';
-                                scope.emailError = false;
-                                scope.hidePasswordField = false;
-                                scope.errorMsg = '';
 
                                 // Emit a confirm message indicating that is the next step
                                 scope.$emit(scope.es.passwordResetRequestSuccess, requestDataObj.email);
@@ -473,17 +448,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                         function (reject) {
 
                             // Message received from server
-                            // scope.errorMsg = reject.data.error[0].message;
-
-                            // Message to display instead because server message is too confusing.
-                            scope.loginFormTitle = 'Forgot Password';
-                            scope.errorMsg = "Please enter a valid email address to reset your password.";
-                            scope.hidePasswordField = true;
-                            scope.emailError = true;
-
-                            scope.
-
-                            return;
+                            scope.errorMsg = reject.data.error[0].message;
 
                         }
                     ).finally(
@@ -532,7 +497,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                 scope.$on(UserEventsService.password.passwordResetRequest, function (e, resetDataObj) {
 
 
-                    scope._requestPasswordReset(resetDataObj);
+                    scope._toggleForms();
+                    // scope._requestPasswordReset(resetDataObj);
                 });
             }
         }

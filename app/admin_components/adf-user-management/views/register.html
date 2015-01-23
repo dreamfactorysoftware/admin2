@@ -24,7 +24,7 @@
                                     <i class="fa fa-fw fa-envelope"></i>
                                 </span>
                                 <input type="email" id="email" name="df-register-email" placeholder="Enter Email"
-                                       data-ng-model="user.email" class="form-control" required>
+                                       data-ng-model="user.email" class="form-control" required autocomplete="off">
                             </div>
 
                         </div>
@@ -35,7 +35,7 @@
                                     <i class="fa fa-fw fa-user"></i>
                                 </span>
                                 <input type="text" id="first-name" name="df-register-first-name" placeholder="Enter First Name"
-                                       data-ng-model="user.first_name" class="form-control" required>
+                                       data-ng-model="user.first_name" class="form-control" required autocomplete="off">
                             </div>
                         </div>
 
@@ -45,7 +45,7 @@
                                     <i class="fa fa-fw fa-user"></i>
                                 </span>
                                 <input type="text" id="last-name" name="df-register-last-name" placeholder="Enter Last Name"
-                                       data-ng-model="user.last_name" class="form-control" required>
+                                       data-ng-model="user.last_name" class="form-control" required autocomplete="off">
                             </div>
                         </div>
 
@@ -55,7 +55,7 @@
                                     <i class="fa fa-fw fa-user"></i>
                                 </span>
                                 <input type="text" id="display-name" name="df-register-display-name" placeholder="Enter Display Name"
-                                       data-ng-model="user.display_name" class="form-control" required>
+                                       data-ng-model="user.display_name" class="form-control" required autocomplete="off">
                             </div>
                         </div>
 
@@ -71,7 +71,9 @@
                                     </span>
                                     <input type="password" id="password" name="df-register-password" placeholder="Enter Password"
                                            data-ng-model="user.new_password" class="form-control" required
-                                           data-ng-keyup="verifyPassword(user)" >
+                                           data-ng-keyup="verifyPassword(user)"
+                                           autocomplete="off"
+                                            >
 
                                 </div>
                             </div>
@@ -85,7 +87,9 @@
                                     </span>
                                     <input type="password" id="verify-password" name="df-register-verify-password" placeholder="Verify Password"
                                            data-ng-model="user.verify_password" class="form-control" required
-                                           data-ng-keyup="verifyPassword(user)" >
+                                           data-ng-keyup="verifyPassword(user)"
+                                           autocomplete="off"
+                                            >
                                 </div>
 
                             </div>

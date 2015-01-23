@@ -29,6 +29,11 @@ angular.module('dfTable', ['dfUtility'])
 
         $templateCache.put('df-input-text.html', '<input type="{{templateData.type}}"  class="form-control" placeholder="{{templateData.placeholder}}" data-ng-model="currentEditRecord[field.name]" data-ng-disabled="!templateData.editable" data-ng-required="field.required">');
         $templateCache.put('df-input-ref-text.html', '<input type="{{templateData.type}}"  class="form-control" placeholder="{{templateData.placeholder}}" data-ng-model="currentEditRecord[field.name]" data-ng-disabled="!templateData.editable" data-ng-required="field.required">');
+        $templateCache.put('df-input-number.html', '<input type="{{templateData.type}}" step="any" class="form-control" placeholder="{{templateData.placeholder}}" data-ng-model="currentEditRecord[field.name]" data-ng-disabled="!templateData.editable" data-ng-required="field.required">');
+        $templateCache.put('df-input-int.html', '<input type="{{templateData.type}}" step="1" class="form-control" placeholder="{{templateData.placeholder}}" data-ng-model="currentEditRecord[field.name]" data-ng-disabled="!templateData.editable" data-ng-required="field.required">');
+
+
+        $templateCache.put('df-input-textarea.html', '<textarea class="form-control" rows="3" data-ng-model="currentEditRecord[field.name]" data-ng-disabled="!templateData.editable" data-ng-required="field.required"></textarea>');
         $templateCache.put('df-input-binary.html', '<p>BINARY DATA</p>');
         $templateCache.put('df-input-datetime.html', '<p>DATETIME</p>');
         $templateCache.put('df-input-reference.html', '<div class="well"><df-table data-options="relatedOptions" data-parent-record="currentEditRecord" data-export-field="field"></df-table></div>');
@@ -2718,8 +2723,14 @@ angular.module('dfTable', ['dfUtility'])
                         type: 'text',
                         editable: true
                     },
+					text: {
+						template: 'df-input-textarea.html',
+						placeholder: '',
+						type: 'textarea',
+						editable: true
+					},
                     integer: {
-                        template: 'df-input-text.html',
+                        template: 'df-input-int.html',
                         placeholder: 'Enter Integer Value',
                         type: 'number',
                         editable: true
@@ -2737,13 +2748,19 @@ angular.module('dfTable', ['dfUtility'])
                         editable: false
                     },
                     float: {
-                        template: 'df-input-text.html',
+                        template: 'df-input-number.html',
                         placeholder: 'Enter Float Value',
                         type: 'number',
                         editable: true
                     },
+					double: {
+						template: 'df-input-number.html',
+						placeholder: 'Enter Double Value',
+						type: 'number',
+						editable: true
+					},
                     decimal: {
-                        template: 'df-input-text.html',
+                        template: 'df-input-number.html',
                         placeholder: 'Enter Decimal Value',
                         type: 'number',
                         editable: true
@@ -2761,6 +2778,12 @@ angular.module('dfTable', ['dfUtility'])
                         editable: true
                     },
                     time: {
+                        template: 'df-input-text.html',
+                        placeholder: '',
+                        type: 'text',
+                        editable: true
+                    },
+                    timestamp: {
                         template: 'df-input-text.html',
                         placeholder: '',
                         type: 'text',
@@ -2809,7 +2832,6 @@ angular.module('dfTable', ['dfUtility'])
                 scope.fieldTypes = dfObjectService.mergeObjects(scope.extendFieldTypes, scope.defaultFieldTypes);
 
 
-
                 if (scope.overrideFields[scope.field.name]) {
 
                     scope.templateData = {
@@ -2852,9 +2874,12 @@ angular.module('dfTable', ['dfUtility'])
                     }
 
                 } else {
+
                     scope.templateData = scope.fieldTypes[scope.field.type];
                     scope.templateData.editable = scope._parseEditable(scope.field);
                 }
+
+
 
                 switch (scope.field.type) {
 
@@ -2951,7 +2976,7 @@ angular.module('dfTable', ['dfUtility'])
                         scope.relatedOptions.defaultFields[scope.field.ref_fields] = true;
                         break;
 
-                    case 'datetime':
+                   /* case 'datetime':
                     case 'timestamp':
                     case  'timestamp_on_create':
                     case  'timestamp_on_update':
@@ -3060,7 +3085,7 @@ angular.module('dfTable', ['dfUtility'])
 
                             //scope.currentEditRecord[scope.field.name] = scope.theDate.toISOString();
                         });
-                        break;
+                        break;*/
 
                 }
 

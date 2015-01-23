@@ -20,6 +20,20 @@ body {
 //}
 
 
+.full-color-bg {
+  // needs latest Compass, add '@import "compass"' to your scss
+  background-color: #0a0809; // Old browsers
+  @include filter-gradient(#0a0809, #2d2f30, horizontal); // IE6-9 fallback on horizontal gradient
+  @include background-image(linear-gradient(left top,  #0a0809 0%,#2d2f30 100%));
+
+  z-index: -1;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
 
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
   display: none !important;
@@ -150,3 +164,8 @@ body {
   }
 
 }
+
+.table tr {
+  cursor: pointer
+}
+
