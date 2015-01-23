@@ -2709,18 +2709,23 @@ angular.module('dfUtility', ['dfApplication'])
     // Notification service
     .service('dfNotify', ['dfApplicationPrefs', function(dfApplicationPrefs) {
 
+        var stack_topleft = {"dir1": "down", "dir2": "right", "push": "top", "firstpos1": 25, "firstpos2": 25, "spacing1": 5, spacing2: 5};
+        var stack_bottomleft = {"dir1": "right", "dir2": "up", "push": "top"};
+        var stack_bar_top = {"dir1": "down", "dir2": "right", "push": "top", "spacing1": 0, "spacing2": 0};
+        var stack_bar_bottom = {"dir1": "up", "dir2": "right", "spacing1": 0, "spacing2": 0};
+        var stack_context = {"dir1": "down", "dir2": "left", "context": $("#stack-context")};
+
+
         function pnotify (messageOptions) {
+
+
 
             // Removed module title property as per Todd's request
             // title: messageOptions.module,
 
             (function() {
 
-                var stack_topleft = {"dir1": "down", "dir2": "right", "push": "top", "firstpos1": 25, "firstpos2": 25};
-                var stack_bottomleft = {"dir1": "right", "dir2": "up", "push": "top"};
-                var stack_bar_top = {"dir1": "down", "dir2": "right", "push": "top", "spacing1": 0, "spacing2": 0};
-                var stack_bar_bottom = {"dir1": "up", "dir2": "right", "spacing1": 0, "spacing2": 0};
-                var stack_context = {"dir1": "down", "dir2": "left", "context": $("#stack-context")};
+
 
                 // Set PNotify options
                 PNotify.prototype.options.styling = "fontawesome";
@@ -2730,7 +2735,11 @@ angular.module('dfUtility', ['dfApplication'])
                     type:  messageOptions.type,
                     text:  messageOptions.message,
                     addclass: "stack_topleft",
-                    stack: stack_topleft
+                    animation: 'fade',
+                    animate_speed: 150,
+                    position_animate_speed: 150,
+                    stack: stack_topleft,
+                    mouse_reset: false
                 })
             })();
         }
@@ -3070,8 +3079,14 @@ angular.module('dfUtility', ['dfApplication'])
                             // that needs to be sorted will be wrapped in an object and
                             // the data we are looking for will be assigned to the record
                             // property of that object
-                            a = a.record[field] || a[field];
-                            b = b.record[field] || b[field];
+                            if (a.hasOwnProperty('record') && b.hasOwnProperty('record')) {
+                                a = a.record[field];
+                                b = b.record[field]
+                            }
+                            else {
+                                a = a[field];
+                                b = b[field];
+                            }
 
                             // if the value is null of undefined set to zero
                             a = a === null || a === undefined ? 0 : a;
@@ -3087,8 +3102,14 @@ angular.module('dfUtility', ['dfApplication'])
                     filtered.sort(
                         function sortfn(a, b) {
 
-                            a = a.record[field] || a[field];
-                            b = b.record[field] || b[field];
+                            if (a.hasOwnProperty('record') && b.hasOwnProperty('record')) {
+                                a = a.record[field];
+                                b = b.record[field]
+                            }
+                            else {
+                                a = a[field];
+                                b = b[field];
+                            }
 
                             // if the value is null of undefined set to zero
                             a = a === null || a === undefined ? '' : a;
@@ -3109,8 +3130,14 @@ angular.module('dfUtility', ['dfApplication'])
                     filtered.sort(
                         function sortfn(a, b) {
 
-                            a = a.record[field] || a[field];
-                            b = b.record[field] || b[field];
+                            if (a.hasOwnProperty('record') && b.hasOwnProperty('record')) {
+                                a = a.record[field];
+                                b = b.record[field]
+                            }
+                            else {
+                                a = a[field];
+                                b = b[field];
+                            }
 
                             // if the value is null of undefined set to empty string
                             a = a === null || a === undefined ? '' : a;
