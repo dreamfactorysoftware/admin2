@@ -13,20 +13,20 @@
             <form name="security-question-form" data-ng-submit="securityQuestionSubmit(reset)" autocomplete="off">
                 <div class="form-group">
                     <input type="hidden" name="reset-password-email" placeholder="Enter Email"
-                           data-ng-model="sq.email" class="form-control" required>
+                           data-ng-model="sq.email" class="form-control" required autocomplete="off">
                 </div>
 
                 <div class="form-group">
                     <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-fw fa-question"></i></span>
-                        <input type="text" id="reset-question" data-ng-model="sq.question" class="form-control" />
+                        <input type="text" id="reset-question" data-ng-model="sq.question" class="form-control"  autocomplete="off"/>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
-                        <input type="text" id="reset-answer" data-ng-model="sq.answer" class="form-control" />
+                        <input type="text" id="reset-answer" data-ng-model="sq.answer" class="form-control" autocomplete="off" />
                     </div>
                 </div>
 
@@ -36,7 +36,7 @@
                         <span class="input-group-addon"><i class="fa fa-fw fa-key"></i></span>
                         <input type="password" id="password" name="df-register-password" placeholder="Enter Password"
                                data-ng-model="sq.new_password" class="form-control" required
-                               data-ng-keyup="verifyPassword(user)" >
+                               data-ng-keyup="verifyPassword(user)"  autocomplete="off">
                     </div>
                 </div>
 
@@ -47,7 +47,7 @@
                         <span class="input-group-addon"><i class="fa fa-fw fa-check"></i></span>
                         <input type="password" id="verify-password" name="df-register-verify-password" placeholder="Verify Password"
                                data-ng-model="sq.verify_password" class="form-control" required
-                               data-ng-keyup="verifyPassword(user)" >
+                               data-ng-keyup="verifyPassword(user)" autocomplete="off">
                     </div>
                 </div>
 
