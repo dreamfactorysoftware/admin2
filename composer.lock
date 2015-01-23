@@ -4,20 +4,20 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8970747e708c51f2191cf38b5997c912",
+    "hash": "9ba29b3d128a83cb847167ec991d767e",
     "packages": [
         {
-            "name": "dreamfactory/installers",
-            "version": "dev-master",
+            "name": "dreamfactory/installer",
+            "version": "dev-develop",
             "source": {
                 "type": "git",
-                "url": "https://github.com/dreamfactorysoftware/installers.git",
-                "reference": "cc2681581640ab87271a0ebcf3ecbbdd89e3e809"
+                "url": "https://github.com/dreamfactorysoftware/installer.git",
+                "reference": "cd9de2bb6daae50a4ce2e11a873121bb0c17d916"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dreamfactorysoftware/installers/zipball/cc2681581640ab87271a0ebcf3ecbbdd89e3e809",
-                "reference": "cc2681581640ab87271a0ebcf3ecbbdd89e3e809",
+                "url": "https://api.github.com/repos/dreamfactorysoftware/installer/zipball/cd9de2bb6daae50a4ce2e11a873121bb0c17d916",
+                "reference": "cd9de2bb6daae50a4ce2e11a873121bb0c17d916",
                 "shasum": ""
             },
             "replace": {
@@ -26,86 +26,53 @@
             },
             "require-dev": {
                 "composer/composer": "1.0.*@dev",
-                "phpunit/phpunit": "4.1.*"
+                "phpunit/phpunit": "@stable"
             },
             "type": "composer-installer",
             "extra": {
-                "class": "Composer\\Installers\\Installer",
+                "class": "DreamFactory\\Tools\\Composer\\Installer\\Installer",
                 "branch-alias": {
                     "dev-master": "1.0-dev"
                 }
             },
             "autoload": {
-                "psr-0": {
-                    "Composer\\Installers\\": "src/"
+                "psr-4": {
+                    "DreamFactory\\Tools\\Composer\\Installer\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "MIT"
+                "Apache-2.0"
             ],
-            "authors": [
-                {
-                    "name": "Kyle Robinson Young",
-                    "email": "kyle@dontkry.com",
-                    "homepage": "https://github.com/shama"
-                }
-            ],
-            "description": "A multi-framework Composer library installer",
-            "homepage": "http://composer.github.com/installers/",
+            "description": "DreamFactory Services Platform(tm) Library Installer",
+            "homepage": "https://www.dreamfactory.com/",
             "keywords": [
-                "Craft",
-                "Dolibarr",
-                "Hurad",
-                "MODX Evo",
-                "OXID",
-                "SMF",
-                "Thelia",
-                "WolfCMS",
-                "agl",
-                "annotatecms",
-                "bitrix",
-                "cakephp",
-                "chef",
-                "codeigniter",
-                "concrete5",
-                "croogo",
-                "dokuwiki",
-                "drupal",
-                "elgg",
-                "fuelphp",
-                "grav",
-                "installer",
-                "joomla",
-                "kohana",
-                "laravel",
-                "lithium",
-                "magento",
-                "mako",
-                "mediawiki",
-                "modulework",
-                "moodle",
-                "phpbb",
-                "piwik",
-                "ppi",
-                "puppet",
-                "roundcube",
-                "shopware",
-                "silverstripe",
-                "symfony",
-                "typo3",
-                "wordpress",
-                "zend",
-                "zikula"
+                "Service Bus",
+                "cloud-computing",
+                "dsp",
+                "dsp-core",
+                "esb",
+                "framework",
+                "remote web services",
+                "rest"
             ],
-            "time": "2015-01-21 19:55:46"
+            "time": "2015-01-22 19:46:54"
         }
     ],
     "packages-dev": [],
-    "aliases": [],
+    "aliases": [
+        {
+            "alias": "dev-master",
+            "alias_normalized": "9999999-dev",
+            "version": "dev-develop",
+            "package": "dreamfactory/installer"
+        }
+    ],
     "minimum-stability": "dev",
-    "stability-flags": [],
-    "prefer-stable": false,
+    "stability-flags": {
+        "dreamfactory/installer": 20
+    },
+    "prefer-stable": true,
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": []
