@@ -1018,6 +1018,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         // We need to create our role service objects
                         angular.forEach(newValue.record.role_service_accesses, function (obj) {
 
+
                             // Make a new role service object
                             var _newSA = new ServiceAccess();
 
@@ -1045,10 +1046,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                                 }
 
                                 dfNotify.error(messageOptions);
-
                             }
-
-
 
 
                             // store on the scope
@@ -1203,8 +1201,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                         // set error to false. ditto
                         scope.serviceAccess.__dfUI.hasError = false;
 
-                        // Set component to default;
-                        scope.serviceAccess.record.component = '*';
 
                     }
                 }
@@ -1219,8 +1215,6 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                     // set filters if allowed
                     scope.allowFilters();
-
-
 
                 });
 
@@ -1485,7 +1479,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     ).finally(
                         function() {
 
-                            console.log('Delete Roles Finally');
+                            // console.log('Delete Roles Finally');
                         }
                     )
                 };
