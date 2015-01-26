@@ -363,6 +363,7 @@ module.exports = function (grunt) {
             'images/{,*/}*.{png,jpg,jpeg,gif,webp}',
             'fonts/*',
             'admin_components/**/*.html',
+            'admin_components/**/examples/**/*',
             'vendor/**/*'
           ]
         }, {

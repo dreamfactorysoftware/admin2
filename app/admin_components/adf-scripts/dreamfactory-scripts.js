@@ -21,7 +21,7 @@
 angular.module('dfScripts', ['ngRoute', 'dfUtility'])
     .constant('MODSCRIPTING_ROUTER_PATH', '/scripts')
     .constant('MODSCRIPTING_ASSET_PATH', 'admin_components/adf-scripts/')
-    .constant('MODSCRIPTING_EXAMPLES_PATH', 'admin_components/adf-scripts//examples/')
+    .constant('MODSCRIPTING_EXAMPLES_PATH', 'admin_components/adf-scripts/examples/')
     .config(['$routeProvider', 'MODSCRIPTING_ROUTER_PATH', 'MODSCRIPTING_ASSET_PATH',
         function ($routeProvider, MODSCRIPTING_ROUTER_PATH, MODSCRIPTING_ASSET_PATH) {
             $routeProvider
