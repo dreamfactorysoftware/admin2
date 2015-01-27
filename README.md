@@ -168,6 +168,144 @@ Each module has a `main.html`.  In `main.html` there wil be directives that pert
 
 ```
 
+If you are experienced with AngularJS you can see that most of if not all of the modules work is delegated to directives as opposed to using routes and controllers.  While this doesn't allow for deep linking it does offer the convenience of dealing with data via context.  Most modules will have manage and detail contexts which are modeled as directives and have templates stored locally in relation to the modules folder.  The manage directive will pull data from the repository, create an object(referred to as a 'Managed Object') based on that data, and present it in a tabular, list, or thumbnail fashion.  There is usually behavior associated with the Managed object (for example, managed app objects allow you to launch a hosted app from it's Managed Object state).  Upon selection the managed object will be passed to a detail directive which will create an object of that type (for example, App object for App entity) for editing or creation.  When that detail directive detects data the manage context is closed and the detail context is shown.  This is usually a form for editing the currently selected object.  The object can be saved, updated, or closed with changes discarded.  Basic CRUD stuff.  Once an operation has been completed the detail context can be closed and the manage context will reappear.  We save deleting for the managed context where one or multiple objects can be selected and deleted.
+
+All the directives(contexts) work in a similar fashion of having data passed to them and then creating an object that holds that data.  The data passed to a directive will always be encapsulated in the 'record' property of the created object.  Often we attach other UI specific properties to that object which will be found under the `__dfUI` property.  Below is an example of what an App object looks like in the detail context.
+
+```javascript
+{
+    __dfUI: {
+        selected: false  
+    },
+    record: {
+        // app data for editing
+    },
+    recordCopy: {
+        // copied app data for comparison
+    }
+}
+```
+
+All form models are tied to the data stored on the record property.  When we save/update the app a new App object is created to replace the old one.  You are then free to close the detail view or continue editing.  If you have made changes and attempt to close without saving then the comparison of the record and recordCopy will fail prompting you if you 'Are sure you want to close?'.  That's how most of it works.  Pretty simple.  Pull data and create objects.  Select object to edit.  Show form to edit object.  Compare on save and close.
+
+### Context Organization (how we setup directives)
+
+Each one of the directives is organized in a similar fashion.  See the stubbed out example below:
+
+```javascript
+.directive(DIRECTIVE_NAME, [function() {
+
+    return {
+        restrict: 'E',
+        scope: {
+            thingData: '='
+        },
+        templateUrl: CONSTANT_PATH + 'views/TEMPLATE.html',
+        link: function (scope, elem, attrs) {
+        
+        // LOCAL FUNCTIONS: 
+        // things pertaining to this directive that won't be shared or stored on scope
+        // Object constructors usually
+        
+        var Thing = function (thingData) {
+            var thingModel = {
+                thingName: 'My Awesome thing name'
+            }
+            
+            thingData = thingData || thingModel
+            
+            return {
+                __dfUI: {
+                    selected: false,
+                    hasError: false
+                },
+                record: thingData,
+                recordCopy: angular.copy(thingData);
+            }
+        }
+        
+        scope.theThing = null;
+        
+        
+        
+        // PUBLIC API
+        // Scope functions that attach to our UI
+        // we do preliminary checking here
+        scope.saveThing = function () {
+            
+            if (scope.theThing.__dfUI.hasError) {
+                alert('Thing has error');
+                return;
+            }
+            
+            scope._saveThing()
+        }
+        
+        
+        // PRIVATE API
+        // functions stored on/off scope that provide
+        // targeted functionality
+        scope._myPrivFuncOne = function () {
+        
+            // Do someting
+        }
+        
+         scope._saveThingToServer = function () {
+        
+            // Save thing to server.  Return promise
+        }
+        
+        
+        // COMPLEX IMPLEMENTATION
+        // These scope functions generally are called from the public api
+        // Their names usually correspond with a preceding underscore
+        // We call private api functions targeted for specific tasks 
+        // and build our...COMPLEX IMPLEMENTATION of the public function.
+        
+        scope._saveThing = function () {
+            
+            // private func to do someting
+            scope._myPrivFuncOne();
+            
+            // save thing to server
+            scope._saveThingToServer(scope.theThing).then(
+                function (result) {
+                    
+                    scope.theThing = new Thing(result.data)
+                },
+                function (reject) {
+                    //report error
+                }
+            );
+        }
+        
+        
+        // WATCHERS 
+        // place any watchers here
+        var watchThing = scope.$watch('thingData', function (newValue, oldValue) {
+        
+            scope.theThing = new Thing(newValue);
+        }
+        
+        
+        // MESSAGES
+        // Handle messaging/events here
+        scope.$on('$destroy', function (e) {
+        
+            watchThing();
+        }
+        
+        
+    }
+}])
+```
+
+That's prett much it.  There are a few gotchas that I'll list below and explain.
+
+
+
+
+
 
 
 
