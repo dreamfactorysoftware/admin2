@@ -95,6 +95,62 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
     }])
     .controller('LaunchpadCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', 'loadApps', function($scope, UserDataService, SystemConfigDataService, loadApps) {
 
+        var replaceParams = function(appUrl, appName) {
+            var newParams = "";
+            var url = appUrl;
+            if (appUrl.indexOf("?") !== -1) {
+                var temp = appUrl.split("?");
+                url = temp[0];
+                var params = temp[1];
+                params = params.split("&");
+                $.each(
+                    params, function(index, oneParam) {
+                        if (oneParam) {
+                            if ("" === newParams) {
+                                newParams += "?";
+                            } else {
+                                newParams += "&";
+                            }
+                            var pieces = oneParam.split("=");
+                            if (1 < pieces.length) {
+                                var name = pieces.shift();
+                                var value = pieces.join("=");
+
+                                switch (value) {
+                                    case "{session_id}":
+                                    case "{ticket}":
+                                    case "{first_name}":
+                                    case "{last_name}":
+                                    case "{display_name}":
+                                    case "{email}":
+                                        value = value.substring(1, value.length - 1);
+                                        value =  UserDataService.getCurrentUser()[value];
+                                        break;
+                                    case "{user_id}":
+                                        // value = top.CurrentSession.id;
+                                        value = UserDataService.getCurrentUser().session_id;
+                                        break;
+                                    case "{app_name}":
+                                        value = appName;
+                                        break;
+                                    case "{server_url}":
+                                        value = top.CurrentServer;
+                                        break;
+                                }
+
+                                newParams += name + "=" + value;
+                            } else {
+                                newParams += oneParam;
+                            }
+                        }
+                    }
+                );
+            }
+
+            return url + newParams;
+        };
+
+
         $scope.apps = [];
         $scope.noAppsMsg = false;
         $scope.onlyNoGroupApps = false;
@@ -119,6 +175,9 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                             if (!app.launch_url) {
                                 appGroup.apps.splice(index, 1);
                             }
+                            else {
+                                app.launch_url = replaceParams(app.launch_url, app.api_name);
+                            }
                         });
 
                         $scope.apps.push(appGroup)
@@ -134,6 +193,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 angular.forEach(newValue.no_group_apps, function (app, index) {
                     if (app.launch_url) {
+                        app.launch_url = replaceParams(app.launch_url, app.api_name);
                         temp.push(app);
                     }
                 });
