@@ -93,7 +93,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
         });
     }])
 
-    .directive('dfAppDetails', ['MOD_APPS_ASSET_PATH', '$location', 'dfServerInfoService', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', function(MOD_APPS_ASSET_PATH, $location, dfServerInfoService, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService) {
+    .directive('dfAppDetails', ['MOD_APPS_ASSET_PATH', 'DSP_URL', 'UserDataService', '$location', 'dfServerInfoService', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', function(MOD_APPS_ASSET_PATH, DSP_URL, UserDataService, $location, dfServerInfoService, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService) {
 
         return {
 
@@ -108,7 +108,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 var getLocalFileStorageServiceId = function () {
 
                     var a = dfApplicationData.getApiData('service', {type: 'Local File Storage'});
-
 
                     return  a && a.length ? a[0].id : null;
                 }
@@ -615,7 +614,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
         }
     }])
 
-    .directive('dfManageApps', ['MOD_APPS_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', '$window', function(MOD_APPS_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, $window) {
+    .directive('dfManageApps', ['MOD_APPS_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfReplaceParams', 'dfNotify', '$window', function(MOD_APPS_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfReplaceParams, dfNotify, $window) {
 
         return {
 
@@ -738,7 +737,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 // COMPLEX IMPLEMENTATION
                 scope._launchApp = function (app) {
 
-                    $window.open(app.record.launch_url);
+                    $window.open(dfReplaceParams(app.record.launch_url, app.record.name));
                 };
 
                 scope._editApp = function (app) {

@@ -2979,6 +2979,66 @@ angular.module('dfUtility', ['dfApplication'])
 
     }])
 
+    // replace params in launch url service
+    .service('dfReplaceParams', ['UserDataService', '$window', function (UserDataService, $window) {
+
+        return function (appUrl, appName) {
+
+            var newParams = "";
+            var url = appUrl;
+            if (appUrl.indexOf("?") !== -1) {
+                var temp = appUrl.split("?");
+                url = temp[0];
+                var params = temp[1];
+                params = params.split("&");
+                $.each(
+                    params, function(index, oneParam) {
+                        if (oneParam) {
+                            if ("" === newParams) {
+                                newParams += "?";
+                            } else {
+                                newParams += "&";
+                            }
+                            var pieces = oneParam.split("=");
+                            if (1 < pieces.length) {
+                                var name = pieces.shift();
+                                var value = pieces.join("=");
+
+                                switch (value) {
+                                    case "{session_id}":
+                                    case "{ticket}":
+                                    case "{first_name}":
+                                    case "{last_name}":
+                                    case "{display_name}":
+                                    case "{email}":
+                                        value = value.substring(1, value.length - 1);
+                                        value =  UserDataService.getCurrentUser()[value];
+                                        break;
+                                    case "{user_id}":
+                                        // value = top.CurrentSession.id;
+                                        value = UserDataService.getCurrentUser().session_id;
+                                        break;
+                                    case "{app_name}":
+                                        value = appName;
+                                        break;
+                                    case "{server_url}":
+                                        value = $window.location.origin;
+                                        break;
+                                }
+
+                                newParams += name + "=" + value;
+                            } else {
+                                newParams += oneParam;
+                            }
+                        }
+                    }
+                );
+            }
+
+            return url + newParams;
+        }
+    }])
+
     // Various Filters.  All used in dfTable.  Possibly elsewhere.
     // I'll find out if so.
     .filter('orderAndShowSchema', [function () {
