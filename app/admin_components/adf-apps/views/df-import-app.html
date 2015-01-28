@@ -6,7 +6,7 @@
         <div class="col-xs-12">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <form data-ng-submit="submitApp()" class="" >
+                    <form data-ng-submit="submitApp()" name="uploadForm" class="" >
                         <div class="row">
                             <div class="col-lg-6" >
                                 <div class="input-group" >
@@ -39,7 +39,7 @@
                             </div>
                         </div>
 
-                        <input style="display: none" type="file" id="upload" name="upload" data-file-model="uploadFile" />
+                        <input style="display: none" type="file" id="upload" name="upload" data-ng-model="uploadFile" data-file-model="uploadFile" file-model-2 />
                         <input type="submit" class="btn btn-default btn-primary" value="Import" />
                     </form>
                 </div>

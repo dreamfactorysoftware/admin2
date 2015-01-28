@@ -413,7 +413,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             var params = options.params;
             params['api'] = api;
 
-
             // return response from server as promise
             return dfSystemData.resource(options).post(params, options.data, function(result) {
 
@@ -932,8 +931,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     headers: ''
                 };
 
-                options = dfObjectService.mergeObjects(defaults, options);
-
+                options = dfObjectService.mergeObjects(options, defaults);
 
                 // Return a resource for our service so we can just call the operation we want.
                 return $resource(DSP_URL + '/rest/system/:api/:id', {api: '@api', id: '@id'}, {
@@ -944,7 +942,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     },
                     post: {
                         method: 'POST',
-                        headers: options.headers
+                        headers: options.headers,
                     },
                     put: {
                         method: 'PUT',

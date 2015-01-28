@@ -1235,6 +1235,31 @@ angular.module('dfUtility', ['dfApplication'])
         }
     ])
 
+    .directive('fileModel2', [
+        '$parse', function ($parse) {
+            return {
+                restrict: 'A',
+                scope: false,
+                link: function (scope, element, attrs) {
+
+                    var model = $parse(attrs.fileModel);
+                    var modelSetter = model.assign;
+
+                    element.on(
+                        'change', function () {
+                            scope.$apply(
+                                function () {
+
+                                    modelSetter(scope, element[0].files[0]);
+                                }
+                            );
+                        }
+                    );
+                }
+            };
+        }
+    ])
+
     // Helper directive for tabbed interfaces
     .directive('showtab',[function () {
         return {
@@ -3016,7 +3041,7 @@ angular.module('dfUtility', ['dfApplication'])
                                         break;
                                     case "{user_id}":
                                         // value = top.CurrentSession.id;
-                                        value = UserDataService.getCurrentUser().session_id;
+                                        value = UserDataService.getCurrentUser().id;
                                         break;
                                     case "{app_name}":
                                         value = appName;

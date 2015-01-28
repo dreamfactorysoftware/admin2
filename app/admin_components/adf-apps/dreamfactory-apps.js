@@ -552,7 +552,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         }
                     });
 
-                    console.log(scope.app);
 
                 });
 
@@ -966,7 +965,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
         }
     }])
 
-    .directive('dfImportApp', ['MOD_APPS_ASSET_PATH', 'dfApplicationData', 'dfNotify',  function(MOD_APPS_ASSET_PATH, dfApplicationData, dfNotify) {
+    .directive('dfImportApp', ['MOD_APPS_ASSET_PATH', '$http', 'dfApplicationData', 'dfNotify',  function(MOD_APPS_ASSET_PATH, $http, dfApplicationData, dfNotify) {
 
         return {
 
@@ -1053,15 +1052,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     };
 
                     if (scope._isAppPathUrl(scope.appPath)) {
-
                         _options['headers'] = {
                             "Content-type" : 'application/json'
                         }
-
                     }
                     else {
-                        _options['headers'] = {"Content-type" : undefined};
-                        _options['transformRequest'] = angular.identity
+                        _options['headers'] = {"Content-type" :  undefined};
+                        $http.defaults.transformRequest = angular.identity;
                     }
 
                     return dfApplicationData.saveApiData('app', _options).$promise;
@@ -1105,7 +1102,10 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     else {
 
                         var fd = new FormData();
+
                         fd.append('files', scope.uploadFile);
+                        // fd.append("files", $('input[type=file]')[0].files[0]);
+                        // fd.append("text", 'asdfasdsfasdfasdf');
                         requestDataObj = fd
                     }
 
@@ -1134,6 +1134,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             }
 
                             dfNotify.error(messageOptions);
+
+
                         }
                     )
                         .finally(
@@ -1141,6 +1143,12 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                             scope._resetImportApp();
 
+                            $http.defaults.transformRequest = function (d, headers) {
+
+                                if (angular.isObject(d)) {
+                                    return angular.toJson(d);
+                                }
+                            }
                         }
                     )
                 };
@@ -1184,6 +1192,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         i++;
                     }
                 });
+
+                var watchUploadFile = scope.$watch('uploadFile', function (n , o) {
+
+                    if (!n) return;
+
+                    scope.appPath = n.name;
+                })
 
 
                 // MESSAGES
