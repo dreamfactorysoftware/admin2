@@ -1235,6 +1235,31 @@ angular.module('dfUtility', ['dfApplication'])
         }
     ])
 
+    .directive('fileModel2', [
+        '$parse', function ($parse) {
+            return {
+                restrict: 'A',
+                scope: false,
+                link: function (scope, element, attrs) {
+
+                    var model = $parse(attrs.fileModel);
+                    var modelSetter = model.assign;
+
+                    element.on(
+                        'change', function () {
+                            scope.$apply(
+                                function () {
+
+                                    modelSetter(scope, element[0].files[0]);
+                                }
+                            );
+                        }
+                    );
+                }
+            };
+        }
+    ])
+
     // Helper directive for tabbed interfaces
     .directive('showtab',[function () {
         return {
@@ -1326,7 +1351,7 @@ angular.module('dfUtility', ['dfApplication'])
     }])
 
     // Used for manage section pagination
-    .directive('dfToolbarPaginate', ['MOD_UTILITY_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', function (MOD_UTILITY_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify) {
+    .directive('dfToolbarPaginate', ['MOD_UTILITY_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', '$location', function (MOD_UTILITY_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, $location) {
 
 
         return {
@@ -1588,9 +1613,14 @@ angular.module('dfUtility', ['dfApplication'])
                     scope._setCurrentPage(scope.pagesArr[0]);
                 });
 
+                // This is fired on $destroy in controllers that use this directive
                 scope.$on('toolbar:paginate:' + scope.api + ':reset', function (e) {
 
-                    // @TODO: if there is no api and this is fired ...return
+                    // If we're logging out don't bother
+                    // dfApplicationObj is being destroyed
+                    if ($location.path() === '/logout') {
+                        return;
+                    }
 
                     // are we currently updating the model.
                     // yes.
@@ -2977,6 +3007,66 @@ angular.module('dfUtility', ['dfApplication'])
             }
         }
 
+    }])
+
+    // replace params in launch url service
+    .service('dfReplaceParams', ['UserDataService', '$window', function (UserDataService, $window) {
+
+        return function (appUrl, appName) {
+
+            var newParams = "";
+            var url = appUrl;
+            if (appUrl.indexOf("?") !== -1) {
+                var temp = appUrl.split("?");
+                url = temp[0];
+                var params = temp[1];
+                params = params.split("&");
+                $.each(
+                    params, function(index, oneParam) {
+                        if (oneParam) {
+                            if ("" === newParams) {
+                                newParams += "?";
+                            } else {
+                                newParams += "&";
+                            }
+                            var pieces = oneParam.split("=");
+                            if (1 < pieces.length) {
+                                var name = pieces.shift();
+                                var value = pieces.join("=");
+
+                                switch (value) {
+                                    case "{session_id}":
+                                    case "{ticket}":
+                                    case "{first_name}":
+                                    case "{last_name}":
+                                    case "{display_name}":
+                                    case "{email}":
+                                        value = value.substring(1, value.length - 1);
+                                        value =  UserDataService.getCurrentUser()[value];
+                                        break;
+                                    case "{user_id}":
+                                        // value = top.CurrentSession.id;
+                                        value = UserDataService.getCurrentUser().id;
+                                        break;
+                                    case "{app_name}":
+                                        value = appName;
+                                        break;
+                                    case "{server_url}":
+                                        value = $window.location.origin;
+                                        break;
+                                }
+
+                                newParams += name + "=" + value;
+                            } else {
+                                newParams += oneParam;
+                            }
+                        }
+                    }
+                );
+            }
+
+            return url + newParams;
+        }
     }])
 
     // Various Filters.  All used in dfTable.  Possibly elsewhere.

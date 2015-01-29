@@ -43,17 +43,17 @@
                             <tbody>
                             <tr data-ng-repeat="obj in apps | orderObjectBy:order.orderBy:order.orderByReverse" class="repeated-item" data-ng-class="obj.__dfUI.selected ? 'danger' : ''">
                                 <td style="width: 80px;">
-                                    <div class="checkbox" style="margin: 0">
-                                        <label>
-                                            <input type="checkbox" data-ng-checked="obj.__dfUI.selected" data-ng-click="setSelected(obj)" />
-                                            <div class="btn-group btn-group-xs" >
-                                                <button type="button" class="btn btn-default btn-xs" data-ng-click="deleteApp(obj)" title="Delete app"><i class="fa fa-trash"></i></button>
-                                                <button type="button" class="btn btn-default btn-xs" data-ng-click="launchApp(obj)" data-ng-disabled="!obj.record.launch_url" title="Launch app"><i class="fa fa-play"></i></button>
 
-                                                <!-- Export button doesn't exist in previous app.  Remove -->
-                                                <!-- <button type="button" class="btn btn-default" data-ng-click="exportApp(obj)" data-ng-disabled="true">Export</button> -->
-                                            </div>
-                                        </label>
+
+                                    <div class="btn-group btn-group-xs" >
+                                        <div class="" style="margin-right: 5px; display: inline-block; float:left">
+                                            <input type="checkbox" data-ng-checked="obj.__dfUI.selected" data-ng-click="setSelected(obj)" />
+                                        </div>
+                                        <button type="button" class="btn btn-default btn-xs" data-ng-click="deleteApp(obj)" title="Delete app"><i class="fa fa-trash"></i></button>
+                                        <button type="button" class="btn btn-default btn-xs" data-ng-click="launchApp(obj)" data-ng-disabled="!obj.record.launch_url" title="Launch app"><i class="fa fa-play"></i></button>
+
+                                        <!-- Export button doesn't exist in previous app.  Remove -->
+                                        <!-- <button type="button" class="btn btn-default" data-ng-click="exportApp(obj)" data-ng-disabled="true">Export</button> -->
                                     </div>
 
                                 </td>

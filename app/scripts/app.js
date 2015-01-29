@@ -39,7 +39,7 @@ angular
     ])
 
     // Set application version number
-    .constant('APP_VERSION', '1.0.1')
+    .constant('APP_VERSION', '1.0.2')
 
     // Set global url for this application
     .constant('DSP_URL', '')
@@ -246,6 +246,20 @@ angular
                             type: exception.type,
                             provider: exception.provider,
                             message: exception.exception
+                        };
+
+                        dfNotify.error(messageOptions);
+                    }]);
+                }
+                else if (exception.routing) {
+
+                    $injector.invoke(['dfNotify', function(dfNotify) {
+
+                        var messageOptions = {
+                            module: 'Admin Application',
+                            type: 'error',
+                            provider: 'dreamfactory',
+                            message: 'Access to this route requires Admin role.'
                         };
 
                         dfNotify.error(messageOptions);

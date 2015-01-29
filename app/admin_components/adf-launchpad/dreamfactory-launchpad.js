@@ -95,6 +95,8 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
     }])
     .controller('LaunchpadCtrl', ['$scope', 'UserDataService', 'SystemConfigDataService', 'loadApps', function($scope, UserDataService, SystemConfigDataService, loadApps) {
 
+
+
         $scope.apps = [];
         $scope.noAppsMsg = false;
         $scope.onlyNoGroupApps = false;
@@ -119,6 +121,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
                             if (!app.launch_url) {
                                 appGroup.apps.splice(index, 1);
                             }
+
                         });
 
                         $scope.apps.push(appGroup)
@@ -168,7 +171,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
         }
     }])
 
-    .directive('dfApp', ['MOD_LAUNCHPAD_ASSET_PATH', '$window', function (MOD_LAUNCHPAD_ASSET_PATH, $window) {
+    .directive('dfApp', ['MOD_LAUNCHPAD_ASSET_PATH', '$window', 'dfReplaceParams', function (MOD_LAUNCHPAD_ASSET_PATH, $window, dfReplaceParams) {
 
         return {
             restrict: 'E',
@@ -187,7 +190,7 @@ angular.module('dfLaunchPad', ['ngRoute', 'dfUtility', 'dfTable'])
 
                 scope._launchApp = function (app) {
 
-                    $window.open(app.launch_url);
+                    $window.open(dfReplaceParams(app.launch_url, app.name));
                 };
             }
         }

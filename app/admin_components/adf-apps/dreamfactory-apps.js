@@ -23,21 +23,39 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             }
                         }],
 
-                        checkCurrentUser: ['UserDataService', '$location', function (UserDataService, $location) {
+                        checkCurrentUser: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
 
-                            var currentUser = UserDataService.getCurrentUser();
-
+                            var currentUser = UserDataService.getCurrentUser(),
+                                defer = $q.defer();
 
                             // If there is no currentUser and we don't allow guest users
                             if (!currentUser) {
-                                $location.url('/login')
+
+                                $location.url('/login');
+
+                                // This will stop the route from loading anything
+                                // it's caught by the global error handler in
+                                // app.js
+                                throw {
+                                    routing: true
+                                }
                             }
 
                             // There is a currentUser but they are not an admin
                             else if (currentUser && !currentUser.is_sys_admin) {
 
-                                $location.url('/launchpad')
+                                $location.url('/launchpad');
+
+                                // This will stop the route from loading anything
+                                // it's caught by the global error handler in
+                                // app.js
+                                throw {
+                                    routing: true
+                                }
                             }
+
+                            defer.resolve();
+                            return defer.promise;
                         }]
                     }
                 });
@@ -93,7 +111,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
         });
     }])
 
-    .directive('dfAppDetails', ['MOD_APPS_ASSET_PATH', '$location', 'dfServerInfoService', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', function(MOD_APPS_ASSET_PATH, $location, dfServerInfoService, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService) {
+    .directive('dfAppDetails', ['MOD_APPS_ASSET_PATH', 'DSP_URL', 'UserDataService', '$location', 'dfServerInfoService', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', function(MOD_APPS_ASSET_PATH, DSP_URL, UserDataService, $location, dfServerInfoService, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService) {
 
         return {
 
@@ -108,7 +126,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 var getLocalFileStorageServiceId = function () {
 
                     var a = dfApplicationData.getApiData('service', {type: 'Local File Storage'});
-
 
                     return  a && a.length ? a[0].id : null;
                 }
@@ -553,7 +570,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         }
                     });
 
-                    console.log(scope.app);
 
                 });
 
@@ -615,7 +631,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
         }
     }])
 
-    .directive('dfManageApps', ['MOD_APPS_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', '$window', function(MOD_APPS_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, $window) {
+    .directive('dfManageApps', ['MOD_APPS_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfReplaceParams', 'dfNotify', '$window', function(MOD_APPS_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfReplaceParams, dfNotify, $window) {
 
         return {
 
@@ -738,7 +754,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                 // COMPLEX IMPLEMENTATION
                 scope._launchApp = function (app) {
 
-                    $window.open(app.record.launch_url);
+                    $window.open(dfReplaceParams(app.record.launch_url, app.record.name));
                 };
 
                 scope._editApp = function (app) {
@@ -967,7 +983,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
         }
     }])
 
-    .directive('dfImportApp', ['MOD_APPS_ASSET_PATH', 'dfApplicationData', 'dfNotify',  function(MOD_APPS_ASSET_PATH, dfApplicationData, dfNotify) {
+    .directive('dfImportApp', ['MOD_APPS_ASSET_PATH', '$http', 'dfApplicationData', 'dfNotify',  function(MOD_APPS_ASSET_PATH, $http, dfApplicationData, dfNotify) {
 
         return {
 
@@ -1054,15 +1070,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     };
 
                     if (scope._isAppPathUrl(scope.appPath)) {
-
                         _options['headers'] = {
                             "Content-type" : 'application/json'
                         }
-
                     }
                     else {
-                        _options['headers'] = {"Content-type" : undefined};
-                        _options['transformRequest'] = angular.identity
+                        _options['headers'] = {"Content-type" :  undefined};
+                        $http.defaults.transformRequest = angular.identity;
                     }
 
                     return dfApplicationData.saveApiData('app', _options).$promise;
@@ -1106,7 +1120,10 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                     else {
 
                         var fd = new FormData();
+
                         fd.append('files', scope.uploadFile);
+                        // fd.append("files", $('input[type=file]')[0].files[0]);
+                        // fd.append("text", 'asdfasdsfasdfasdf');
                         requestDataObj = fd
                     }
 
@@ -1135,6 +1152,8 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             }
 
                             dfNotify.error(messageOptions);
+
+
                         }
                     )
                         .finally(
@@ -1142,6 +1161,12 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                             scope._resetImportApp();
 
+                            $http.defaults.transformRequest = function (d, headers) {
+
+                                if (angular.isObject(d)) {
+                                    return angular.toJson(d);
+                                }
+                            }
                         }
                     )
                 };
@@ -1185,6 +1210,13 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                         i++;
                     }
                 });
+
+                var watchUploadFile = scope.$watch('uploadFile', function (n , o) {
+
+                    if (!n) return;
+
+                    scope.appPath = n.name;
+                })
 
 
                 // MESSAGES
