@@ -642,6 +642,8 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
 
                                 scope.$emit(scope.es.passwordSetSuccess, userCredsObj);
 
+                                scope.showTemplate = false;
+
 
                             },
                             function (reject) {
@@ -650,10 +652,10 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                                 scope.$emit(scope.es.passwordSetError);
                                 scope.resetWaiting = false;
                             }
-                        ).finally (
-
-
-
+                        ).finally(
+                                function() {
+                                    scope.resetWaiting = false;
+                                }
                             )
                     };
 
