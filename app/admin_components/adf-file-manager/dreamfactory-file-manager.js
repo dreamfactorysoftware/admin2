@@ -25,12 +25,26 @@ angular.module('dfFileManager', ['ngRoute', 'dfUtility'])
                             if (!currentUser) {
 
                                 $location.url('/login');
+
+                                // This will stop the route from loading anything
+                                // it's caught by the global error handler in
+                                // app.js
+                                throw {
+                                    routing: true
+                                }
                             }
 
                             // There is a currentUser but they are not an admin
                             else if (currentUser && !currentUser.is_sys_admin) {
 
                                 $location.url('/launchpad');
+
+                                // This will stop the route from loading anything
+                                // it's caught by the global error handler in
+                                // app.js
+                                throw {
+                                    routing: true
+                                }
                             }
 
                             defer.resolve();

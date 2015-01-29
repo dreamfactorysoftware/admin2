@@ -1351,7 +1351,7 @@ angular.module('dfUtility', ['dfApplication'])
     }])
 
     // Used for manage section pagination
-    .directive('dfToolbarPaginate', ['MOD_UTILITY_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', function (MOD_UTILITY_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify) {
+    .directive('dfToolbarPaginate', ['MOD_UTILITY_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', '$location', function (MOD_UTILITY_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, $location) {
 
 
         return {
@@ -1613,9 +1613,14 @@ angular.module('dfUtility', ['dfApplication'])
                     scope._setCurrentPage(scope.pagesArr[0]);
                 });
 
+                // This is fired on $destroy in controllers that use this directive
                 scope.$on('toolbar:paginate:' + scope.api + ':reset', function (e) {
 
-                    // @TODO: if there is no api and this is fired ...return
+                    // If we're logging out don't bother
+                    // dfApplicationObj is being destroyed
+                    if ($location.path() === '/logout') {
+                        return;
+                    }
 
                     // are we currently updating the model.
                     // yes.

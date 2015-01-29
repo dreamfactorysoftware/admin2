@@ -251,6 +251,20 @@ angular
                         dfNotify.error(messageOptions);
                     }]);
                 }
+                else if (exception.routing) {
+
+                    $injector.invoke(['dfNotify', function(dfNotify) {
+
+                        var messageOptions = {
+                            module: 'Admin Application',
+                            type: 'error',
+                            provider: 'dreamfactory',
+                            message: 'Access to this route requires Admin role.'
+                        };
+
+                        dfNotify.error(messageOptions);
+                    }]);
+                }
 
                 else {
 

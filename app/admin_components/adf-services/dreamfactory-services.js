@@ -27,12 +27,20 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             if (!currentUser) {
 
                                 $location.url('/login');
+
+                                throw {
+                                    routing: true
+                                }
                             }
 
                             // There is a currentUser but they are not an admin
                             else if (currentUser && !currentUser.is_sys_admin) {
 
                                 $location.url('/launchpad');
+
+                                throw {
+                                    routing: true
+                                }
                             }
 
                             defer.resolve();
