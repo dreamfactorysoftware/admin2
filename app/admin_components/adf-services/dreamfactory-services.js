@@ -607,6 +607,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                             data = scope._prepareRWS();
                             break;
+
+                        case 'Push Service':
+                            data = scope._preparePS();
+                            break;
                     }
 
                     scope.serviceInfo.record.credentials = data;
@@ -713,6 +717,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     // return scope._storageType;
                     return null;
                 };
+
+                scope._preparePS = function () {
+
+                    switch ( scope.serviceInfo.record.storage_type ) {
+                        case "aws sns":
+                            return scope._storageType;
+                    }
+                }
 
 
 
@@ -878,7 +890,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope._renderAdditionalFields = function (storageType) {
 
-
                     var creds = {};
 
                     if (storageType === scope.serviceInfo.recordCopy.storage_type) {
@@ -978,6 +989,17 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                                     'os-tenet-name',
                                     'os-region',
                                     'os-endpoint'
+                                ], true);
+                            break;
+
+                        case 'aws sns':
+
+                            scope._storageType = new dfStorageTypeFactory('aws', creds);
+                            scope._buildFieldSet(
+                                [
+                                    'aws-access-key',
+                                    'aws-secret-key',
+                                    'aws-region'
                                 ], true);
                             break;
 
@@ -1129,6 +1151,21 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                                     'description',
                                     'is-active'
                                 ]);
+                            break;
+
+                        case 'Push Service':
+                            scope._setTabs(false, false, false, true);
+                            scope._storageType = new dfStorageTypeFactory('push service', scope.serviceInfo.record.credentials);
+                            scope._buildFieldSet(
+                                [
+                                    'type',
+                                    'api-name',
+                                    'name',
+                                    'description',
+                                    'is-active',
+                                    'push-type'
+                                ]);
+                            scope._renderAdditionalFields(scope.serviceInfo.record.storage_type);
                             break;
 
                         default:
@@ -1322,6 +1359,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     emailCommand: {
                         title: 'Email Command ',
                         text: 'Specify the command path for email.'
+                    },
+                    pushServiceVendor: {
+                        title: 'Push Notification Service Vendor',
+                        text: 'Select a Push Notfication Service Provider'
                     }
                 }
             }
@@ -2377,8 +2418,14 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         name: 'email_service',
                         label: 'Email Service',
                         value: 'Email Service'
+                    },
+                    {
+                        name: 'push_service',
+                        label: 'Push Service',
+                        value: 'Push Service'
                     }
                 ],
+
 
                 emailOptions: [
                     {name: "Server Default", value: 'default'},
@@ -2426,6 +2473,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     {name: "Windows Azure Storage", value: "azure blob"},
                     {name: "RackSpace CloudFiles", value: "rackspace cloudfiles"},
                     {name: "OpenStack Object Storage", value: "openstack object storage"}
+                ],
+                pushOptions: [
+                    {name: "Amazon SNS", value: "aws sns"}
                 ]
             }
 
@@ -2861,4 +2911,17 @@ angular.module('dfServiceTemplates', [])
                 '<input class="form-control" data-ng-disabled="!_storageType.region" type="text" data-ng-model="_storageType.url"/>' +
             '</div>'
         );
+
+
+        // Push Service
+        $templateCache.put('_service-push-type.html',
+            '<div class="form-group">' +
+                '<label>Push Notification Service Vendor</label><df-simple-help data-options="dfSimpleHelp.pushServiceVendor"></df-simple-help>' +
+                '<select class="form-control" data-ng-change="_renderAdditionalFields(serviceInfo.record.storage_type)" data-ng-options="option.value as option.name for option in hcv.pushOptions" data-ng-model="serviceInfo.record.storage_type" type="text">' +
+                '<option value="">-- Select Storage Type --</option>' +
+                '</select>' +
+
+                '</div>'
+        );
+
     }]);
