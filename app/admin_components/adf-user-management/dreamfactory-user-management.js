@@ -346,13 +346,13 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                 // I was lazy.  These two dismiss errors don't
                 // follow the module pattern.
                 // Public functions setting values directly
-                scope.dismissError = function () {
+                /*scope.dismissError = function () {
                     scope.errorMsg = '';
                 }
 
                 scope.dismissSuccess = function () {
                     scope.successMsg = '';
-                }
+                }*/
 
 
                 scope.requestPasswordReset = function (emailDataObj) {
