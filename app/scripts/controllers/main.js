@@ -321,7 +321,7 @@ angular.module('dreamfactoryApp')
     // We inject $location because we'll want to update our location on a successful
     // login and the UserEventsService from our DreamFactory User Management Module to be able
     // to respond to events generated from that module
-    .controller('LoginCtrl', ['dfAvailableApis', '$scope', '$location', '$timeout', 'UserEventsService', 'dfApplicationData', 'dfApplicationPrefs', 'SystemConfigDataService', 'dfNotify', function(dfAvailableApis, $scope, $location, $timeout, UserEventsService, dfApplicationData, dfApplicationPrefs, SystemConfigDataService, dfNotify) {
+    .controller('LoginCtrl', ['dfAvailableApis', '$scope', '$location', '$timeout', 'UserDataService', 'UserEventsService', 'dfApplicationData', 'dfApplicationPrefs', 'SystemConfigDataService', 'dfNotify', function(dfAvailableApis, $scope, $location, $timeout, UserDataService, UserEventsService, dfApplicationData, dfApplicationPrefs, SystemConfigDataService, dfNotify) {
 
         // Login options array
         $scope.loginOptions = {
@@ -415,8 +415,6 @@ angular.module('dreamfactoryApp')
             }
         });
 
-
-
     }])
 
     // Our LogoutCtrl controller inherits from out TopLevelAppCtrl controller
@@ -432,7 +430,6 @@ angular.module('dreamfactoryApp')
             // the userDataObj passed with the success message is just a boolean
             // and should be 'false'
             $scope.$parent.currentUser = userDataObj;
-
 
             // Remove Application Object from sessionStorage on successful logout
             dfApplicationData.destroyApplicationObj();

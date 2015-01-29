@@ -8,7 +8,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
     .constant('MODUSRMNGR_ASSET_PATH', 'admin_components/adf-user-management/')
 
     // Define a router to handle module routes.  None used here
-    .config(['$routeProvider', 'MODUSRMNGR_ROUTER_PATH', 'MODUSRMNGR_ASSET_PATH',
+    /*.config(['$routeProvider', 'MODUSRMNGR_ROUTER_PATH', 'MODUSRMNGR_ASSET_PATH',
         function ($routeProvider, MODUSRMNGR_ROUTER_PATH, MODUSRMNGR_ASSET_PATH) {
 
             $routeProvider
@@ -16,6 +16,7 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                     templateUrl: MODUSRMNGR_ASSET_PATH + 'views/main.html'
                 });
         }])
+    */
 
     .run(['$cookieStore', '$http', 'UserDataService', function ($cookieStore, $http, UserDataService) {
 
@@ -254,8 +255,6 @@ angular.module('dfUserManagement', ['ngRoute', 'ngCookies', 'dfUtility'])
                                 // Handle Login error with template error message
                                 scope.errorMsg = reject.data.error[0].message;
                                 scope.$emit(scope.es.loginError, reject);
-
-                                console.log(scope);
 
 
                             }

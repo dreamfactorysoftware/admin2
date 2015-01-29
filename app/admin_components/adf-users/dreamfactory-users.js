@@ -36,21 +36,25 @@ angular.module('dfUsers', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                                 return dfApplicationData.initDeferred.promise;
                             }
                         }],
-                        checkCurrentUser: ['UserDataService', '$location', function (UserDataService, $location) {
+                        checkCurrentUser: ['UserDataService', '$location', '$q', function (UserDataService, $location, $q) {
 
-                            var currentUser = UserDataService.getCurrentUser();
-
+                            var currentUser = UserDataService.getCurrentUser(),
+                                defer = $q.defer();
 
                             // If there is no currentUser and we don't allow guest users
                             if (!currentUser) {
-                                $location.url('/login')
+
+                                $location.url('/login');
                             }
 
                             // There is a currentUser but they are not an admin
                             else if (currentUser && !currentUser.is_sys_admin) {
 
-                                $location.url('/launchpad')
+                                $location.url('/launchpad');
                             }
+
+                            defer.resolve();
+                            return defer.promise;
                         }]
                     }
                 });

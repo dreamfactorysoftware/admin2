@@ -4,46 +4,86 @@
 
 angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
-    // This whole service is basically a facade for our bootstrapped app data.
-    // It provides accessor functions that will invoke the proper service
-    // for the manipulation of application data
-    .run(['$q', 'dfApplicationData', 'dfApplicationPrefs', 'dfAvailableApis', 'dfSessionStorage', 'UserDataService', 'SystemConfigDataService', function($q, dfApplicationData, dfApplicationPrefs, dfAvailableApis, dfSessionStorage, UserDataService, SystemConfigDataService) {
+
+    .run(['$q', 'dfApplicationData', 'dfApplicationPrefs', 'dfAvailableApis', 'dfSessionStorage', 'UserDataService', 'SystemConfigDataService', '$location', '$rootScope', function($q, dfApplicationData, dfApplicationPrefs, dfAvailableApis, dfSessionStorage, UserDataService, SystemConfigDataService, $location, $rootScope) {
 
 
+        // Get the System Config synchronously because we are
+        // dead in the water without it
         var SystemConfig = SystemConfigDataService.getSystemConfigFromServerSync();
 
-
+        // Set it to the service so we have access to it everywhere
+        // we inject the 'SystemConfigDataService'
         SystemConfigDataService.setSystemConfig(SystemConfig);
 
 
+        // if no local dfApplicationObject and there is a current user
+        // **possibly a closed tab without loggin out**
         if (!dfSessionStorage.getItem('dfApplicationObj') && UserDataService.getCurrentUser()) {
 
+            // Set init var true so other modules can check state
             dfApplicationData.initInProgress = true;
+
+            // Set a rootScope init var.  The httpValidSession service looks for this to
+            // determine if it should show the popup login on api call failure
+            $rootScope.initInProgress = true;
+
+            // Set a promise object so that any modules loading can be alerted to
+            // the init completion
             dfApplicationData.initDeferred = $q.defer();
 
+            // Check if we are on the hosted system
             if (SystemConfig.is_hosted) {
 
-                // reload app data
+                // we are hosted.  Add the event api for scripting
                 dfApplicationData.init(dfAvailableApis.getApis().addEventApi().apis).then(
+
+                    // Success
                     function () {
+
+                        // Resolve the init promise which will allow modules waiting on the init processs
+                        // to finish loading.  You will find this resolution in the resolve function
+                        // of component modules(like dfApps, dfUsers, dfRoles, etc etc)
                         dfApplicationData.initDeferred.resolve();
+
+                        // Set our init flag to false
                         dfApplicationData.initInProgress = false;
+                    },
+                    function () {
+                        dfApplicationData.initInProgress = false;
+                        $location.url('/logout');
+                        return;
                     }
                 )
             }
             else {
+
+                // Same process as above but event api is not loaded
+                // because we are not on the hosted system
                 dfApplicationData.init(dfAvailableApis.getApis().apis).then(
                     function () {
                         dfApplicationData.initDeferred.resolve();
                         dfApplicationData.initInProgress = false;
+                    },
+                    function () {
+
+                        dfApplicationData.initInProgress = false;
+                        $location.url('/logout');
+                        return;
                     }
                 )
             }
 
         }
+
+        // if we have a dfApplicationObj and a current user
+        // ** browser refresh **
         else if (dfSessionStorage.getItem('dfApplicationObj') && UserDataService.getCurrentUser()) {
 
+
+            // same init process as above.
             dfApplicationData.initInProgress = true;
+            $rootScope.initInProgress = true;
             dfApplicationData.initDeferred = $q.defer();
 
             if (SystemConfig.is_hosted) {
@@ -53,33 +93,60 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     function () {
                         dfApplicationData.initDeferred.resolve();
                         dfApplicationData.initInProgress = false;
+                    },
+                    function () {
+                        dfApplicationData.initInProgress = false;
+                        $location.url('/logout');
+                        return;
                     }
                 )
             }
             else {
                 dfApplicationData.init(dfAvailableApis.getApis().apis).then(
                     function () {
+
                         dfApplicationData.initDeferred.resolve();
                         dfApplicationData.initInProgress = false;
+                    },
+                    function () {
+                        dfApplicationData.initInProgress = false;
+                        $location.url('/logout');
+                        return;
                     }
                 )
             }
         }
+
+        // No local dfApplicationObj and no current user
         else if (!dfSessionStorage.getItem('dfApplicationObj') && !UserDataService.getCurrentUser()) {
 
-            // console.log('No user and no app object');
+            // Destroy any existing dfApplicationObj that may be in memory
+            dfApplicationData.destroyApplicationObj();
+
+            // redirect to login
+            // the application routing will take care of this automatically
+
         }
         else if (dfSessionStorage.getItem('dfApplicationObj') && !UserDataService.getCurrentUser()) {
 
             // Something went wrong.  App obj should not be present
             // This should be ammedned to accept guest users as a possibility
-            // dfSessionStorage.removeItem('dfApplicationObj');
+            dfSessionStorage.removeItem('dfApplicationObj');
+
+            // Delete the dfApplicationObj if it is in memory
+            dfApplicationData.destroyApplicationObj();
+
+            // send to login
+            $location.url('/login');
         }
         else {
 
-            // Sample Caching Mode?
+            // Sample Caching Mode
+            // used for development so we don't have to contact the sever
+            // everytime we make a CSS change.  Commented out as nothing should ever reach here.
             // screen was refreshed.  reload app obj from session storage
-            dfApplicationData.setApplicationObj(angular.fromJson(dfSessionStorage.getItem('dfApplicationObj')));
+            // dfApplicationData.setApplicationObj(angular.fromJson(dfSessionStorage.getItem('dfApplicationObj')));
+            alert('dfAplicationData: INIT: This should not be reached')
         }
     }])
 
@@ -116,155 +183,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     delete options.params[key];
                 }
             });
-        }
-
-        // Loads the data for the modules we have access to and
-        // builds our application object
-        function _init(options) {
-
-
-            var result,
-                api = {
-                    api_name: null,
-                    params: {}
-                };
-
-
-            // Load our current user into the application obj
-            dfApplicationObj.currentUser = UserDataService.getCurrentUser();
-
-            // Are we an admin
-            if (dfApplicationObj.currentUser.is_sys_admin) {
-
-                // Get admin prefs
-                var result = _getAdminPrefs();
-
-                result = angular.fromJson(result.response);
-
-                // were they retrieved successfully
-                if (result !== null && result.hasOwnProperty('adminPreferences') && result.adminPreferences !== null) {
-
-                    // store them for following calls
-                    dfApplicationPrefs.setPrefs(result.adminPreferences);
-                }
-            }
-
-
-
-            if (dfApplicationObj.currentUser.is_sys_admin) {
-
-                dfMainLoadData.numElemsToLoad = options.apis.length;
-                dfMainLoadData.loadData.module = 'Current User';
-
-                // $rootScope.$broadcast('dfml:start');
-                dfMainLoading.start();
-
-                var i = 0,
-                    authorized = true;
-
-                // Loop through allowed apis for user
-                while (authorized && i < options.apis.length) {
-
-                    var apiName = options.apis[i],
-                        api = {
-                        api_name: apiName,
-                        params: {}
-                        };
-
-                    api.params = dfApplicationPrefs.getPrefs().data[apiName];
-
-                    // Set loading screen
-                    dfMainLoadData.loadData.module = apiName;
-                    dfMainLoadData.loadData.percent += parseInt(100/dfMainLoadData.numElemsToLoad);
-                    // $rootScope.$broadcast('dfml:update');
-                    dfMainLoading.update();
-
-
-
-                    // check for and remove null value params
-                    _checkParams(api);
-
-                    // This is a special case and could be handled better
-                    // do we just want a list of system components
-                    if (api.api_name === 'system') {
-
-                        // set the name to empty string because already build the
-                        // url with 'system' in it.
-                        api.api_name = '';
-
-
-                        var apiData = dfSystemData.getSystemApisFromServerSync(api).resource;
-
-                        if (apiData === 'Unauthorized') {
-                            authorized = false;
-                            break;
-                        }
-
-                        // Set our application object system prop
-                        dfApplicationObj['apis']['system'] = {};
-                        dfApplicationObj.apis.system['record'] = apiData;
-                    }
-
-                    // special case for config.
-                    // not reutrned in record array
-                    else if (api.api_name === 'config') {
-
-                        var apiData = dfSystemData.getSystemApisFromServerSync(api);
-
-                        if (apiData === 'Unauthorized') {
-                            authorized = false;
-                            break;
-                        }
-
-                        // Set our application object config prop
-                        dfApplicationObj['apis']['config'] = {};
-
-                        // This returns an object so store in an array to mimick other apis
-                        dfApplicationObj.apis.config['record'] = [apiData]
-                    }
-                    else {
-
-                        var apiData = dfSystemData.getSystemApisFromServerSync(api);
-
-                        if (apiData === 'Unauthorized') {
-                            authorized = false;
-                            break;
-                        }
-
-
-                        // Attach them to the application object
-                        dfApplicationObj['apis'][api.api_name] = apiData;
-                    }
-
-                    i++;
-                }
-
-                // Session has timed out and you have refreshed the page.
-                if (!authorized) {
-
-                    // redirect to logout
-                    // it has all the logic to handle this.
-                    $location.url('/logout');
-                }
-            }
-
-            // Set our bootstrapped application object into sessionStorage
-            dfSessionStorage.setItem('dfApplicationObj', angular.toJson(dfApplicationObj, true));
-
-            dfMainLoadData = {
-                numElemsToLoad: 0,
-                percentLoaded: 0,
-                loadData: {
-
-                    op: 'Loading',
-                    module: null,
-                    percent: 0
-                }
-            }
-
-            // $rootScope.$broadcast('dfml:finish');
-
-            dfMainLoading.finish();
         }
 
         // Loads modules data and builds application object from async calls
@@ -364,19 +282,14 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         },
                         function (reject) {
 
-                            if (reject.readyState == 4 && (reject.status === 401 || reject.status === 403)) {
-
-                                // redirect to logout
-                                // it has all the logic to handle this.
-                                $location.url('/logout');
-                            }
+                            return $q.reject(reject);
                         }
                     ));
                 });
 
 
 
-                $q.all(promises).then(
+               $q.all(promises).then(
                     function () {
 
                         // All apis finished loading
@@ -386,11 +299,21 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                         dfSessionStorage.setItem('dfApplicationObj', angular.toJson(dfApplicationObj, true));
 
                         defer.resolve();
+
+                        // Init was successful.  The popup login will check for this value to be false before
+                        // showing.  Init is in progress it will allow this module to handle login/logout and user location
+                        $rootScope.initInProgress = false;
+                    },
+                    function () {
+
+                        // All apis finished loading
+                        dfMainLoading.finish();
+                        defer.reject();
                     }
-                );
+               );
+
 
                 return defer.promise;
-
             }
         }
 
@@ -669,7 +592,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                 options = options || [];
 
                 return _asyncInit(options);
-                // _init(options);
             },
 
             // Returns app obj that is stored in the service
@@ -698,8 +620,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             },
 
             // Update browser sessionStorage with current dfApplicationObj in memory.
-            // Generally used to update the sessionStorage when UI properties are added
-            // or removed.
             updateApplicationStore: function () {
 
                 dfSessionStorage.setItem('dfApplicationObj', angular.toJson(dfApplicationObj, true));
@@ -908,7 +828,6 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
 
             },
 
-
             http: function(api, options) {
 
                 return {
@@ -1094,7 +1013,7 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
     }])
 
     // Intercepts outgoing http calls.  Checks for valid session.  If 403 or 401 will trigger a pop up login screen.
-    .factory('httpValidSession', ['$q', '$rootScope', '$location', function ($q, $rootScope, $location) {
+    .factory('httpValidSession', ['$q', '$rootScope', '$location', function($q, $rootScope, $location) {
 
 
         return {
@@ -1132,7 +1051,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
                     default:
 
                         if (reject.status === 401 || reject.status === 403) {
-                            $rootScope.$$childHead.openLoginWindow(reject);
+
+                            if ($rootScope.initInProgress === false) {
+                                $rootScope.$$childHead.openLoginWindow(reject);
+                            }
                         }
                 }
 
