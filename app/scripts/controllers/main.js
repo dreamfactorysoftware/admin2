@@ -566,7 +566,12 @@ angular.module('dreamfactoryApp')
     }])
 
     // Controls Reset of password
-    .controller('ResetPasswordEmailCtrl', ['$scope', '$location', 'dfApplicationData', 'UserEventsService', 'SystemConfigDataService', 'dfNotify',  function($scope, $location, dfApplicationData, UserEventsService, SystemConfigDataService, dfNotify) {
+    .controller('ResetPasswordEmailCtrl', ['$scope', '$location', 'dfApplicationData', 'dfAvailableApis', 'UserEventsService', 'SystemConfigDataService', 'dfNotify', '$timeout',  function($scope, $location, dfApplicationData, dfAvailableApis, UserEventsService, SystemConfigDataService, dfNotify, $timeout) {
+
+        // Login options array
+        $scope.loginOptions = {
+            showTemplate: false
+        };
 
         $scope.resetPasswordLoginErrorMsg = '';
 
@@ -593,7 +598,6 @@ angular.module('dreamfactoryApp')
         // we would probably write more code trying not to repeat ourselves.
         $scope.$on(UserEventsService.login.loginSuccess, function(e, userDataObj) {
 
-
             // alert success to user
             var messageOptions = {
                 module: 'Users',
@@ -604,15 +608,57 @@ angular.module('dreamfactoryApp')
 
             dfNotify.success(messageOptions);
 
-            // Assign the user to the parent current user var
+            // Set our parent's current user var
             $scope.$parent.currentUser = userDataObj;
 
+            // API Options
+            var options = {
+                apis: []
+            };
 
-            // setup the app
-            dfApplicationData.init();
+            // Set services on application object
+            // are we an admin
+            if (userDataObj.is_sys_admin) {
 
-            // redirect to the app home page
-            $location.url('/launchpad');
+                // Hide our login template while services build
+                $scope.loginOptions.showTemplate = false;
+
+                // 250ms delay to allow the login screen to process
+                // and disappear
+                $timeout(function () {
+
+                    // Set the apis we want
+                    options.apis = dfAvailableApis.getApis().apis;
+
+                    if (SystemConfigDataService.getSystemConfig().is_hosted) {
+                        options.apis = dfAvailableApis.getApis().addEventApi().apis;
+                    }
+
+                    // Init the app
+                    dfApplicationData.init(options.apis).then(
+                        function () {
+
+                            // Change our app location back to the home page
+                            $location.url('/quickstart');
+                            // $location.url('/dashboard');
+                        }
+                    );
+
+                }, 250);
+            }
+
+            // not an admin.
+            else {
+
+                // Set our parent's current user var
+                $scope.$parent.currentUser = userDataObj;
+
+                // Init the application
+                dfApplicationData.init();
+
+                // Send em to launchpad
+                $location.url('/launchpad');
+            }
         });
 
 
