@@ -2768,7 +2768,7 @@ angular.module('dfServiceTemplates', [])
         $templateCache.put('_service-couch-dsn.html',
             '<div class="form-group">' +
             '<label>Connection String</label><df-simple-help data-options="dfSimpleHelp.connectionString"></df-simple-help>' +
-            '<input data-ng-model="_couchdb.dsn" type="text" class="form-control"/>' +
+            '<input data-ng-model="_storageType.dsn" type="text" class="form-control"/>' +
             '</div>'
         );
 
