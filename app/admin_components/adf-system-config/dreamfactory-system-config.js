@@ -390,6 +390,10 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                 scope: true,
                 link: function (scope, elem, attrs) {
 
+                    elem.bind('change', function(){
+                        scope.systemConfig.record.allowed_hosts = scope.allowedHosts;
+                    });
+
                     scope.allowedHosts = scope.systemConfig.record.allowed_hosts;
 
                     scope.supportedVerbs = [
