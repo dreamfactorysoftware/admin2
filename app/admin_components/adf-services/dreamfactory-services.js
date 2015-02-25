@@ -1052,7 +1052,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                                     'api-name',
                                     'name',
                                     'description',
-                                    'base-url',
                                     'is-active',
                                     'email-transport-type'
                                 ]);
