@@ -17,6 +17,8 @@ angular
         'ngSanitize',
         'ngTouch',
         'dfUtility',
+        'dfHome',
+        'dfDownloads',
         'dfDashboard',
         'dfSystemConfig',
         'dfUsers',
