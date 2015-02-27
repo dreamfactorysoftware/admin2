@@ -398,10 +398,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     scope._prepareServiceData();
 
-                    // console.log(angular.toJson(scope.service.record))
-                    // console.log(angular.toJson(scope.service.recordCopy))
-
-
                     if (!dfObjectService.compareObjectsAsJson(scope.service.record, scope.service.recordCopy)) {
 
                         if (!dfNotify.confirmNoSave()) {
@@ -621,10 +617,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             break;
                     }
 
-                    scope.serviceInfo.record.credentials = data;
+                    scope.serviceInfo.record.credentials = dfObjectService.mergeObjects(scope.serviceInfo.record.credentials, data);
                     scope.service.record = dfObjectService.mergeObjects(scope.serviceInfo.record, scope.service.record);
-
-                    // console.log(scope.serviceInfo);
                 };
                 
                 scope._prepareRWS = function() {
@@ -634,9 +628,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 
                 scope._prepareEmailData = function () {
 
-                    scope._storageType['user'] = scope.serviceInfo.record.user;
-                    scope._storageType['password'] = scope.serviceInfo.record.password;
-
+                    scope._storageType['user'] = scope.serviceInfo.record.credentials.user;
+                    scope._storageType['password'] = scope.serviceInfo.record.credentials.password;
 
                     var temp = angular.copy(scope._storageType);
 
@@ -1052,6 +1045,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                                     'api-name',
                                     'name',
                                     'description',
+                                    'base-url',
                                     'is-active',
                                     'email-transport-type'
                                 ]);
@@ -1454,7 +1448,15 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     if (scope.service.record.credentials !== null && scope.service.record.credentials !== undefined && scope.service.record.credentials.hasOwnProperty('client_exclusions')) {
                         scope.service.record.credentials.client_exclusions.parameters = scope.excludeParams;
                     }
+                    else {
+                        var _new = {
+                            client_exclusions: {
+                                parameters: scope.excludeParams
+                            }
+                        };
 
+                        scope.service.record.credentials = dfObjectService.mergeObjects(scope.service.record.credentials, _new);
+                    }
                 };
 
                 scope._addParameter = function () {
