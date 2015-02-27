@@ -2540,14 +2540,14 @@ angular.module('dfServiceTemplates', [])
         $templateCache.put('_service-user-name.html',
             '<div class="form-group">' +
             '<label>Username</label><df-simple-help data-options="dfSimpleHelp.userName"></df-simple-help>' +
-                '<input class="form-control" id="serviceInfo-record-user" name="serviceInfo-record-user" data-ng-model="serviceInfo.record.user" type="text"/>' +
+                '<input class="form-control" id="serviceInfo-record-user" name="serviceInfo-record-user" data-ng-model="serviceInfo.record.credentials.user" type="text"/>' +
                 '</div>'
         );
 
         $templateCache.put('_service-password.html',
             '<div class="form-group">' +
             '<label>Password</label><df-simple-help data-options="dfSimpleHelp.password"></df-simple-help>' +
-                '<input class="form-control" id="serviceInfo-record-password" name="serviceInfo-record-password" data-ng-model="serviceInfo.record.password" type="password"/>' +
+                '<input class="form-control" id="serviceInfo-record-password" name="serviceInfo-record-password" data-ng-model="serviceInfo.record.credentials.password" type="password"/>' +
                 '</div>'
         );
 
