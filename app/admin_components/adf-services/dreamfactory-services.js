@@ -215,7 +215,27 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     else {
                         scope._prepareServiceDefinitionData();
                     }
+
+                    if (scope.service.record.type === 'NoSQL DB') {
+                        scope._prepareServiceNoSQLData();
+                    }
                 };
+
+                scope._trimRequestDataObj = function (requestObj) {
+                    delete requestObj.data.credentials.options_ctrl;
+                    return requestObj;
+                }
+
+                scope._restoreRequestDataObj = function (requestObj) {
+                    if (requestObj.credentials.options.hasOwnProperty('ssl'))
+                        requestObj.credentials.options_ctrl = true;
+                    else
+                        requestObj.credentials.options_ctrl = false;
+
+                    scope._storageType = requestObj.credentials;
+
+                    return requestObj;
+                }
 
                 scope._resetServiceDetails = function () {
 
@@ -250,6 +270,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         },
                         data: scope.service.record
                     };
+
+                    requestDataObj = scope._trimRequestDataObj(requestDataObj);
 
                     scope._saveServiceToServer(requestDataObj).then(
                         function(result) {
@@ -304,6 +326,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         data: scope.service.record
                     };
 
+                    requestDataObj = scope._trimRequestDataObj(requestDataObj);
 
                     scope._updateServiceToServer(requestDataObj).then(
                         function(result) {
@@ -316,6 +339,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                                 message: 'Service updated successfully.'
 
                             };
+
+                            result = scope._restoreRequestDataObj(result);
 
                             dfNotify.success(messageOptions);
                             scope.service = new Service(result);
@@ -524,7 +549,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     headers: true,
                     privates: true,
                     serviceDef: true
-                }
+                };
+
 
 
                 scope.sql_server_host_identifier = null;
@@ -568,6 +594,19 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                         }
                     });
                 };
+
+
+                scope._prepareServiceNoSQLData = function () {
+
+                    if ( scope.service.record.storage_type === 'mongodb') {
+                        if ( scope.service.record.credentials.options_ctrl === true) {
+                            scope.service.record.credentials.options = {ssl:true};
+                        }
+                        else {
+                            scope.service.record.credentials.options = {};
+                        }
+                    }
+                }
 
                 scope._prepareServiceInfoData = function () {
 
@@ -617,7 +656,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             break;
                     }
 
-                    scope.serviceInfo.record.credentials = dfObjectService.mergeObjects(scope.serviceInfo.record.credentials, data);
+                    scope.serviceInfo.record.credentials = data;//dfObjectService.mergeObjects(scope.serviceInfo.record.credentials, data);
                     scope.service.record = dfObjectService.mergeObjects(scope.serviceInfo.record, scope.service.record);
                 };
                 
@@ -693,7 +732,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                         case "couchdb":
                         case "mongodb":
-                            return scope._storageType
+                            return scope._storageType;
                     }
 
                 }
@@ -2214,12 +2253,17 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     user: null,
                     pwd: null,
                     db: null,
-                    options: {
-                        ssl: false
-                    }
+                    options: {},
+                    options_ctrl: null
+
                 }
 
                 if (data) {
+                    if (data.options.hasOwnProperty('ssl'))
+                        data.options_ctrl = true;
+                    else
+                        data.options_ctrl = false;
+
                     return dfObjectService.mergeObjects(data, _new);
                 }
                 else {
@@ -2822,12 +2866,12 @@ angular.module('dfServiceTemplates', [])
         $templateCache.put('_service-mongo-options-ssl.html',
 
             '<div class="form-group">' +
-                '<div class="checkbox">' +
-                    '<label>' +
-                        '<input data-ng-model="_storageType.options.ssl" type="checkbox"/>' +
-                        'Connect with SSL (PHP driver and MongoDB server must support SSL)' +
-                    '</label>' +
-                '</div>' +
+            '<div class="checkbox">' +
+            '<label>' +
+            '<input data-ng-model="_storageType.options_ctrl" type="checkbox"/>' +
+            'Connect with SSL (PHP driver and MongoDB server must support SSL)' +
+            '</label>' +
+            '</div>' +
             '</div>'
         );
 
