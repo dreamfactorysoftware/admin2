@@ -1213,6 +1213,17 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     }
                 };
 
+                scope._renderRegionUrl = function (region, regions) {
+
+                    var regionObj = regions.find(function ( element, index, array ) {
+                        if (element.value === region){
+                            return element;
+                        }
+                    });
+
+                    this._storageType.url = regionObj.url;
+                }
+
                 var watchEmailProvider = scope.$watch('_storageType.transport_type', function (newValue, oldValue) {
 
                     if (!newValue) return false;
@@ -2517,9 +2528,9 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     {name: "South America (Sao Paulo)", value: "sa-east-1"}
                 ],
                 rackspaceRegions: [
-                    {name: "London", value: "LON"},
-                    {name: "Chicago", value: "ORD"},
-                    {name: "Dallas / Fort Worth", value: "DFW"}
+                    {name: "London", value: "LON", url: "https://lon.identity.api.rackspacecloud.com"},
+                    {name: "Chicago", value: "ORD", url: "https://identity.api.rackspacecloud.com"},
+                    {name: "Dallas / Fort Worth", value: "DFW", url: "https://identity.api.rackspacecloud.com"}
                 ],
                 remoteOptions: [
                     {name: "Amazon S3", value: "aws s3"},
@@ -2916,8 +2927,8 @@ angular.module('dfServiceTemplates', [])
         $templateCache.put('_service-rs-region.html',
             '<div class="form-group">' +
             '<label>Region</label><df-simple-help data-options="dfSimpleHelp.rsTenantRegion"></df-simple-help>' +
-                '<select class="form-control" data-ng-change="changeUrl()" data-ng-options="option.value as option.name for option in hcv.rackspaceRegions" data-ng-model="_storageType.region"></select>' +
-                '</div>'
+            '<select class="form-control" data-ng-change="_renderRegionUrl(_storageType.region, hcv.rackspaceRegions)" data-ng-options="option.value as option.name for option in hcv.rackspaceRegions" data-ng-model="_storageType.region"></select>' +
+            '</div>'
         );
 
         $templateCache.put('_service-rs-endpoint.html',
