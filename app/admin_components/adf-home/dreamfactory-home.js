@@ -269,7 +269,6 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         // we take care of the app name for the user
                         _app.record.name = _app.record.api_name;
 
-
                         return _app.record;
                     }
                 };

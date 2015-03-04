@@ -19,7 +19,6 @@ angular
         'dfUtility',
         'dfHome',
         'dfDownloads',
-        'dfDashboard',
         'dfSystemConfig',
         'dfUsers',
         'dfApps',
