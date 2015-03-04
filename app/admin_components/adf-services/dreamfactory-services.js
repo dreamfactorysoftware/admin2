@@ -1025,7 +1025,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             scope._buildFieldSet(
                                 [
                                     'os-user-name',
-                                    'os-api-key',
+                                    'os-password',
                                     'os-tenet-name',
                                     'os-region',
                                     'os-endpoint'
@@ -2243,7 +2243,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 var _new = {
                     private_paths : [],
                     url: null,
-                    api_key: null,
+                    password: null,
                     username: null,
                     tenant_name: null,
                     region: null
@@ -2948,11 +2948,11 @@ angular.module('dfServiceTemplates', [])
                 '</div>'
         );
 
-        $templateCache.put('_service-os-api-key.html',
+        $templateCache.put('_service-os-password.html',
             '<div class="form-group">' +
-            '<label>API Key</label><df-simple-help data-options="dfSimpleHelp.osApiKey"></df-simple-help>' +
-                '<input class="form-control" type="text" data-ng-model="_storageType.api_key"/>' +
-                '</div>'
+            '<label>Password</label><df-simple-help data-options="dfSimpleHelp.osApiKey"></df-simple-help>' +
+            '<input class="form-control" type="text" data-ng-model="_storageType.password"/>' +
+            '</div>'
         );
 
         $templateCache.put('_service-os-tenet-name.html',
