@@ -8,8 +8,38 @@ Clone the repo.  Navigate to the top level directory of where you cloned the rep
 
 
 ## Building the app with Node and Grunt
-Admin App 2 comes prepackaged with a grunt file that concats, minifies, uglifies, compresses and reorgs the source files into a more "transit" friendly manner.  It decreases load time and automatically busts client side caches so your changes will be seen the next time a client uses it without any pesky manual cache clearing.  This process will create a folder named `dist` that will contain the app after processing.  From here on out the phrase 'build the app' is refering to this process.  To run the build process simply type `grunt build` on the command line whilst in the top level directory of the app. **NOTE: you must have Node, Grunt, and GruntCLI installed.**  
+Admin App 2 comes prepackaged with a grunt file that concats, minifies, uglifies, compresses and reorgs the source files into a more "transit" friendly manner.  It decreases load time and automatically busts client side caches so your changes will be seen the next time a client uses it without any pesky manual cache clearing.  This process will create a folder named `dist` that will contain the app after processing.  From here on out the phrase 'build the app' is referring to this process.  To run the build process simply type `grunt build` on the command line whilst in the top level directory of the app. **NOTE: you must have Node, Grunt, and GruntCLI, and Bower installed.**
 
+Here's how to build the dist version of admin2.
+
+One Time Setup:
+
+```
+
+install node and npm (downloadable installer)
+sudo npm install -g bower
+sudo npm install grunt-cli
+cd ~/repos/admin2 (or wherever your repo is)
+npm install
+bower install
+
+```
+
+Then to rebuild dist folder :
+
+```
+
+grunt build
+
+```
+
+Before committing changes you should revert /dist/fonts and app/index.html. These modified files are unwanted artifacts of the build process.
+
+```
+
+git checkout -- dist/fonts app/index.html
+
+```
 
 ## Administer your DSP from anywhere.
 The Admin App 2 can be configured to manage your DSP from another remote server.  Simply open the `app.js` file contained in `app\scripts` directory and add your DSP Host name to the `DSP_URL` constant at the top.  You can now optionally build the app and deploy the `dist` directory.  You must enable CORS in the DSP for the server you will be deploying the app to.
