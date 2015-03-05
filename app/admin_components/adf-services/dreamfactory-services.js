@@ -222,11 +222,16 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
                 scope._trimRequestDataObj = function (requestObj) {
-                    delete requestObj.data.credentials.options_ctrl;
+                    if (requestObj.data.credentials.hasOwnProperty('options_ctrl'))
+                        delete requestObj.data.credentials.options_ctrl;
+
                     return requestObj;
                 }
 
                 scope._restoreRequestDataObj = function (requestObj) {
+                    if (!requestObj.credentials.hasOwnProperty('options'))
+                        return requestObj;
+
                     if (requestObj.credentials.options.hasOwnProperty('ssl'))
                         requestObj.credentials.options_ctrl = true;
                     else
@@ -540,6 +545,13 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                 };
 
                 scope.hcv = new dfServiceValues();
+
+                if (scope.newService) {
+                    scope.hcv.serviceTypes = scope.hcv.serviceTypes
+                        .filter(function (el) {
+                            return el.name !== "local_sql_db";
+                        });
+                }
 
                 scope._script = {};
                 scope.serviceInfo = {};
