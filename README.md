@@ -15,33 +15,49 @@ Here's how to build the dist version of admin2.
 One Time Setup:
 
 ```
-
 install node and npm (downloadable installer)
 sudo npm install -g bower
 sudo npm install grunt-cli
 cd ~/repos/admin2 (or wherever your repo is)
 npm install
 bower install
-
 ```
 
 Then to rebuild dist folder :
 
 ```
-
 grunt build
-
 ```
 
 Before committing changes you should revert /dist/fonts and app/index.html. These modified files are unwanted artifacts of the build process.
 
 ```
-
 git checkout -- dist/fonts app/index.html
-
 ```
 
-## Administer your DSP from anywhere.
+## Building a release version
+
+This pushes to master. Running composer update will pull down new version. The first step is to bump the app version in app/scripts/app.js. Then build and push to develop branch as described above.
+
+```
+// Set application version number
+.constant('APP_VERSION', '1.0.6')
+```
+
+The basic steps for doing a release with git-flow are as follows. Your local develop and master should be clean before attempting this.
+
+```
+git checkout master
+git pull origin master
+git checkout develop
+git tag
+git flow release start 1.0.6
+git flow release finish 1.0.6
+git push origin master
+git push --tags
+```
+
+## Administer your DSP from anywhere
 The Admin App 2 can be configured to manage your DSP from another remote server.  Simply open the `app.js` file contained in `app\scripts` directory and add your DSP Host name to the `DSP_URL` constant at the top.  You can now optionally build the app and deploy the `dist` directory.  You must enable CORS in the DSP for the server you will be deploying the app to.
 
 
