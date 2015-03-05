@@ -396,7 +396,7 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                         }
                     });
 
-                    scope.iframe_url = $sce.trustAsHtml('<iframe src="' + url + '" width="100%" height="100%" frameborder="0"></iframe>');
+                    scope.iframe_url = $sce.trustAsHtml('<iframe src="' + url + '" style="padding-bottom: 75px; height: 100%; width: 100%; border: 0px"></iframe>');
                 }
             }
     }])
