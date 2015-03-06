@@ -1163,12 +1163,15 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope._saveFieldToServer = function () {
 
-                    delete scope.field.record.ref_tables;
+                    var recordObj = angular.copy(scope.field.record);
+
+                    if (recordObj.hasOwnProperty('ref_tables'))
+                        delete recordObj.ref_tables;
 
                     return $http({
-                        url: DSP_URL + '/rest/' + scope.fieldData.currentService.api_name + '/_schema/' + scope.currentTable + '/' + scope.field.record.name,
+                        url: DSP_URL + '/rest/' + scope.fieldData.currentService.api_name + '/_schema/' + scope.currentTable + '/' + recordObj.name,
                         method: 'PATCH',
-                        data: scope.field.record
+                        data: recordObj
                     })
                 };
 
