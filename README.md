@@ -37,22 +37,29 @@ git checkout -- dist/fonts app/index.html
 
 ## Building a release version
 
-This pushes to master. Running composer update will pull down new version. The first step is to bump the app version in app/scripts/app.js. Then build and push to develop branch as described above.
-
-```
-// Set application version number
-.constant('APP_VERSION', '1.0.6')
-```
-
-The basic steps for doing a release with git-flow are as follows. Your local develop and master should be clean before attempting this.
+This pushes to master. Running composer update will pull down new version. The basic steps for doing a release with git-flow are as follows. Your local develop and master should be up to date before attempting this.
 
 ```
 git checkout master
 git pull origin master
 git checkout develop
-git tag
-git flow release start 1.0.6
-git flow release finish 1.0.6
+git pull origin develop
+git flow release start 1.0.7
+```
+
+Bump the app version in app/scripts/app.js.
+
+```
+// Set application version number
+.constant('APP_VERSION', '1.0.7')
+```
+
+```
+grunt build
+git checkout -- dist/fonts app/index.html
+git add --all
+git commit -m "Release 1.0.7"
+git flow release finish 1.0.7
 git push origin master
 git push --tags
 ```
@@ -342,14 +349,3 @@ Each one of the directives is organized in a similar fashion.  See the stubbed o
     }
 }])
 ```
-
-That's pretty much it.  There are a few gotchas that I'll list below and explain.
-
-
-
-
-
-
-
-
-
