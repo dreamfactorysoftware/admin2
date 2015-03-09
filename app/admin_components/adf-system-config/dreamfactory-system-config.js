@@ -703,7 +703,7 @@ angular.module('dfSystemConfig', ['ngRoute', 'dfUtility', 'dfApplication'])
                                 message: reject
                             };
 
-                            dfNotify.success(messageOptions);
+                            dfNotify.error(messageOptions);
 
                         }
                     )

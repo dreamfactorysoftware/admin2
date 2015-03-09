@@ -1476,7 +1476,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                                 message: reject
                             };
 
-                            dfNotify.success(messageOptions);
+                            dfNotify.error(messageOptions);
 
                         }
                     )

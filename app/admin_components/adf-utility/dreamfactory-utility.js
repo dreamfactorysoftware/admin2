@@ -2805,8 +2805,7 @@ angular.module('dfUtility', ['dfApplication'])
 
         function parseDreamfactoryError (errorDataObj) {
 
-            // create a place to store the error
-            var error = null;
+            var i, error = "";
 
             // If the exception type is a string we don't need to go any further
             // This was thrown explicitly by the module due to a module error
@@ -2821,23 +2820,12 @@ angular.module('dfUtility', ['dfApplication'])
                 // let's assume it came from the server
             } else {
 
-                // is there more than one error contained in the object
-                if (errorDataObj.data.error.length > 1) {
-
-                    // yes. Let's loop through and concat these to display to the user
-                    angular.forEach(
-                        errorDataObj.data.error, function(obj) {
-
-                            // add the message from each error obj to the error store
-                            error += obj.message + '\n';
-                        }
-                    );
-
-                    // We only have one error
-                } else {
-
-                    // store that error message
-                    error = errorDataObj.data.error[0].message;
+                // add the message from each error obj to the error store
+                for (i = 0; i < errorDataObj.data.error.length; i++) {
+                    if (i > 0) {
+                        error += '\n';
+                    }
+                    error += errorDataObj.data.error[i].message;
                 }
             }
 
@@ -2852,7 +2840,6 @@ angular.module('dfUtility', ['dfApplication'])
                 case 'message':
                     return parseDreamfactoryError(error.message);
                 default:
-
                     error.message = parseDreamfactoryError(error.message);
                     return error;
             }
@@ -2892,7 +2879,6 @@ angular.module('dfUtility', ['dfApplication'])
                 switch(dfApplicationPrefs.getPrefs().application.notificationSystem.error) {
 
                     case 'pnotify':
-
                         options.message = parseError(options, 'message');
                         pnotify(options);
                         break;
