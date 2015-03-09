@@ -465,7 +465,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                                 };
 
-                                dfNotify.error(messageOptions)
+                                dfNotify.error(messageOptions);
 
                             }
                         ).finally(

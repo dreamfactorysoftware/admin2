@@ -141,7 +141,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                                     module: 'Api Error',
                                     type: 'error',
                                     provider: 'dreamfactory',
-                                    message: reject.data.error[0].message
+                                    message: reject
                                 };
 
                                 dfNotify.error(messageOptions);

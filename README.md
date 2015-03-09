@@ -60,6 +60,8 @@ git checkout -- dist/fonts app/index.html
 git add --all
 git commit -m "Release 1.0.7"
 git flow release finish 1.0.7
+git push origin develop
+git checkout master
 git push origin master
 git push --tags
 ```

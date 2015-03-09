@@ -1217,7 +1217,7 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
                                 message: reject
                             }
 
-                            dfNotify.success(messageOptions);
+                            dfNotify.error(messageOptions);
 
                         }
                     );
