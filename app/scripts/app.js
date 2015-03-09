@@ -17,7 +17,8 @@ angular
         'ngSanitize',
         'ngTouch',
         'dfUtility',
-        'dfDashboard',
+        'dfHome',
+        'dfDownloads',
         'dfSystemConfig',
         'dfUsers',
         'dfApps',
@@ -39,7 +40,7 @@ angular
     ])
 
     // Set application version number
-    .constant('APP_VERSION', '1.0.6')
+    .constant('APP_VERSION', '1.0.7')
 
     // Set global url for this application
     .constant('DSP_URL', '')

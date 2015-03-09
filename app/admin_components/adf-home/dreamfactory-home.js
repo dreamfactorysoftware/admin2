@@ -1,18 +1,33 @@
+/**
+ * This file is part of the DreamFactory Services Platform(tm) (DSP)
+ *
+ * DreamFactory Services Platform(tm) <http://github.com/dreamfactorysoftware/dsp-core>
+ * Copyright 2012-2014 DreamFactory Software, Inc. <support@dreamfactory.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 'use strict';
 
-// Declare our new module
-angular.module('dfDashboard', ['dfUtility'])
 
-    // Set a constant so we can access the 'local' path of our assets
-    .constant('MOD_DASHBOARD_ASSET_PATH', 'admin_components/adf-dashboard/')
-//    .constant('MOD_DASHBOARD_ROUTER_PATH', '/dashboard')
-    .constant('MOD_DASHBOARD_ROUTER_PATH', '/quickstart')
-    .config(['$routeProvider', 'MOD_DASHBOARD_ROUTER_PATH', 'MOD_DASHBOARD_ASSET_PATH',
-        function ($routeProvider, MOD_DASHBOARD_ROUTER_PATH, MOD_DASHBOARD_ASSET_PATH) {
+angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
+    .constant('MOD_HOME_ROUTER_PATH', '/home')
+    .constant('MOD_HOME_ASSET_PATH', 'admin_components/adf-home/')
+    .config(['$routeProvider', 'MOD_HOME_ROUTER_PATH', 'MOD_HOME_ASSET_PATH',
+        function ($routeProvider, MOD_HOME_ROUTER_PATH, MOD_HOME_ASSET_PATH) {
             $routeProvider
-                .when(MOD_DASHBOARD_ROUTER_PATH, {
-                    templateUrl: MOD_DASHBOARD_ASSET_PATH + 'views/main.html',
-                    controller: 'DashboardCtrl',
+                .when(MOD_HOME_ROUTER_PATH, {
+                    templateUrl: MOD_HOME_ASSET_PATH + 'views/main.html',
+                    controller: 'HomeCtrl',
                     resolve: {
                         checkAppObj:['dfApplicationData', function (dfApplicationData) {
 
@@ -58,61 +73,46 @@ angular.module('dfDashboard', ['dfUtility'])
                     }
                 });
         }])
+    .run(['DSP_URL', '$templateCache', function (DSP_URL, $templateCache) {
 
-    .controller('DashboardCtrl', ['$scope', '$rootScope', 'dfApplicationData',  function($scope, $rootScope, dfApplicationData) {
 
-
-        $scope.$parent.title = 'Quickstart';
-//        $scope.$parent.title = 'Dashboard';
-
-        // Set module links
-        $scope.links = [
-            {
-                name: 'quick-start',
-                label: 'QuickStart',
-                path: 'quick-start'
-            }
-//            {
-//                name: 'dashboard-home',
-//                label: 'Home',
-//                path: 'dashboard-home'
-//            },
-//            {
-//                name: 'about',
-//                label: 'About',
-//                path: 'about'
-//            }
-//            {
-//                name: 'usage',
-//                label: 'Usage',
-//                path: 'usage'
-//            }
-        ];
 
     }])
 
-    .directive('dfDashboardHome', ['MOD_DASHBOARD_ASSET_PATH', function (MOD_DASHBOARD_ASSET_PATH) {
+    .controller('HomeCtrl', ['$scope',
+        function($scope){
 
+            $scope.$parent.title = 'Home';
 
+            // Set module links
+            $scope.links = [
+                {
+                    name: 'quickstart-home',
+                    label: 'Quickstart',
+                    path: 'quickstart-home'
+                },
+                {
+                    name: 'resource-home',
+                    label: 'Resources',
+                    path: 'resource-home'
+                },
+                {
+                    name: 'download-home',
+                    label: 'Download',
+                    path: 'download-home'
+                }
+            ];
+        }])
+
+    .directive('dfQuickstart', ['MOD_HOME_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', 'dfStringService', function(MOD_HOME_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService, dfStringService) {
         return {
+
             restrict: 'E',
-            scope: false,
-            templateUrl: MOD_DASHBOARD_ASSET_PATH + 'views/df-dashboard-home.html',
-            link: function (scope, elem, attrs) {
-
-
-
-            }
-        }
-    }])
-
-    .directive('dfQuickStart', ['MOD_DASHBOARD_ASSET_PATH', '$location', 'dfApplicationData', 'dfNotify', 'dfStringService', function (MOD_DASHBOARD_ASSET_PATH, $location,  dfApplicationData, dfNotify, dfStringService) {
-
-
-        return {
-            restrict: 'E',
-            scope: false,
-            templateUrl: MOD_DASHBOARD_ASSET_PATH + 'views/df-quick-start.html',
+            scope: {
+                userData: '=?',
+                newUser: '=?'
+            },
+            templateUrl: MOD_HOME_ASSET_PATH + 'views/df-quickstart.html',
             link: function (scope, elem, attrs) {
 
                 var App = function  (appData) {
@@ -172,7 +172,7 @@ angular.module('dfDashboard', ['dfUtility'])
 
                 scope.setStep = function (step) {
 
-                   scope._setStep(step);
+                    scope._setStep(step);
                 };
 
                 scope.goToDocs = function() {
@@ -269,7 +269,6 @@ angular.module('dfDashboard', ['dfUtility'])
                         // we take care of the app name for the user
                         _app.record.name = _app.record.api_name;
 
-
                         return _app.record;
                     }
                 };
@@ -360,27 +359,45 @@ angular.module('dfDashboard', ['dfUtility'])
         }
     }])
 
-    .directive('dfAbout', ['MOD_DASHBOARD_ASSET_PATH', function (MOD_DASHBOARD_ASSET_PATH) {
-
-
+    .directive('dfResource', ['$sce', 'MOD_HOME_ASSET_PATH', '$http', 'dfApplicationData', function($sce, MOD_HOME_ASSET_PATH, $http, dfApplicationData) {
         return {
             restrict: 'E',
             scope: false,
-            templateUrl: MOD_DASHBOARD_ASSET_PATH + 'views/df-about.html',
+            templateUrl: MOD_HOME_ASSET_PATH + 'views/df-resource.html',
             link: function (scope, elem, attrs) {
+                var url = "http://www.dreamfactory.com/in_product_resources.html";
+
+                angular.forEach(dfApplicationData.getApiData('app'), function (app) {
+                    if (app.hasOwnProperty('api_name') && (app.hasOwnProperty('launch_url'))) {
+                        if (app.api_name == 'df-resources') {
+                            url = app.launch_url;
+                        }
+                    }
+                });
+
+                scope.iframe_url = $sce.trustAsHtml('<iframe src="' + url + '" width="100%" height="100%" frameborder="0"></iframe>');
             }
         }
     }])
 
-    .directive('dfUsage', ['MOD_DASHBOARD_ASSET_PATH', function (MOD_DASHBOARD_ASSET_PATH) {
+    .directive('dfDownload', ['$sce', 'MOD_HOME_ASSET_PATH', '$http', 'dfApplicationData', function($sce, MOD_HOME_ASSET_PATH, $http, dfApplicationData) {
+            return {
+                restrict: 'E',
+                scope: false,
+                templateUrl: MOD_HOME_ASSET_PATH + 'views/df-download.html',
+                link: function (scope, elem, attrs) {
+                    var url = "http://www.dreamfactory.com/in_product_downloads.html";
 
+                    angular.forEach(dfApplicationData.getApiData('app'), function (app) {
+                        if (app.hasOwnProperty('api_name') && (app.hasOwnProperty('launch_url'))) {
+                            if (app.api_name == 'df-downloads') {
+                                url = app.launch_url;
+                            }
+                        }
+                    });
 
-        return {
-            restrict: 'E',
-            scope: false,
-            templateUrl: MOD_DASHBOARD_ASSET_PATH + 'views/df-usage.html',
-            link: function (scope, elem, attrs) {
+                    scope.iframe_url = $sce.trustAsHtml('<iframe src="' + url + '" style="padding-bottom: 75px; height: 100%; width: 100%; border: 0px"></iframe>');
+                }
             }
-        }
-    }]);
+    }])
 

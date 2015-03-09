@@ -275,9 +275,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             _app.record.storage_service_id = null;
                             _app.record.storage_container = null;
 
-                            // we take care of the app name for the user
-                            _app.record.name = _app.record.api_name;
-
                             // no need for a launch_url
                             _app.record.launch_url = "";
 
@@ -294,11 +291,6 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             // it's set to null
                             _app.record.storage_service_id = null;
                             _app.record.storage_container = null;
-
-                            // Set the app name for the user because it
-                            // is required but useless as this pertains to
-                            // launching the app from Laucnhpad
-                            _app.record.name = _app.record.api_name;
 
                             return _app.record
 
@@ -585,9 +577,18 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                 scope.dfHelp = {
                     applicationName: {
-                        title: 'Application Name',
+                        title: 'Application API Name',
                         text: 'This is your API KEY. It must be included with each API request as a query ' +
                             'param (app_name=yourappname) or a header (X-DreamFactory-Application-Name: yourappname).'
+                    },
+                    displayName: {
+                        title: "Display Name",
+                        text: 'The display name or label for your app, seen by users of the app in the LaunchPad UI.' +
+                        ' It is usually different from the API name used in API requests.'
+                    },
+                    description: {
+                        title: "Description",
+                        text: 'The app description, seen by users of the app in the LaunchPad UI.'
                     },
                     appLocation: {
                         title: "App Location",
@@ -596,29 +597,20 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
                             'from code on your local machine (CORS required). Select URL to specify a URL for your app.'
                     },
                     storageService: {
-                        title: "Storage Service Help",
+                        title: "Storage Service",
                         text: 'Where to store the files for your app.'
                     },
                     storageContainer: {
-                        title: "Storage Container Help",
+                        title: "Storage Container",
                         text: 'The container on the selected storage service.'
                     },
-                    launchpadName: {
-                        title: "Launchpad Name Help",
-                        text: 'The display name or label for your app. It is usually different from the API ' +
-                            'name used in API requests.'
-                    },
-                    launchpadDescription: {
-                        title: "Launchpad Description Help",
-                        text: 'The description seen by users of the app in the LaunchPad UI.'
-                    },
                     defaultPath: {
-                        title: "Default Path Help",
+                        title: "Default Path",
                         text: 'The is the file to load when your app is run. Default is index.html.'
                     },
                     remoteUrl: {
                         title: "Remote Url",
-                        text: 'Applications that require no additional file storage can specify a URL. ' +
+                        text: 'Applications can consist of only a URL. ' +
                             'This could be an app on some other server or a web site URL.'
                     },
                     assignRole: {

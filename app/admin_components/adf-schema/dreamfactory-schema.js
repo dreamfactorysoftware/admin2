@@ -1105,6 +1105,31 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
 
                 // PRIVATE API
+                scope._loadReferenceTables = function () {
+
+                    $http.get(DSP_URL + '/rest/' + scope.fieldData.currentService.api_name + '/_schema/').then(
+
+                        function (result) {
+                            scope.field.record.ref_tables = result.data.resource;
+                        },
+
+                        function (reject) {
+
+                            var messageOptions = {
+
+                                module: 'Api Error',
+                                type: 'error',
+                                provider: 'dreamfactory',
+                                message: reject
+                            };
+
+                            dfNotify.error(messageOptions);
+                        }
+                    );
+                };
+
+
+
                 scope._loadReferenceFields = function () {
 
 
@@ -1138,10 +1163,15 @@ angular.module('dfSchema', ['ngRoute', 'dfUtility'])
 
                 scope._saveFieldToServer = function () {
 
+                    var recordObj = angular.copy(scope.field.record);
+
+                    if (recordObj.hasOwnProperty('ref_tables'))
+                        delete recordObj.ref_tables;
+
                     return $http({
-                        url: DSP_URL + '/rest/' + scope.fieldData.currentService.api_name + '/_schema/' + scope.currentTable + '/' + scope.field.record.name,
+                        url: DSP_URL + '/rest/' + scope.fieldData.currentService.api_name + '/_schema/' + scope.currentTable + '/' + recordObj.name,
                         method: 'PATCH',
-                        data: scope.field.record
+                        data: recordObj
                     })
                 };
 

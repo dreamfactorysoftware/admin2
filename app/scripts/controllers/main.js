@@ -30,10 +30,10 @@ angular.module('dreamfactoryApp')
                 show: false
             },
             {
-                path: '#/quickstart',
+                path: '#/home',
                 label: 'Admin',
                 name: 'admin',
-                icon: dfIconService().quickstart,
+                icon: dfIconService().home,
                 show: false
             },
 //            {
@@ -83,16 +83,23 @@ angular.module('dreamfactoryApp')
         // Right now they are all hard coded
         $scope.componentLinks = [
 
+            /*
             {
                 name: 'quickstart',
                 label: 'Quickstart',
                 path: '/quickstart'
             },
+             */
 //            {
 //                name: 'dashboard',
 //                label: 'Dashboard',
 //                path: '/dashboard'
 //            },
+            {
+                name: 'home',
+                label: 'Home',
+                path: '/home'
+            },
             {
                 name: 'apps',
                 label: 'Apps',
@@ -144,13 +151,16 @@ angular.module('dreamfactoryApp')
                 label: 'Config',
                 path: '/config'
             },
-
             {
                 name: 'package-manager',
                 label: 'Packages',
                 path: '/package-manager'
             },
-
+            {
+                name: 'downloads',
+                label: 'Download',
+                path: '/downloads'
+            }
         ];
         $scope.componentNavOptions = {
             links: $scope.componentLinks
@@ -393,7 +403,7 @@ angular.module('dreamfactoryApp')
                         function () {
 
                             // Change our app location back to the home page
-                            $location.url('/quickstart');
+                            $location.url('/home');
                             // $location.url('/dashboard');
                         }
                     );
@@ -639,7 +649,7 @@ angular.module('dreamfactoryApp')
                         function () {
 
                             // Change our app location back to the home page
-                            $location.url('/quickstart');
+                            $location.url('/home');
                             // $location.url('/dashboard');
                         }
                     );

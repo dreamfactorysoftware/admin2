@@ -74,19 +74,20 @@
     <input class="form-control" type="text" data-ng-model="field.record.default" />
     <br />
 
+    <span data-ng-if="field.record.is_foreign_key || field.record.type === 'reference'" data-ng-init="_loadReferenceTables()"></span>
 
     <label>Reference Table</label>
     <select data-ng-disabled="field.record.type !== 'reference' && !field.record.is_foreign_key || (field.record.type === 'user_id' || field.record.type === 'user_id_on_create' || field.record.type === 'user_id_on_update')  "
             class="form-control"
             data-ng-change="_loadReferenceFields()"
             data-ng-model="field.record.ref_table"
-            data-ng-options="o.name as o.name for o in fieldData.currentDatabase.tables">
+            data-ng-options="o.name as o.name for o in field.record.ref_tables">
         <option value="">-- Select Reference Table --</option>
     </select> <br />
 
     <label>Reference Field</label>
     <select
-            data-ng-disabled="!field.record.ref_table || (field.record.type === 'user_id' || field.record.type === 'user_id_on_create' || field.record.type === 'user_id_on_update') "
+            data-ng-disabled="(!field.record.is_foreign_key && !field.record.type === 'reference') || !field.record.ref_table || (field.record.type === 'user_id' || field.record.type === 'user_id_on_create' || field.record.type === 'user_id_on_update') "
             class="form-control"
             data-ng-model="field.record.ref_fields"
             data-ng-options="o.name as o.name for o in refFields">
