@@ -40,7 +40,7 @@ angular
     ])
 
     // Set application version number
-    .constant('APP_VERSION', '1.0.7')
+    .constant('APP_VERSION', '1.0.8')
 
     // Set global url for this application
     .constant('DSP_URL', '')
