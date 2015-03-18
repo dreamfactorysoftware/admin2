@@ -172,6 +172,10 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
                     scope.system.unshift({label: 'All', name: '*'});
                 }
 
+                if (scope.services[0].name !== 'All') {
+                    scope.services.unshift({id: null, name: 'All', components: ["","*"]});
+                }
+
 
                 // PUBLIC API
                 scope.saveRole = function() {
