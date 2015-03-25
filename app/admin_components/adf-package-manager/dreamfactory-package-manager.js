@@ -178,7 +178,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     }
                 };
 
-                scope.database = null;
+                scope.databases = null;
                 scope.includeSchema = false;
 
 
@@ -217,7 +217,7 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                 };
 
 
-                var watchDatabase = scope.$watch('database', function(newValue, oldValue) {
+                var watchDatabase = scope.$watch('databases', function(newValue, oldValue) {
 
                     if (newValue == null) {
 
@@ -247,9 +247,10 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                     if (!newValue || !newValue.hasOwnProperty('app_service_relations')) {
 
-                        angular.forEach(scope.database, function(table) {
-
-                            table.__dfUI.selected = false;
+                        angular.forEach(scope.databases, function(database) {
+                            angular.forEach(database.table, function(table) {
+                                table.__dfUI.selected = false;
+                            });
                         });
 
                         return;
