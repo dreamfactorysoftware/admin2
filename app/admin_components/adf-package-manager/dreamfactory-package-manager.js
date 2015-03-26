@@ -190,7 +190,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     angular.forEach(scope.databases, function (schema) {
 
                         tempSchema = {
-                            api_name: 'db',
                             component: [],
                             service_id: schema.service_id
                         };
