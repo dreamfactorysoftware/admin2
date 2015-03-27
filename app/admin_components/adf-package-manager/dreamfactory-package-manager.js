@@ -178,58 +178,67 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                     }
                 };
 
-
-                scope.database = null;
+                scope.databases = null;
                 scope.includeSchema = false;
 
 
                 scope.prepareSchemaData = function () {
 
-                    var tempSchema = {
-                        api_name: 'schema',
-                        component: [],
-                        service_id: 2
-                    };
+                    var schemas = [];
+                    var tempSchema = {};
 
+                    angular.forEach(scope.databases, function (schema) {
 
-                    angular.forEach(scope.database, function (schema) {
+                        tempSchema = {
+                            component: [],
+                            service_id: schema.service_id
+                        };
 
-                        if (schema.__dfUI.selected) {
-                            tempSchema.component.push(schema.record);
-                        }
+                        angular.forEach(schema.tables, function (comp) {
+
+                            if (comp.__dfUI.selected) {
+                                tempSchema.component.push(comp.record);
+                            }
+                        });
+
+                        if (tempSchema.component.length)
+                            schemas.push(tempSchema);
 
                     });
 
-                    if (!tempSchema.component.length) {
+                    if (!schemas.length) {
                         scope.includeSchema = false;
                         return;
                     }
 
                     scope.includeSchema = true;
-                    return tempSchema;
+                    return schemas;
                 };
 
 
-                var watchDatabase = scope.$watch('database', function(newValue, oldValue) {
+                var watchDatabase = scope.$watch('databases', function(newValue, oldValue) {
 
                     if (newValue == null) {
 
-                        var _tableNames = [],
-                            _dbservice = dfApplicationData.getApiData('service', {type: 'Local SQL DB'})[0];
+                        var _dbservices = dfApplicationData.getApiData('service', {type: 'Local SQL DB'});
+                        var _dbservicesRemote = dfApplicationData.getApiData('service', {type: 'Remote SQL DB'});
 
+                        _dbservices = _dbservices.concat(_dbservicesRemote);
 
-                        if (!_dbservice || !_dbservice.hasOwnProperty('components') || !_dbservice.components.length) {
-                            return;
-                        }
+                        var _databases = [];
 
-                        angular.forEach(_dbservice.components, function (table) {
+                        angular.forEach(_dbservices, function (service) {
 
-                            if (table.indexOf('_schema') !== 0 && table !== '*' && table !== "") {
-                                _tableNames.push(new DBTable(table));
-                            }
+                            var _tableNames = [];
+                            angular.forEach(service.components, function (table) {
 
-                            scope.database = _tableNames;
-                        })
+                                if (table.indexOf('_schema') !== 0 && table !== '*' && table !== "" && Array.isArray(service.components)) {
+                                    _tableNames.push(new DBTable(table));
+                                }
+                            });
+                            _databases.push({name: service.name, tables: _tableNames, service_id: service.id});
+                            scope.databases = _databases;
+                        });
                     }
                 });
 
@@ -237,9 +246,10 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                     if (!newValue || !newValue.hasOwnProperty('app_service_relations')) {
 
-                        angular.forEach(scope.database, function(table) {
-
-                            table.__dfUI.selected = false;
+                        angular.forEach(scope.databases, function(database) {
+                            angular.forEach(database.table, function(table) {
+                                table.__dfUI.selected = false;
+                            });
                         });
 
                         return;
@@ -254,11 +264,11 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
 
                             var i = 0;
 
-                            while(i < scope.database.length) {
+                            while(i < scope.databases.length) {
 
-                                if (scope.database[i].record === component) {
+                                if (scope.databases[i].record === component) {
 
-                                    scope.database[i].__dfUI.selected = true;
+                                    scope.databases[i].__dfUI.selected = true;
                                     scope.includeSchema = true;
                                     return;
                                 }
@@ -433,24 +443,22 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                 // COMPLEX IMPLEMENTATION
                 scope._exportPackage = function () {
 
-
                     var _schema = scope.prepareSchemaData(),
                         _services = scope.prepareServicesData(),
                         _serviceRelations = [];
 
                     if (scope.includeSchema) {
 
-                        _serviceRelations.push(_schema);
+                        _serviceRelations = _serviceRelations.concat(_schema)
 
                     }
 
                     if (scope.includeServices) {
 
-                        _serviceRelations = _serviceRelations.concat(_services)
+                        _serviceRelations = _serviceRelations.concat(_services);
                     }
 
                     scope.selectedApp['app_service_relations'] = _serviceRelations;
-
 
                     var requestDataObj = {
 
@@ -460,7 +468,6 @@ angular.module('dfPackageManager', ['ngRoute', 'dfUtility'])
                         },
                         data: scope.selectedApp
                     }
-
 
 
                     scope._updateAppsToService(requestDataObj).then(

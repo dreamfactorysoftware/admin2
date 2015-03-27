@@ -379,7 +379,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                             };
 
-                            dfNotify.error(messageOptions)
+                            dfNotify.error(messageOptions);
 
                         }
                     ).finally(
@@ -430,7 +430,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                             };
 
-                            dfNotify.error(messageOptions)
+                            dfNotify.error(messageOptions);
                         }
                     ).finally(
                         function() {
@@ -508,7 +508,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                                 };
 
-                                dfNotify.error(messageOptions)
+                                dfNotify.error(messageOptions);
 
                             }
 
@@ -1010,7 +1010,7 @@ angular.module('dfRoles', ['ngRoute', 'dfUtility', 'dfTable'])
 
                     var messageOptions = {
                         module: 'DreamFactory Roles Module',
-                        type: 'success',
+                        type: 'error',
                         provider: 'dreamfactory',
                         message: 'Service with id "' + serviceId + '" not found.'
 

@@ -365,7 +365,7 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             scope: false,
             templateUrl: MOD_HOME_ASSET_PATH + 'views/df-resource.html',
             link: function (scope, elem, attrs) {
-                var url = "http://www.dreamfactory.com/in_product_resources.html";
+                var url = "https://www.dreamfactory.com/in_product_resources.html";
 
                 angular.forEach(dfApplicationData.getApiData('app'), function (app) {
                     if (app.hasOwnProperty('api_name') && (app.hasOwnProperty('launch_url'))) {
@@ -386,7 +386,7 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 scope: false,
                 templateUrl: MOD_HOME_ASSET_PATH + 'views/df-download.html',
                 link: function (scope, elem, attrs) {
-                    var url = "http://www.dreamfactory.com/in_product_downloads.html";
+                    var url = "https://www.dreamfactory.com/in_product_downloads.html";
 
                     angular.forEach(dfApplicationData.getApiData('app'), function (app) {
                         if (app.hasOwnProperty('api_name') && (app.hasOwnProperty('launch_url'))) {
