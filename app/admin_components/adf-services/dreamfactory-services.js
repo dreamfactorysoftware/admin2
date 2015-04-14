@@ -921,22 +921,23 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope._renderAdditionalEmailFields = function () {
 
-                    if (scope._storageType.transport_type === 'command') {
-
-                        scope._buildFieldSet(
-                            [
-                                'email-command'
-                            ], true)
-                    }else {
-
-                        scope._buildFieldSet(
-                            [
-                                'email-host',
-                                'email-port',
-                                'email-security',
-                                'user-name',
-                                'password'
-                            ], true)
+                    switch (scope._storageType.transport_type) {
+                        case 'command':
+                            scope._buildFieldSet(
+                                [
+                                    'email-command'
+                                ], true);
+                            break;
+                        case 'smtp':
+                            scope._buildFieldSet(
+                                [
+                                    'email-host',
+                                    'email-port',
+                                    'email-security',
+                                    'user-name',
+                                    'password'
+                                ], true);
+                            break;
                     }
                 };
 
@@ -1096,7 +1097,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                                     'api-name',
                                     'name',
                                     'description',
-                                    'base-url',
                                     'is-active',
                                     'email-transport-type'
                                 ]);
@@ -1400,12 +1400,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     emailTransportType: {
                         title: 'Email Provider',
                         text: 'Specify the type of provider.'
-                    },
-                    emailBaseUrl: {
-                        title: 'Email Base URL',
-                        text: 'Base URL - Specify the base URL for the email service. For example, if you named the API \'myemail\'' +
-                            ' and the base URL is http://api.bestemail.com/v1/api/, then a REST call to /rest/myemail/all ' +
-                            'would tell DreamFactory to call http://api.bestemail.com/v1/api/myemail/all.'
                     },
                     emailHost: {
                         title: 'Email Host ',
@@ -2598,7 +2592,6 @@ angular.module('dfServiceTemplates', [])
         $templateCache.put('_service-base-url.html',
             '<div class="form-group">' +
             '<label>Base URL</label>' +
-                '<df-simple-help data-ng-if="_storageType.transport_type" data-options="dfSimpleHelp.emailBaseUrl"></df-simple-help>' +
                 '<df-simple-help data-ng-if="!_storageType.transport_type" data-options="dfSimpleHelp.baseUrl"></df-simple-help>' +
             '<input class="form-control" data-ng-model="serviceInfo.record.base_url" type="text"/>' +
                 '</div>'
