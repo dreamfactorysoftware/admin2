@@ -33,15 +33,9 @@ angular.module('dreamfactoryApp')
                 path: '#/home',
                 label: 'Admin',
                 name: 'admin',
-                icon: dfIconService().home,
+                icon: dfIconService().admin,
                 show: false
             },
-//            {
-//                path: '#/dashboard',
-//                label: 'Admin',
-//                name: 'admin',
-//                show: false
-//            },
             {
                 path: '#/login',
                 label: 'Login',
@@ -70,7 +64,6 @@ angular.module('dreamfactoryApp')
                 icon: dfIconService().profile,
                 show: false
             }
-
         ];
 
 
@@ -83,18 +76,6 @@ angular.module('dreamfactoryApp')
         // Right now they are all hard coded
         $scope.componentLinks = [
 
-            /*
-            {
-                name: 'quickstart',
-                label: 'Quickstart',
-                path: '/quickstart'
-            },
-             */
-//            {
-//                name: 'dashboard',
-//                label: 'Dashboard',
-//                path: '/dashboard'
-//            },
             {
                 name: 'home',
                 label: 'Home',
@@ -175,23 +156,22 @@ angular.module('dreamfactoryApp')
         // Sets links for navigation
         $scope._setActiveLinks = function(linksArr, activeLinksArr) {
 
+            var found, i;
+
             angular.forEach(linksArr, function(link) {
 
-                var i = 0;
+                found = false;
 
-                while (i < activeLinksArr.length) {
+                for (i = 0; i < activeLinksArr.length; i++) {
 
                     if (link.name === activeLinksArr[i]) {
 
-                        link.show = true;
+                        found = true;
                         break;
                     }
-                    else {
-                        link.show = false;
-                    }
-
-                    i++;
                 }
+
+                link.show = found;
             })
         };
 
@@ -404,7 +384,6 @@ angular.module('dreamfactoryApp')
 
                             // Change our app location back to the home page
                             $location.url('/home');
-                            // $location.url('/dashboard');
                         }
                     );
 
@@ -650,7 +629,6 @@ angular.module('dreamfactoryApp')
 
                             // Change our app location back to the home page
                             $location.url('/home');
-                            // $location.url('/dashboard');
                         }
                     );
 

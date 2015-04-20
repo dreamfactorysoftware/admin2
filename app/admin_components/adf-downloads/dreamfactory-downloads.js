@@ -88,7 +88,7 @@ angular.module('dfDownloads', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'
             scope: false,
             templateUrl: MOD_DOWNLOADS_ASSET_PATH + 'views/df-downloads.html',
             link: function (scope, elem, attrs) {
-                var url = "http://www.dreamfactory.com/in_product_downloads.html";
+                var url = "//www.dreamfactory.com/in_product_downloads.html";
 
                 angular.forEach(dfApplicationData.getApiData('app'), function (app) {
                     if (app.hasOwnProperty('api_name') && (app.hasOwnProperty('launch_url'))) {

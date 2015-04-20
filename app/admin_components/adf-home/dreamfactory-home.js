@@ -87,6 +87,11 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             // Set module links
             $scope.links = [
                 {
+                    name: 'welcome-home',
+                    label: 'Welcome',
+                    path: 'welcome-home'
+                },
+                {
                     name: 'quickstart-home',
                     label: 'Quickstart',
                     path: 'quickstart-home'
@@ -103,6 +108,26 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 }
             ];
         }])
+
+    .directive('dfWelcome', ['$sce', 'MOD_HOME_ASSET_PATH', '$http', 'dfApplicationData', function($sce, MOD_HOME_ASSET_PATH, $http, dfApplicationData) {
+        return {
+            restrict: 'E',
+            scope: false,
+            templateUrl: MOD_HOME_ASSET_PATH + 'views/df-welcome.html',
+            link: function (scope, elem, attrs) {
+                var url = "//www.dreamfactory.com/in_product_welcome.html";
+                angular.forEach(dfApplicationData.getApiData('app'), function (app) {
+                    if (app.hasOwnProperty('api_name') && (app.hasOwnProperty('launch_url'))) {
+                        if (app.api_name == 'df-welcome') {
+                            url = app.launch_url;
+                        }
+                    }
+                });
+
+                scope.iframe_url = $sce.trustAsHtml('<iframe src="' + url + '" style="padding-bottom: 75px; height: 100%; width: 100%; border: 0px"></iframe>');
+            }
+        }
+    }])
 
     .directive('dfQuickstart', ['MOD_HOME_ASSET_PATH', 'dfApplicationData', 'dfApplicationPrefs', 'dfNotify', 'dfObjectService', 'dfStringService', function(MOD_HOME_ASSET_PATH, dfApplicationData, dfApplicationPrefs, dfNotify, dfObjectService, dfStringService) {
         return {
@@ -365,7 +390,7 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
             scope: false,
             templateUrl: MOD_HOME_ASSET_PATH + 'views/df-resource.html',
             link: function (scope, elem, attrs) {
-                var url = "https://www.dreamfactory.com/in_product_resources.html";
+                var url = "//www.dreamfactory.com/in_product_resources.html";
 
                 angular.forEach(dfApplicationData.getApiData('app'), function (app) {
                     if (app.hasOwnProperty('api_name') && (app.hasOwnProperty('launch_url'))) {
@@ -386,7 +411,7 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
                 scope: false,
                 templateUrl: MOD_HOME_ASSET_PATH + 'views/df-download.html',
                 link: function (scope, elem, attrs) {
-                    var url = "https://www.dreamfactory.com/in_product_downloads.html";
+                    var url = "//www.dreamfactory.com/in_product_downloads.html";
 
                     angular.forEach(dfApplicationData.getApiData('app'), function (app) {
                         if (app.hasOwnProperty('api_name') && (app.hasOwnProperty('launch_url'))) {

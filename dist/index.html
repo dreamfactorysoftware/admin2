@@ -2,4 +2,29 @@
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]--> <!-- Add your site or application content here --> <div id="dreamfactoryApp" data-ng-controller="MainCtrl" df-popup-login> <div id="popup-login-container"></div> <!-- Top level Nav --> <df-top-level-nav-std data-options="topLevelNavOptions"></df-top-level-nav-std> <div data-ng-if="showAdminComponentNav" style="margin: 10px auto"> <!-- Component nav and title --> <div class="container-fluid"> <div class="row"> <div class="col-xs-12"> <df-component-title></df-component-title> <df-component-nav data-options="componentNavOptions"></df-component-nav> </div> </div> </div> </div> <!-- Rendering Context --> <div class="container-fluid"> <div class="row"> <div class="col-xs-12"> <div class="row"> <div data-ng-view=""></div> </div> </div> </div> </div> <!--<df-main-loading></df-main-loading>--> <div id="mask"></div> </div> <!--[if lt IE 9]>
     <script src="scripts/oldieshim.d41d8cd9.js"></script>
-    <![endif]--> <script src="scripts/vendor.3c568256.js"></script> <script src="scripts/app.cddbe9d4.js"></script> <!-- other deps --> <script src="vendor/ace/ace.js"></script> <script src="vendor/ace/mode-javascript.js"></script> <script src="/static/pnotify/2.0.1/js/pnotify.custom.min.js" defer></script>  
+    <![endif]--> <script src="scripts/vendor.3c568256.js"></script> <script src="scripts/app.ed8e96f9.js"></script> <!-- other deps --> <script src="vendor/ace/ace.js"></script> <script src="vendor/ace/mode-javascript.js"></script> <script src="/static/pnotify/2.0.1/js/pnotify.custom.min.js" defer></script> <!--Begin Comm100 Live Chat Code--> <div id="comm100-button-219"></div> <script type="text/javascript">var Comm100API = Comm100API || new Object;
+        Comm100API.chat_buttons = Comm100API.chat_buttons || [];
+        var comm100_chatButton = new Object;
+        comm100_chatButton.code_plan = 219;
+        comm100_chatButton.div_id = 'comm100-button-219';
+        Comm100API.chat_buttons.push(comm100_chatButton);
+        Comm100API.site_id = 210217;
+        Comm100API.main_code_plan = 219;
+
+        var comm100_lc = document.createElement('script');
+        comm100_lc.type = 'text/javascript';
+        comm100_lc.async = true;
+        comm100_lc.src = 'https://chatserver.comm100.com/livechat.ashx?siteId=' + Comm100API.site_id;
+        var comm100_s = document.getElementsByTagName('script')[0];
+        comm100_s.parentNode.insertBefore(comm100_lc, comm100_s);
+
+        setTimeout(function() {
+            if (!Comm100API.loaded) {
+                var lc = document.createElement('script');
+                lc.type = 'text/javascript';
+                lc.async = true;
+                lc.src = 'https://hostedmax.comm100.com/chatserver/livechat.ashx?siteId=' + Comm100API.site_id;
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(lc, s);
+            }
+        }, 5000)</script> <!--End Comm100 Live Chat Code-->  

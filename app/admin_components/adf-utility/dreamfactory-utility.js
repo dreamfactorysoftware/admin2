@@ -51,20 +51,19 @@ angular.module('dfUtility', ['dfApplication'])
 
                     switch(newValue) {
 
-                        case '/dashboard':
-                        case '/quickstart':
+                        case '/home':
                         case '/apps':
                         case '/users':
                         case '/roles':
                         case '/services':
-                        case '/data':
                         case '/schema':
+                        case '/data':
+                        case '/file-manager':
                         case '/scripts':
-                        case '/api_docs':
                         case '/config':
                         case '/package-manager':
-                        case '/file-manager':
                         case '/apidocs':
+                        case '/downloads':
 
                             scope.activeLink = 'admin';
                             break;
@@ -336,27 +335,27 @@ angular.module('dfUtility', ['dfApplication'])
                 });
 
 
-                // Hsve to set margin for title when this directive loads.
+                // Have to set margin for title when this directive loads.
                 // or resizes
                 // Probably a better way
                 function setMargin(location) {
 
                     switch(location) {
 
-                        case '/quickstart':
-                        case '/data':
                         case '/schema':
-                        case '/scripts':
-                        case '/api_docs':
-                        case '/package-manager':
+                        case '/data':
                         case '/file-manager':
+                        case '/scripts':
                         case '/apidocs':
+                        case '/package-manager':
+                        case '/downloads':
 
                             $('.df-component-nav-title').css({
                                 marginLeft: 0
                             })
                             break;
 
+                        case '/home':
                         case '/apps':
                         case '/users':
                         case '/roles':
@@ -2951,35 +2950,18 @@ angular.module('dfUtility', ['dfApplication'])
     }])
 
     // Icon Service
-    .service('dfIconService', ['ICON_SET', function (ICON_SET) {
-
+    .service('dfIconService', [function () {
 
         return function () {
 
-            var bootstrap = {}, fontawesome = {};
-
-            fontawesome = {
+            return {
                 launchpad: 'fa fa-fw fa-bars',
-                quickstart: 'fa fa-fw fa-cog',
+                admin: 'fa fa-fw fa-cog',
                 login: 'fa fa-fw fa-sign-in',
                 logout: 'fa fa-fw fa-sign-out',
                 register: 'fa fa-fw fa-group',
                 profile: 'fa fa-fw fa-user'
-            }
-
-
-
-
-            switch (ICON_SET) {
-
-
-                case 'fontawesome':
-                    return fontawesome;
-
-                default:
-                    return fontawesome;
-
-            }
+            };
         }
     }])
 

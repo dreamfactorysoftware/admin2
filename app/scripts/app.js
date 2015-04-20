@@ -48,9 +48,6 @@ angular
     // Set app name(api key) for this application
     .constant('DSP_API_KEY', 'admin')
 
-    // Set Icon Set
-    .constant('ICON_SET', 'fontawesome')
-
     // Set global header for calls made to DSP
     .config(['$httpProvider', 'DSP_API_KEY', function($httpProvider, DSP_API_KEY) {
 
@@ -71,8 +68,7 @@ angular
 
                         if (currentUser && currentUser.is_sys_admin && currentUser.session_id) {
 
-                            $location.url('/quickstart');
-//                            $location.url('/dashboard');
+                            $location.url('/home');
                             return;
                         }
 
@@ -111,8 +107,7 @@ angular
 
                         // we have a user and that user is an admin
                         if (currentUser && currentUser.is_sys_admin) {
-                            $location.url('/quickstart');
-//                            $location.url('/dashboard');
+                            $location.url('/home');
                             return;
                         }
 
@@ -136,8 +131,7 @@ angular
                         }
 
                         if (currentUser && currentUser.is_sys_admin) {
-                            $location.url('/quickstart');
-//                            $location.url('/dashboard');
+                            $location.url('/home');
                             return;
                         }
 
@@ -164,8 +158,7 @@ angular
                         }
 
                         if (currentUser && currentUser.is_sys_admin) {
-                            $location.url('/quickstart');
-//                            $location.url('/dashboard');
+                            $location.url('/home');
                             return;
                         }
 
@@ -186,8 +179,7 @@ angular
                         var currentUser = dfApplicationData.getCurrentUser();
 
                         if (currentUser && currentUser.is_sys_admin) {
-                            $location.url('/quickstart');
-//                            $location.url('/dashboard');
+                            $location.url('/home');
                             return;
                         }
 
@@ -210,8 +202,7 @@ angular
                         var currentUser = dfApplicationData.getCurrentUser();
 
                         if (currentUser && currentUser.is_sys_admin) {
-                            $location.url('/quickstart');
-//                            $location.url('/dashboard');
+                            $location.url('/home');
                             return;
                         }
 
