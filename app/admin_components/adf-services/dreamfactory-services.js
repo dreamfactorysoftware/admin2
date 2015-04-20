@@ -624,7 +624,7 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     var data = null;
 
-                    switch(scope.service.record.type) {
+                    switch(scope.serviceInfo.record.type) {
 
                         case 'Email Service':
 
