@@ -580,6 +580,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             }
         }
 
+        function _getLocation() {
+            return $location.path();
+        }
+        
 
         return {
 
@@ -773,6 +777,10 @@ angular.module('dfApplication', ['dfUtility', 'dfUserManagement', 'ngResource'])
             getMainLoadData: function () {
 
                 return dfMainLoadData;
+            },
+
+            getLocation: function() {
+                return _getLocation();
             }
 
         }

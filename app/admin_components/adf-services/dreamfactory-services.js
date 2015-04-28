@@ -624,25 +624,21 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                     var data = null;
 
-                    switch(scope.service.record.type) {
+                    switch(scope.serviceInfo.record.type) {
 
                         case 'Email Service':
-
                             data = scope._prepareEmailData();
                             break;
 
                         case 'Remote File Storage':
-
                             data = scope._prepareRFS();
                             break;
 
                         case 'Salesforce':
-
                             data = scope._prepareSF();
                             break;
 
                         case 'NoSQL DB':
-
                             data = scope._prepareNoSQL();
                             break;
 
@@ -655,11 +651,10 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                             break;
 
                         case 'Local SQL DB':
-
                             data = scope._prepareLSQLDB();
                             break;
-                        case 'Remote Web Service':
 
+                        case 'Remote Web Service':
                             data = scope._prepareRWS();
                             break;
 
@@ -682,44 +677,24 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     scope._storageType['user'] = scope.serviceInfo.record.credentials.user;
                     scope._storageType['password'] = scope.serviceInfo.record.credentials.password;
 
-                    var temp = angular.copy(scope._storageType);
-
-                    for (var key in temp) {
-
-                        if (temp[key]===null) {
-                            delete temp[key];
-                        }
-                    }
-
-                    // return temp;
-
-                    /*
-
-                    Ask Lee about sending an empty string here for transport type
-
-                    if (scope._email.transport_type === '') {
-                        scope._email.transport_type = null
-                    }
-                    */
-
                     return scope._storageType;
                 };
 
                 scope._prepareRFS = function () {
 
-
                     switch ( scope.serviceInfo.record.storage_type ) {
                         case "aws s3":
-
-                            return scope._storageType;
+                            // nothing to do
+                            break;
                         case "azure blob":
                             delete scope._storageType.PartitionKey
-                            return scope._storageType;
-
+                            break;
                         case "rackspace cloudfiles":
                         case "openstack object storage":
-                            return scope._storageType;
+                            // nothing to do
+                            break;
                     }
+                    return scope._storageType;
                 };
 
                 scope._prepareSF = function () {
@@ -729,24 +704,19 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope._prepareNoSQL = function () {
 
-                    switch ( scope.service.record.storage_type ) {
+                    switch ( scope.serviceInfo.record.storage_type ) {
                         case "aws dynamodb":
                         case "aws simpledb":
                         case "azure tables":
-                            var temp = scope._storageType;
-
+                            var temp = angular.copy(scope._storageType);
                             if (temp.hasOwnProperty('private_paths')) {
                                 delete temp.private_paths
                             }
-
                             return temp;
-
-
                         case "couchdb":
                         case "mongodb":
                             return scope._storageType;
                     }
-
                 }
 
                 scope._prepareRSQLDB = function () {
@@ -772,13 +742,8 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope._preparePS = function () {
 
-                    switch ( scope.serviceInfo.record.storage_type ) {
-                        case "aws sns":
-                            return scope._storageType;
-                    }
+                    return scope._storageType;
                 }
-
-
 
                 scope._dsnToFields = function (dsn) {
 
@@ -921,22 +886,23 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
 
                 scope._renderAdditionalEmailFields = function () {
 
-                    if (scope._storageType.transport_type === 'command') {
-
-                        scope._buildFieldSet(
-                            [
-                                'email-command'
-                            ], true)
-                    }else {
-
-                        scope._buildFieldSet(
-                            [
-                                'email-host',
-                                'email-port',
-                                'email-security',
-                                'user-name',
-                                'password'
-                            ], true)
+                    switch (scope._storageType.transport_type) {
+                        case 'command':
+                            scope._buildFieldSet(
+                                [
+                                    'email-command'
+                                ], true);
+                            break;
+                        case 'smtp':
+                            scope._buildFieldSet(
+                                [
+                                    'email-host',
+                                    'email-port',
+                                    'email-security',
+                                    'user-name',
+                                    'password'
+                                ], true);
+                            break;
                     }
                 };
 
@@ -1096,7 +1062,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                                     'api-name',
                                     'name',
                                     'description',
-                                    'base-url',
                                     'is-active',
                                     'email-transport-type'
                                 ]);
@@ -1400,12 +1365,6 @@ angular.module('dfServices', ['ngRoute', 'dfUtility', 'dfServiceTemplates', 'dfS
                     emailTransportType: {
                         title: 'Email Provider',
                         text: 'Specify the type of provider.'
-                    },
-                    emailBaseUrl: {
-                        title: 'Email Base URL',
-                        text: 'Base URL - Specify the base URL for the email service. For example, if you named the API \'myemail\'' +
-                            ' and the base URL is http://api.bestemail.com/v1/api/, then a REST call to /rest/myemail/all ' +
-                            'would tell DreamFactory to call http://api.bestemail.com/v1/api/myemail/all.'
                     },
                     emailHost: {
                         title: 'Email Host ',
@@ -2598,7 +2557,6 @@ angular.module('dfServiceTemplates', [])
         $templateCache.put('_service-base-url.html',
             '<div class="form-group">' +
             '<label>Base URL</label>' +
-                '<df-simple-help data-ng-if="_storageType.transport_type" data-options="dfSimpleHelp.emailBaseUrl"></df-simple-help>' +
                 '<df-simple-help data-ng-if="!_storageType.transport_type" data-options="dfSimpleHelp.baseUrl"></df-simple-help>' +
             '<input class="form-control" data-ng-model="serviceInfo.record.base_url" type="text"/>' +
                 '</div>'

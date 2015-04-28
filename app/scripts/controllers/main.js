@@ -33,15 +33,9 @@ angular.module('dreamfactoryApp')
                 path: '#/home',
                 label: 'Admin',
                 name: 'admin',
-                icon: dfIconService().home,
+                icon: dfIconService().admin,
                 show: false
             },
-//            {
-//                path: '#/dashboard',
-//                label: 'Admin',
-//                name: 'admin',
-//                show: false
-//            },
             {
                 path: '#/login',
                 label: 'Login',
@@ -70,7 +64,6 @@ angular.module('dreamfactoryApp')
                 icon: dfIconService().profile,
                 show: false
             }
-
         ];
 
 
@@ -83,18 +76,6 @@ angular.module('dreamfactoryApp')
         // Right now they are all hard coded
         $scope.componentLinks = [
 
-            /*
-            {
-                name: 'quickstart',
-                label: 'Quickstart',
-                path: '/quickstart'
-            },
-             */
-//            {
-//                name: 'dashboard',
-//                label: 'Dashboard',
-//                path: '/dashboard'
-//            },
             {
                 name: 'home',
                 label: 'Home',
@@ -175,23 +156,22 @@ angular.module('dreamfactoryApp')
         // Sets links for navigation
         $scope._setActiveLinks = function(linksArr, activeLinksArr) {
 
+            var found, i;
+
             angular.forEach(linksArr, function(link) {
 
-                var i = 0;
+                found = false;
 
-                while (i < activeLinksArr.length) {
+                for (i = 0; i < activeLinksArr.length; i++) {
 
                     if (link.name === activeLinksArr[i]) {
 
-                        link.show = true;
+                        found = true;
                         break;
                     }
-                    else {
-                        link.show = false;
-                    }
-
-                    i++;
                 }
+
+                link.show = found;
             })
         };
 
@@ -297,31 +277,61 @@ angular.module('dreamfactoryApp')
             $scope.setTopLevelLinkValue('profile', 'label', n);
         })
 
-        // on routechangesuccess deal with hide showing admin nav
+        // on $routeChangeSuccess show/hide admin nav and chat
+
         $scope.$on('$routeChangeSuccess', function (e) {
 
-            if ($location.path() === '/launchpad') {
-                $scope.showAdminComponentNav = false;
-                return;
+            var config, path;
+
+            // default chat settings
+
+            var enableLaunchpadChat = false;
+            var enableAdminChat = true;
+
+            // if value in config is true or false then use it, else use default
+
+            config = SystemConfigDataService.getSystemConfig();
+
+            if (config && config.hasOwnProperty('chat')) {
+
+                if (config.chat.hasOwnProperty('launchpad')) {
+                    if (config.chat.launchpad === true ||
+                        config.chat.launchpad === false) {
+                        enableLaunchpadChat = config.chat.launchpad;
+                    }
+                }
+
+                if (config.chat.hasOwnProperty('admin')) {
+                    if (config.chat.admin === true ||
+                        config.chat.admin === false) {
+                        enableAdminChat = config.chat.admin;
+                    }
+                }
             }
 
-            if ($location.path() === '/profile') {
-                $scope.showAdminComponentNav = false;
-                return;
-            }
+            path = $location.path();
+            switch (path) {
+                case '/launchpad':
+                    $scope.showAdminComponentNav = false;
+                    Comm100API.showChat(enableLaunchpadChat);
+                    break;
+                case '/profile':
+                    $scope.showAdminComponentNav = false;
+                    Comm100API.showChat(enableAdminChat);
+                    break;
+                case '/logout':
+                    $scope.showAdminComponentNav = false;
+                    Comm100API.showChat(enableAdminChat);
+                    break;
+                default:
+                    // this is not a launchpad or logout route so check is user is sys admin
+                    if ($scope.currentUser.is_sys_admin) {
 
-            if ($location.path() === '/logout') {
-
-                $scope.showAdminComponentNav = false;
-                return;
-            }
-
-            // this is not a launchpad or logout route so check is user is sys admin
-            if ($scope.currentUser.is_sys_admin) {
-
-                // yes.  show the component nav
-                $scope.showAdminComponentNav = true;
-                return;
+                        // yes.  show the component nav
+                        $scope.showAdminComponentNav = true;
+                    }
+                    Comm100API.showChat(enableAdminChat);
+                    break;
             }
         })
     }])
@@ -404,7 +414,6 @@ angular.module('dreamfactoryApp')
 
                             // Change our app location back to the home page
                             $location.url('/home');
-                            // $location.url('/dashboard');
                         }
                     );
 
@@ -650,7 +659,6 @@ angular.module('dreamfactoryApp')
 
                             // Change our app location back to the home page
                             $location.url('/home');
-                            // $location.url('/dashboard');
                         }
                     );
 
