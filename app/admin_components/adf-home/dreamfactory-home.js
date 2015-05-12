@@ -191,7 +191,7 @@ angular.module('dfHome', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp'])
 
                 scope.downloadSDK = function() {
 
-                    window.top.location = location.protocol + '//' + location.host + '/rest/system/app/' + scope.app.record.id + '?sdk=true&app_name=admin';
+                    window.top.location = location.protocol + '//' + location.host + '/api/v1/system/app/' + scope.app.record.id + '?sdk=true&app_name=admin';
                 };
 
 

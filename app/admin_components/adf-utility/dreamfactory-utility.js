@@ -893,7 +893,7 @@ angular.module('dfUtility', ['dfApplication'])
                     scope._getResources = function () {
                         return $http(
                             {
-                                method: 'GET', url: DSP_URL + '/rest/' + scope.activeService
+                                method: 'GET', url: DSP_URL + '/api/v1/' + scope.activeService
                             }
                         )
                     };
@@ -978,7 +978,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                     return $http({
                         method: 'GET',
-                        url: DSP_URL + '/rest' + requestDataObj.serviceName + '/' + requestDataObj.fileName,
+                        url: DSP_URL + '/api/v1' + requestDataObj.serviceName + '/' + requestDataObj.fileName,
                         cache: false,
                         params: requestDataObj.params
                     })
@@ -988,7 +988,7 @@ angular.module('dfUtility', ['dfApplication'])
 
                     return $http({
                         method: 'PUT',
-                        url: DSP_URL + '/rest' + requestDataObj.serviceName + '/' + requestDataObj.fileName,
+                        url: DSP_URL + '/api/v1' + requestDataObj.serviceName + '/' + requestDataObj.fileName,
                         headers: {
                             'Content-Type': 'text/plain'
                         },
@@ -1003,7 +1003,7 @@ angular.module('dfUtility', ['dfApplication'])
                     return $http({
 
                         method: 'DELETE',
-                        url: DSP_URL + '/rest' + requestDataObj.serviceName + '/' + requestDataObj.fileName,
+                        url: DSP_URL + '/api/v1' + requestDataObj.serviceName + '/' + requestDataObj.fileName,
                         params: {
                             script_id:requestDataObj.scriptId
                         }
@@ -2489,7 +2489,7 @@ angular.module('dfUtility', ['dfApplication'])
                 xhr = new ActiveXObject("Microsoft.XMLHTTP");
             }
 
-            xhr.open("GET", DSP_URL + '/rest/system/config', false);
+            xhr.open("GET", DSP_URL + '/api/v1/system/config', false);
             xhr.setRequestHeader("X-DreamFactory-Application-Name", "admin");
             xhr.setRequestHeader("Content-Type", "application/json");
 
@@ -2632,7 +2632,7 @@ angular.module('dfUtility', ['dfApplication'])
 
 
             // Do XHR
-            xhr.open(_method, DSP_URL + '/rest/' + _url + params, _async);
+            xhr.open(_method, DSP_URL + '/api/v1/' + _url + params, _async);
 
             // Set headers
             _setHeaders(xhr, _headers);
