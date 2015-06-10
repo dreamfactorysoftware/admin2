@@ -224,7 +224,7 @@ angular.module('dfApps', ['ngRoute', 'dfUtility', 'dfApplication', 'dfHelp', 'df
 
                 // Other data
                 scope.roles = scope.rolesPrepFunc(dfApplicationData.getApiData('role'));
-                scope.storageServices = dfApplicationData.getApiData('service', {type: 'Local File Storage,File Storage'});
+                scope.storageServices = dfApplicationData.getApiData('service', {type: 'Local File Storage,Remote File Storage'});
                 scope.storageContainers = [];
 
                 if (scope.newApp) {
