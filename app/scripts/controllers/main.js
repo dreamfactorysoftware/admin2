@@ -136,11 +136,6 @@ angular.module('dreamfactoryApp')
                 name: 'package-manager',
                 label: 'Packages',
                 path: '/package-manager'
-            },
-            {
-                name: 'downloads',
-                label: 'Download',
-                path: '/downloads'
             }
         ];
         $scope.componentNavOptions = {
